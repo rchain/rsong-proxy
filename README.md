@@ -2,7 +2,7 @@
 
 # Immersion to Rchain Contract Proxy
 
-A REST layer to proxy Immersion mobile device requests to Rholang RChain contracts
+A REST layer to proxy Immersion mobile device requests to RChain contracts
 
 ## Getting Started
 
@@ -30,9 +30,19 @@ sbt test
 
 ## Deployment
 
+### deploying [Docker](https://hub.docker.com/) image
+
 TBD
 
 ## Built With
 
 TBD
+
+## References
+
+- [Rholang](https://developer.rchain.coop/assets/rholang-spec-0.2.pdf)
+- [RChain Cooperative](https://www.rchain.coop/)
+- [http4s](https://github.com/http4s/http4s)
+
+
 
