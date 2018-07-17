@@ -18,8 +18,22 @@ These instructions will get you a copy of the project up and running on your loc
 #### clone the repo
 
 ```
-git clone git@github.com:kayvank/calculi.git
+git clone git@github.com:kayvank/immersion-rc-proxy.git
 ```
+
+## URL inventory
+
+|------|--------|-------------------------|-----------------------------|
+| Verb | Entity | url Des.                |                             |
+|------|--------|-------------------------|-----------------------------|
+| POST | song   | /song                   | stores songs in blockchain. |
+| POST | play   | /play/userid/songid     | stores play in blockchain.  |
+| GET  | song   | /song&limit?from        | fetch  a list of songs      |
+| GET  | song   | /song/songid            | fetch song by song-id       |
+| GET  | paly   | /play/playid            | fetch song by song-id       |
+| GET  | plays  | /play/userid&limit?from | fetch user play list        |
+|------|--------|-------------------------|-----------------------------|
+
 
 ## Runig the tests
 

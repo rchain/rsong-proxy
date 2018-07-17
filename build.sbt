@@ -1,19 +1,46 @@
-val Http4sVersion = "0.18.14"
-val Specs2Version = "4.2.0"
-val LogbackVersion = "1.2.3"
 
 lazy val root = (project in file("."))
   .settings(
     organization := "coop.rchain",
     name := "immersion-rc-proxy",
-    version := "0.0.1-SNAPSHOT",
     scalaVersion := "2.12.6",
-    libraryDependencies ++= Seq(
-      "org.http4s"      %% "http4s-blaze-server" % Http4sVersion,
-      "org.http4s"      %% "http4s-circe"        % Http4sVersion,
-      "org.http4s"      %% "http4s-dsl"          % Http4sVersion,
-      "org.specs2"     %% "specs2-core"          % Specs2Version % "test",
-      "ch.qos.logback"  %  "logback-classic"     % LogbackVersion
-    )
-  )
+    libraryDependencies ++= {
+      object V {
+        val http4s = "0.18.14"
+        val specs2 = "4.2.0"
+        val logback = "1.2.3"
+        val scalalogging = "3.9.0"
+        val config = "1.3.3"
+      }
+      Seq(
+      "org.http4s"    %% "http4s-blaze-server"        % V.http4s,
+      "org.http4s"    %% "http4s-circe"               % V.http4s,
+      "org.http4s"    %% "http4s-dsl"                 % V.http4s,
+      "org.specs2"    %% "specs2-core"                % V.specs2 % "test",
+      "com.typesafe"  %  "config"                     % V.config,
+      "com.typesafe.scala-logging" %% "scala-logging" % V.scalalogging, 
+      "ch.qos.logback" % "logback-classic"     % V.logback
+    )})
+/**
+scalacOptions := Seq(
+  "-deprecation",
+  "-unchecked",
+  "-explaintypes",
+  "-encoding", "UTF-8",
+  "-feature",
+  "-Xlog-reflective-calls",
+  "-Ywarn-unused",
+  "-Ywarn-value-discard",
+  "-Xlint",
+  "-Ywarn-nullary-override",
+  "-Ywarn-nullary-unit",
+  "-Xfuture",
+  "-language:postfixOps",
+  "-language:implicitConversions"
+)
+ * */
+
+enablePlugins(UniversalPlugin)
+
+enablePlugins(DockerPlugin)
 
