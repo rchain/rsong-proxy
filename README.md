@@ -23,7 +23,6 @@ git clone git@github.com:kayvank/immersion-rc-proxy.git
 
 ## URL inventory
 
-|------|--------|-------------------------|-----------------------------|
 | Verb | Entity | url Des.                |                             |
 |------|--------|-------------------------|-----------------------------|
 | POST | song   | /song                   | stores songs in blockchain. |
@@ -32,7 +31,6 @@ git clone git@github.com:kayvank/immersion-rc-proxy.git
 | GET  | song   | /song/songid            | fetch song by song-id       |
 | GET  | paly   | /play/playid            | fetch song by song-id       |
 | GET  | plays  | /play/userid&limit?from | fetch user play list        |
-|------|--------|-------------------------|-----------------------------|
 
 
 ## Runig the tests
