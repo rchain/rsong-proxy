@@ -1,5 +1,7 @@
 target/
 project/boot/
+.idea/
+.idea*
 ##
 ## emacs stuff
 ##
@@ -15,3 +17,4 @@ native/
 ## local overrides
 ##
 .envrc
+

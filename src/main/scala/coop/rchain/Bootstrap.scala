@@ -6,6 +6,7 @@ import org.http4s.server.blaze.BlazeBuilder
 import scala.concurrent.ExecutionContext
 import api.{Play, Status, Song}
 import utils.Globals._
+import repo.ContractService
 
 object Bootstrap extends StreamApp[IO] {
   import scala.concurrent.ExecutionContext.Implicits.global
@@ -17,8 +18,8 @@ object ServerStream {
 
   import api.middleware._
 
+  val grpcServer = ContractService(appCfg.getInt("grpc.port"))
   val apiVersion = appCfg.getString("api.version")
-  println(s"+++++++++++++ ${apiVersion}")
   def statusApi[F[_]: Effect] = new Status[F].service
   def userApi[F[_]: Effect] = new BasicAuthHttpEndpoint[F].service
   def playApi[F[_]: Effect] =   new Play[F].service 

@@ -30,4 +30,7 @@ object MiddleWear {
     val s = CORS(service, methodConfig) 
     s.map(addHeader(_, Header("XX-header", "XX-value") ) )
   } 
+
+  def bearierToken[F[_]: Effect](req: Request[F]): Option[String] =
+    req.headers.get(CaseInsensitiveString("authorization")).map(_.value)
 }
