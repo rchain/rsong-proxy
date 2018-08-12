@@ -9,6 +9,7 @@ import org.http4s.implicits._
 import coop.rchain.protos.hello._
 import io.grpc._
 import coop.rchain.utils.Globals._
+import io.circe.generic.auto._, io.circe.syntax._
 
 
 class Play[F[_]: Effect] extends Http4sDsl[F] {
@@ -18,12 +19,14 @@ class Play[F[_]: Effect] extends Http4sDsl[F] {
   val service: HttpService[F] = {
     object perPage extends OptionalQueryParamDecoderMatcher[Int] ("per_page")
     object page extends OptionalQueryParamDecoderMatcher[Int] ("page")
-    object userId extends QueryParamDecoderMatcher[String] ("user_id")
+    object userId extends QueryParamDecoderMatcher[String] ("userId")
+
     HttpService[F] {
-      case GET -> Root  / "user" :? userId(id) +& perPage(pp) +& page (p) =>
+      case GET -> Root  / "song" :? userId(userId) +& perPage(pp) +& page (p) =>
         Ok(
           Json.obj(
-            "user" -> Json.fromString(s" ${id}"),
+            "song" -> Json.fromString(s" 123"),
+            "user" -> Json.fromString(s" ${userId}"),
             "per_page" -> Json.fromString(s" ${pp.getOrElse(10)}"),
             "page" -> Json.fromString(s" ${p.getOrElse(0)}")))
       case GET -> Root  / id ⇒

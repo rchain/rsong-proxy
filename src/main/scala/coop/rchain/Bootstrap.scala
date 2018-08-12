@@ -21,7 +21,7 @@ object ServerStream {
   val grpcServer = ContractService(appCfg.getInt("grpc.port"))
   val apiVersion = appCfg.getString("api.version")
   def statusApi[F[_]: Effect] = new Status[F].service
-  def userApi[F[_]: Effect] = new BasicAuthHttpEndpoint[F].service
+  def userApi[F[_]: Effect] = new User[F].service
   def playApi[F[_]: Effect] =   new Play[F].service 
   def songApi[F[_]: Effect] =   new Song[F].service
 

@@ -1,0 +1,99 @@
+// Immersion contract
+// store song & metadata, including playcounts; return songid
+// retrieve song given songid
+// retrieve set of songs, metadata, & corresponding songids
+// get new userid with 50 plays
+// play(songid, userid): if (remaining user plays > 0) { decrement user plays, increment song plays, return allowed } else { return denied }
+// getPlaysRemaining(userid)
+
+
+new metaDataMapStore, songMapStore, userMapStore in {
+  // Maps songId to [metadata, songDataId]
+  metaDataMapStore!({}) |
+  // Maps songDataId to songData
+  songMapStore!({}) |
+  // Maps userId to remaining play count
+  userMapStore!({}) |
+  
+  // songDataIn: arbitrary, usually bytearray
+  // songMetaDataIn: map
+  // songIdOut: name on which new songId gets sent
+  contract @["Immersion", "store"](@songDataIn, @songMetadataIn, songIdOut) = {
+    new songId, songDataId in {
+      for (@metaDataMap <- metaDataMapStore; @songMap <- songMapStore) {
+        metaDataMapStore!(metaDataMap.set(*songId.toByteArray(), [songMetadataIn.set("playCount", 0), *songDataId.toByteArray()])) |
+        songMapStore!(songMap.set(*songDataId, songDataIn)) |
+        songIdOut!(*songId)
+      }
+    }
+  } |
+  
+  // songIdIn: bytearray
+  // songDataOut: name on which songData gets sent
+  contract @["Immersion", "retrieve"](@songIdIn, songDataOut) = {
+    for (@metaDataMap <- metaDataMapStore; @songMap <- songMapStore) {
+      metaDataMapStore!(metaDataMap) |
+      songMapStore!(songMap) |
+      songDataOut!(songMap.get(metaDataMap.get(songIdIn).nth(1)))
+    }
+  } |
+  
+  // metaDataMapOut: name on which to send map from song ids to metadata
+  contract @["Immersion", "retrieve"](metaDataMapOut) = {
+    for (@metaDataMap <- metaDataMapStore) {
+      metaDataMapStore!(metaDataMap) |
+      metaDataMapOut!(metaDataMap)
+    }
+  } |
+  
+  // userIdOut: name on which to send new user id
+  contract @["Immersion", "newUserId"](userIdOut) = {
+    new userId in {
+      for (@userMap <- userMapStore) {
+        userMapStore!(userMap.set(*userId.toByteArray(), 50)) |
+        userIdOut!(*userId)
+      }
+    }
+  } |
+  
+  // songIdIn: bytearray
+  // userIdIn: bytearray
+  // permittedOut: boolean
+  contract @["Immersion", "play"](@songIdIn, @userIdIn, permittedOut) = {
+    for (@metaDataMap <- metaDataMapStore; @userMap <- userMapStore) {
+      new playsRemainingOut in {
+        playsRemainingOut!(userMap.get(userIdIn)) |
+        for (@playsRemaining <- playsRemainingOut) {
+          new mdOut in {
+            mdOut!(metaDataMap.get(songIdIn)) |
+            for (@md <- mdOut) {
+              if (playsRemaining == Nil or playsRemaining == 0 or md == Nil) {
+                userMapStore!(userMap) |
+                metaDataMapStore!(metaDataMap) |
+                permittedOut!(false)
+              } else {
+                userMapStore!(userMap.set(userIdIn, playsRemaining - 1)) |
+                new playCountOut in {
+                  playCountOut!(md.get("playCount")) |
+                  for (@playCount <- playCountOut) {
+                    metaDataMapStore!(metaDataMap.set(songIdIn, md.set("playCount", playCount + 1)))
+                  }
+                } |
+                permittedOut!(true)
+              }
+            }
+          }
+        }
+      }
+    }
+  } |
+  
+  // userIdIn: bytearray
+  // countOut: name on which the reamining play count is sent
+  contract @["Immersion", "playCount"](@userIdIn, countOut) = {
+    for (@userMap <- userMapStore) {
+      userMapStore!(userMap) |
+      countOut!(userMap.get(userIdIn))
+    }
+  }
+}
