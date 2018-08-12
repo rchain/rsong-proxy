@@ -11,12 +11,11 @@ case class PlayList(entity: Entity)extends Model
 case class Cursor(from: Int, to: Int) extends Model
 case class Metadata(k: String, v: String) extends Model
 case class User(id: String, name: String, metadata: List[Metadata])extends Model
-case class Artwork( id: String, url: String ) extends  Model
+case class Artwork( id: String, uri: String ) extends  Model
 case class Artist(id: String, name: String) extends  Model
-case class Song(isrc: String, url: String, duration: Long, language: String) extends  Model
+case class Song(isrc: String, uri: String, duration_ms: Long, language: String) extends  Model
 case class SongMetadata(
-                       isrc: String,
-                       trackUrl: String,
+                       song: Song,
                        artists: List[Artist],
                        artwork: List[Artwork]
                        )

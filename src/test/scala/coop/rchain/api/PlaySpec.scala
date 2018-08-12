@@ -10,11 +10,14 @@ class PlaySpec extends Specification { def is = s2""""
     should return 200 for play by song-id  $e1
   """
 
-  def e1 = retSong.status.code must beEqualTo(200)
+  def e1 = {
+    println(s"songs are : --- ${retSong.body}")
+    retSong.status.code must beEqualTo(200)
+  }
 
 
   private[this] val retSong: Response[IO] = {
-    val getSong = Request[IO](Method.GET, Uri.uri("/song/song-123?userId=user123&perPage=10&page=1"))
+    val getSong = Request[IO](Method.GET, Uri.uri("/song?userId=user123&perPage=10&page=1"))
     new Play[IO].service.orNotFound(getSong).unsafeRunSync()
   }
 }

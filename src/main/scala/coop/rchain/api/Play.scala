@@ -1,6 +1,7 @@
 package coop.rchain.api
 
 import cats.effect.Effect
+import coop.rchain.model.Cursor
 import io.circe.Json
 import org.http4s.HttpService
 import org.http4s.circe._
@@ -9,7 +10,9 @@ import org.http4s.implicits._
 import coop.rchain.protos.hello._
 import io.grpc._
 import coop.rchain.utils.Globals._
-import io.circe.generic.auto._, io.circe.syntax._
+import coop.rchain.service.SongService._
+import io.circe.generic.auto._
+import io.circe.syntax._
 
 
 class Play[F[_]: Effect] extends Http4sDsl[F] {
@@ -23,12 +26,7 @@ class Play[F[_]: Effect] extends Http4sDsl[F] {
 
     HttpService[F] {
       case GET -> Root  / "song" :? userId(userId) +& perPage(pp) +& page (p) =>
-        Ok(
-          Json.obj(
-            "song" -> Json.fromString(s" 123"),
-            "user" -> Json.fromString(s" ${userId}"),
-            "per_page" -> Json.fromString(s" ${pp.getOrElse(10)}"),
-            "page" -> Json.fromString(s" ${p.getOrElse(0)}")))
+        Ok(mySongs("", Cursor(10,1)).asJson)
       case GET -> Root  / id ⇒
         val channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext(true).build
         val request = HelloRequest(name = s"from gRpc user=${id}")
