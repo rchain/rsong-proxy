@@ -39,3 +39,5 @@ PB.targets in Compile := Seq(
 // scalacOptions := CompilerSettings.scalacOptions
 
 enablePlugins(JavaServerAppPackaging)
+
+dockerRepository := Some("kayvank")
