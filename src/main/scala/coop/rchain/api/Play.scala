@@ -27,12 +27,19 @@ class Play[F[_]: Effect] extends Http4sDsl[F] {
     HttpService[F] {
       case GET -> Root  / "song" :? userId(userId) +& perPage(pp) +& page (p) =>
         Ok(mySongs("", Cursor(10,1)).asJson)
-      case GET -> Root  / id ⇒
-        val channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext(true).build
-        val request = HelloRequest(name = s"from gRpc user=${id}")
-        val stub = GreeterGrpc.blockingStub(channel)
-        val f: HelloReply = stub.sayHello(request)
-        Ok(Json.obj("grpcmessage" -> Json.fromString(s"${f}")))
+
+      case GET -> Root  / "song" / id ⇒
+        Ok(Json.obj("message" -> Json.fromString("under construction")))
+
+//        val channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext(true).build
+//        val request = HelloRequest(name = s"from gRpc user=${id}")
+//        val stub = GreeterGrpc.blockingStub(channel)
+//        val f: HelloReply = stub.sayHello(request)
+//        Ok(Json.obj("grpcmessage" -> Json.fromString(s"${f}")))
+
+      case GET -> Root  / "artwork" / id ⇒
+        Ok(Json.obj("message" -> Json.fromString("under construction")))
+
     }
   }
 }

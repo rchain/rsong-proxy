@@ -13,7 +13,7 @@ import coop.rchain.model._
 import cats.effect.{Effect, IO}
 
 
-class User[F[_]](implicit F: Sync[F], R: AuthRepository[F, BasicCredentials])
+class AuthUser[F[_]](implicit F: Sync[F], R: AuthRepository[F, BasicCredentials])
     extends Http4sDsl[F] {
 
   private val authedService: AuthedService[BasicCredentials, F] = AuthedService {
