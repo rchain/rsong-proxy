@@ -5,7 +5,7 @@ import fs2.StreamApp
 import org.http4s.server.blaze.BlazeBuilder
 
 import scala.concurrent.ExecutionContext
-import api.{Play, Song, Status}
+import api.{Play, Song, User, Status}
 import utils.Globals._
 import repo.ContractService
 

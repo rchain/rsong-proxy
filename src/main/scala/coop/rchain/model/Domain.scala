@@ -17,7 +17,7 @@ case class User(
   name: String,
   active: Boolean,
   lastLogin: Long,
-  metadata: List[Metadata])extends Model
+  metadata: Map[String, String])extends Model
 
 case class Artwork( id: String, uri: String ) extends  Model
 
