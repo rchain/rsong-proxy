@@ -3,7 +3,7 @@ package coop.rchain.repo
 import com.dropbox.core.v2.files.ListFolderResult
 import scala.collection.JavaConverters._
 import org.specs2._
-
+/**
 class DropBoxSpec extends  Specification { def is =s2"""
     DropBox Repository Specification
       should verify dropbox account by fetcing a list of files/folders $e1
@@ -18,3 +18,4 @@ class DropBoxSpec extends  Specification { def is =s2"""
   }
 
 }
+ * */
