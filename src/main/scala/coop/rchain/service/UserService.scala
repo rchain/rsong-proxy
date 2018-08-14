@@ -3,8 +3,9 @@ package coop.rchain.service
 import coop.rchain.model._
 
 object UserService {
-  def find(userId: String): User =
-    User(
+  def find(userId: String): Option[User] =
+    if(userId != "bad_user")
+      Some(User(
      id= userId,
       name="immersion-user",
       active=true,
@@ -14,5 +15,5 @@ object UserService {
         "key-2" -> "value-2",
         "key-3" -> "value-3",
         "key-4" -> "value-4")
-      )
+      )) else None
 }
