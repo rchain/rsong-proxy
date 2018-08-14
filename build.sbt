@@ -14,8 +14,10 @@ lazy val root = (project in file("."))
         val scalapb= "0.7.4"
         val dropbox="3.0.8"
         val circie="0.9.3"
+        val aws_sdk= "1.11.385"
       }
       Seq(
+        "com.amazonaws" % "aws-java-sdk-s3" % V.aws_sdk,
         "com.dropbox.core" % "dropbox-core-sdk" % V.dropbox,
         "org.http4s" %% "http4s-blaze-server" % V.http4s,
         "org.http4s" %% "http4s-circe" % V.http4s,
@@ -41,3 +43,6 @@ PB.targets in Compile := Seq(
 enablePlugins(JavaServerAppPackaging)
 
 dockerRepository := Some("kayvank")
+dockerUpdateLatest := true
+version in Docker := version.value + "-" + scala.sys.env.getOrElse(
+  "CIRCLE_BUILD_NUM", default = "local")
