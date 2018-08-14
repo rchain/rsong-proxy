@@ -48,6 +48,7 @@ export DROPBOX_ACCESS_TOKEN='secrete-dropbox-token'
 ```
 
 ### Run the docker image
+The build process pushes the docker image to docker hub. To run the image:
 
 ```
 ./docker-run.sh
@@ -57,14 +58,17 @@ export DROPBOX_ACCESS_TOKEN='secrete-dropbox-token'
 
 ```
 sbt clean compile run
+## to create a local dokcer image
+sbt clean compile docker:stage docker:publishLocal
+docker images | grep 'immersion-rc-proxy'
 ```
 
 ## Built With
-
-TBD
+[circle-ci](https://circleci.com/gh/kayvank)
 
 ## References
 
+- [docker-image]
 - [Rholang](https://developer.rchain.coop/assets/rholang-spec-0.2.pdf)
 - [RChain Cooperative](https://www.rchain.coop/)
 - [http4s](https://github.com/http4s/http4s)
