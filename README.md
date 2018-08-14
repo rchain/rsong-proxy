@@ -14,37 +14,50 @@ These instructions will get you a copy of the project up and running on your loc
 
 - [sbt](https://www.scala-sbt.org/)
 - [JDK8](http://www.oracle.com/technetwork/pt/java/javase/downloads/jdk8-downloads-2133151.html?printOnly=1)
+- [docker](https://www.docker.com/)
 
-#### clone the repo
+#### clone and build the project
 
 ```
 git clone git@github.com:kayvank/immersion-rc-proxy.git
+cd immersion-rc-proxy
+sbt compile
 ```
 
-## URL inventory
+## Running the project locally
 
-| Verb | Entity | url Des.                |                             |
-|------|--------|-------------------------|-----------------------------|
-| POST | song   | /song                   | stores songs in blockchain. |
-| POST | play   | /play/userid/songid     | stores play in blockchain.  |
-| GET  | song   | /song&limit?from        | fetch  a list of songs      |
-| GET  | song   | /song/songid            | fetch song by song-id       |
-| GET  | paly   | /play/playid            | fetch song by song-id       |
-| GET  | plays  | /play/userid&limit?from | fetch user play list        |
+To run the project locally:
+- set the environment variables
+- run the docker
 
+Alternatively you may build and run the project from source code.
 
-## Runig the tests
+### Environment variables
+
+To run the project locally, configure your environment variables:
+
 
 ```
-cd 
-sbt test
+export HTTP_PORT=9000
+export AUTH_NAME=secrete-user-name
+export AUTH_PASSWORD=serete-password
+export API_VERSION=v1
+export GRPC_SERVER=localhost
+export GRPC_PORT=5041
+export DROPBOX_ACCESS_TOKEN='secrete-dropbox-token'
 ```
 
-## Deployment
+### Run the docker image
 
-### deploying [Docker](https://hub.docker.com/) image
+```
+./docker-run.sh
+```
 
-TBD
+### Running the Source code
+
+```
+sbt clean compile run
+```
 
 ## Built With
 
