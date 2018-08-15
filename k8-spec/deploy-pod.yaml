@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: immersion-rc-proxy
+  labels:
+    app: immersion-rc-proxy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: immersion-rc-proxy
+  template:
+    metadata:
+      labels:
+        app: immersion-rc-proxy
+    spec:
+      containers:
+      - name: immersion-rc-proxy
+        image: kayvank/immersion-rc-proxy:1.0-SNAPSHOT-12
+        ports:
+        - containerPort: 9000
