@@ -8,6 +8,10 @@ case class UserMapStore()
 case class Entity(id: String, data: String) extends Model
 case class PlayList(entity: Entity)extends Model
 
+
+object AudioTypes{
+  val t: Map[String, String] = Map("Stereo" -> "Stereo", "3D" -> "3D")
+}
 case class Cursor(from: Int, to: Int) extends Model
 
 case class Metadata(k: String, v: String) extends Model
@@ -23,12 +27,17 @@ case class Artwork( id: String, uri: String ) extends  Model
 
 case class Artist( id: String, name: String ) extends  Model
 
-case class Song(
-  isrc: String,
+case class Audio(
+  effect: String,
   uri: String,
-  duration_ms: Long,
-  language: String
+  duration_ms: Long
 ) extends  Model
+
+case class Song(
+  id: String,
+  audio: List[Audio],
+  language: String
+) extends Model
 
 case class Album(
   id: String,
