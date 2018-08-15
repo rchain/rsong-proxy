@@ -7,7 +7,7 @@ metadata:
 spec:
   containers:
   - name: immersion-rc-proxy-container
-    image: kayvank/immersion-rc-proxy:1.0-SNAPSHOT-9
+    image: kayvank/immersion-rc-proxy:1.0-SNAPSHOT-99
     env:
     - name: HTTP_PORT
       value: "9000"
