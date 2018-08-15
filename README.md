@@ -63,12 +63,21 @@ sbt clean compile docker:stage docker:publishLocal
 docker images | grep 'immersion-rc-proxy'
 ```
 
+### Running tests:
+```
+curl localhost:9000/v1/song?userId=123
+curl localhost:9000/v1/user/123
+```
+
 ## Built With
 [circle-ci](https://circleci.com/gh/kayvank)
 
+## Deploymnet
+Google Cloud Platform
+
 ## References
 
-- [docker-image]
+- [docker-image](https://hub.docker.com/r/kayvank/immersion-rc-proxy/tags/)
 - [Rholang](https://developer.rchain.coop/assets/rholang-spec-0.2.pdf)
 - [RChain Cooperative](https://www.rchain.coop/)
 - [http4s](https://github.com/http4s/http4s)

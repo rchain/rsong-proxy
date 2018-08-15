@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: immersion-rc-proxy
+  labels:
+    purpose: rchain-immersion-proxy
+spec:
+  containers:
+  - name: immersion-rc-proxy-container
+    image: kayvank/immersion-rc-proxy:1.0-SNAPSHOT-9
+    env:
+    - name: HTTP_PORT
+      value: "9000"
+    - name: AUTH_NAME
+      value: "immersion"
+    - name: AUTH_PASSWORD
+      value: "immersion-password"
+    - name: API_VERSION
+      value: "v1"
+    - name: GRPC_SERVER
+      value: "0.0.0.0"
+    - name: GRPC_PORT
+      value: "5041"
+    - name: DROPBOX_ACCESS_TOKEN
+      value: "my-token"

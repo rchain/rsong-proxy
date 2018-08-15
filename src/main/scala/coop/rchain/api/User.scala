@@ -15,9 +15,13 @@ class User[F[_]: Effect] extends Http4sDsl[F] {
 
   val service: HttpService[F] = {
     HttpService[F] {
-      case GET -> Root  / id =>
+      case GET -> Root  / "user" / id =>
+        if( find(id).isEmpty )
+          NotFound(id)
+        else
         Ok(find(id).asJson)
 
+      case GET -> Root  / "user" / "asset" / "re" => PermanentRedirect("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22nome%2C%20ak%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys")
       case req @ POST -> Root  =>
         Ok(req.body.drop(6))
     }

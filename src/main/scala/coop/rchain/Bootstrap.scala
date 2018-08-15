@@ -5,7 +5,7 @@ import fs2.StreamApp
 import org.http4s.server.blaze.BlazeBuilder
 
 import scala.concurrent.ExecutionContext
-import api.{Play, Song, User, Status}
+import api.{Song, User, Status}
 import utils.Globals._
 import repo.ContractService
 
@@ -23,15 +23,13 @@ object ServerStream {
   val apiVersion = appCfg.getString("api.version")
   def statusApi[F[_]: Effect] = new Status[F].service
   def userApi[F[_]: Effect] = new User[F].service
-  def playApi[F[_]: Effect] =   new Play[F].service 
   def songApi[F[_]: Effect] =   new Song[F].service
 
   def stream[F[_]: Effect](implicit ec: ExecutionContext) =
     BlazeBuilder[F]
       .bindHttp(appCfg.getInt("api.http.port"), "0.0.0.0")
       .mountService(MiddleWear(statusApi), s"/${apiVersion}/public")
-      .mountService(MiddleWear(userApi), s"/${apiVersion}/user" )
-      .mountService(MiddleWear(songApi), s"/${apiVersion}/song" )
-      .mountService(MiddleWear(playApi), s"/${apiVersion}/play" )
+      .mountService(MiddleWear(userApi), s"/${apiVersion}" )
+      .mountService(MiddleWear(songApi), s"/${apiVersion}" )
       .serve
 }
