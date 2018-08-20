@@ -1,7 +1,8 @@
 package coop.rchain.repo
 
-import coop.rchain.casper.protocol.{DeployData, DeployServiceGrpc}
+import coop.rchain.casper.protocol.{BlocksResponse, DeployData, DeployServiceGrpc}
 import coop.rchain.model.{Err, ErrorCode}
+import coop.rchain.models.RhoTypes.Var.VarInstance.Empty
 import io.grpc.ManagedChannelBuilder
 
 
@@ -21,4 +22,10 @@ class DeployRholangGrpc(host: String, port: Int) {
          Right(resp.message)
        else Left(Err(ErrorCode.grpcDeploy, resp.message, Some(contract)))
   }
+  def showBlock: BlocksResponse = {
+    val req=  com.google.protobuf.empty.Empty()
+    DeployServiceGrpc.blockingStub(channel)
+    DeployServiceGrpc.blockingStub(channel).showBlocks(req)
+  }
+
 }
