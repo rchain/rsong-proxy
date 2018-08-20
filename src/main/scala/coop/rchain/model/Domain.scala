@@ -54,3 +54,19 @@ case class SongMetadata(
   artwork: List[Artwork],
   album: Option[Album]=None
 ) extends  Model
+
+case class PlayCount(
+  max: Int,
+  current: Int
+) extends Model
+
+case class UserPlayCount(
+  songMetadata: SongMetadata,
+  playCount: PlayCount
+)
+
+case class WorldView (
+  user: User,
+  songMetadata: SongMetadata,
+  playCount: PlayCount
+) extends  Model
