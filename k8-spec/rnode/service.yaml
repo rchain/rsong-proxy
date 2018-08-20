@@ -1,0 +1,16 @@
+# A headless service to create DNS records
+apiVersion: v1
+kind: Service
+metadata:
+  name: rnode
+  labels:
+    app: rnode
+spec:
+  ports:
+  - port: 5041
+    name: rnode
+  # *.galear.default.svc.cluster.local
+  clusterIP: None
+  selector:
+    app: rnode
+  publishNotReadyAddresses: true

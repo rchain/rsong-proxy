@@ -3,11 +3,9 @@ package coop.rchain
 import cats.effect.{Effect, IO}
 import fs2.StreamApp
 import org.http4s.server.blaze.BlazeBuilder
-
 import scala.concurrent.ExecutionContext
-import api.{Song, User, Status}
+import api.{Song, Status, User}
 import utils.Globals._
-import repo.ContractService
 
 object Bootstrap extends StreamApp[IO] {
   import scala.concurrent.ExecutionContext.Implicits.global
@@ -19,7 +17,6 @@ object ServerStream {
 
   import api.middleware._
 
-  val grpcServer = ContractService(appCfg.getInt("grpc.port"))
   val apiVersion = appCfg.getString("api.version")
   def statusApi[F[_]: Effect] = new Status[F].service
   def userApi[F[_]: Effect] = new User[F].service
