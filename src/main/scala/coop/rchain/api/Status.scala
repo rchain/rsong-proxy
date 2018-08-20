@@ -10,6 +10,8 @@ class Status[F[_]: Effect] extends Http4sDsl[F] {
 
    val service: HttpService[F] = {
     HttpService[F] {
+      case req @ GET  -> Root   =>
+        Ok(Json.obj("status" -> Json.fromString(s"up")))
       case req @ GET  -> Root / "status"  =>
         Ok(Json.obj("status" -> Json.fromString(s"up")))
     }
