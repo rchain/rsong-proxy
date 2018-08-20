@@ -1,13 +1,14 @@
 package coop.rchain.repo
+
 import coop.rchain.node.model.repl.{CmdRequest, EvalRequest, ReplGrpc}
 import io.grpc._
 
-object Rnode {
-  def apply(host: String, port: Int): Rnode =
-    new Rnode(host, port)
+object EvalRholangGrpc {
+  def apply(host: String, port: Int): EvalRholangGrpc =
+    new EvalRholangGrpc(host, port)
 }
 
-class Rnode(host: String, port: Int) {
+class EvalRholangGrpc(host: String, port: Int) {
   private lazy val channel =
     ManagedChannelBuilder.forAddress(host, port).usePlaintext(true).build
 
@@ -15,7 +16,4 @@ class Rnode(host: String, port: Int) {
     ReplGrpc.blockingStub(channel).eval(EvalRequest(program)).output
   def runRholang(program: String) =
     ReplGrpc.blockingStub(channel).run(CmdRequest(program)).output
-
-
 }
-

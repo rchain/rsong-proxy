@@ -3,10 +3,8 @@ package coop.rchain
 import cats.effect.{Effect, IO}
 import fs2.StreamApp
 import org.http4s.server.blaze.BlazeBuilder
-
 import scala.concurrent.ExecutionContext
 import api.{Song, Status, User}
-import coop.rchain.repo.Rnode
 import utils.Globals._
 
 object Bootstrap extends StreamApp[IO] {
@@ -18,9 +16,6 @@ object Bootstrap extends StreamApp[IO] {
 object ServerStream {
 
   import api.middleware._
-
-  val grpcServer = Rnode(
-    appCfg.getString("grpc.host"), appCfg.getInt("grpc.port"))
 
   val apiVersion = appCfg.getString("api.version")
   def statusApi[F[_]: Effect] = new Status[F].service
