@@ -20,9 +20,8 @@ class DeployRholangGrpcSpec extends Specification { def is =s2"""
 
   def e2 = {
     val grpcDeploy = DeployRholangGrpc("localhost", 40401)
-    //val computed= grpcDeploy.deployContract("new x in { x!(1 + 1) }")
-    //computed.isRight === true
-    1 ===1
+    val computed= grpcDeploy.deployContract("new x in { x!(1 + 1) }")
+    computed.isRight === true
   }
 }
 
