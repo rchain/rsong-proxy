@@ -25,6 +25,7 @@ object ServerStream {
   def stream[F[_]: Effect](implicit ec: ExecutionContext) =
     BlazeBuilder[F]
       .bindHttp(appCfg.getInt("api.http.port"), "0.0.0.0")
+      .mountService(MiddleWear(statusApi))
       .mountService(MiddleWear(statusApi), s"/${apiVersion}/public")
       .mountService(MiddleWear(userApi), s"/${apiVersion}" )
       .mountService(MiddleWear(songApi), s"/${apiVersion}" )
