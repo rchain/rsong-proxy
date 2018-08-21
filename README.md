@@ -69,6 +69,26 @@ curl localhost:9000/v1/song?userId=123
 curl localhost:9000/v1/user/123
 ```
 
+## url Inventory
+```
+host='localhost:9000'
+
+## create a new user 
+curl -X POST $host/v1/user/<user_id>
+
+## retrieve  user  object
+curl -X POST $host/v1/user/<user_id>
+
+## reset playcount
+curl -X PUT $host/v1/user/<user_id>/playcount
+
+## retrive a user's song
+curl -v  GET $host/v1/song/song1?userId=123 | jq
+
+##  retrive user's songs
+curl -v  GET $host/v1/song\?userId=user123\&perPage=10\&page=1 | jq
+
+```
 ## Built With
 [circle-ci](https://circleci.com/gh/kayvank)
 
