@@ -77,7 +77,7 @@ host='localhost:9000'
 curl -X POST $host/v1/user/<user_id>
 
 ## retrieve  user  object
-curl -X POST $host/v1/user/<user_id>
+curl  $host/v1/user/<user_id>
 
 ## reset playcount
 curl -X PUT $host/v1/user/<user_id>/playcount
