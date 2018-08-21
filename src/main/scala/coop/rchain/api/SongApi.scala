@@ -12,7 +12,7 @@ import io.circe.generic.auto._
 import io.circe.syntax._
 
 
-class Song[F[_]: Effect] extends Http4sDsl[F] {
+class SongApi[F[_]: Effect] extends Http4sDsl[F] {
 
   val service: HttpService[F] = {
     object perPage extends OptionalQueryParamDecoderMatcher[Int] ("per_page")
@@ -23,8 +23,10 @@ class Song[F[_]: Effect] extends Http4sDsl[F] {
       case GET -> Root  / "song" :? userId(id) +& perPage(pp) +& page(p) =>
         Ok(mySongs(id, Cursor(10,1)).asJson)
 
-      case GET -> Root  / "song" / id  / "playcount" :? userId(uid)  =>
-        Ok(Json.obj("song" -> Json.fromString("id")))
+      case GET -> Root  / "song" / id  :? userId(uid)  =>
+        Ok(mySongs(id, Cursor(10,1)).head.asJson)
+
+
 
       case GET -> Root  / "artwork" / id ⇒
         Ok(Json.obj("message" -> Json.fromString("under construction")))

@@ -62,20 +62,19 @@ object SongRepo {
                 duration_ms=1000L)) ,
               language="EN") ) 
 
-  val songMetadata: String => List[UserPlayCount] = userId =>
-  List( UserPlayCount (
-    songMetadata=SongMetadata(
+  val songMetadata: String => List[SongMetadata] = userId =>
+  List(
+    SongMetadata(
       song("Prog_Noir"),
       artists = List(artists("Prog_Noir")),
       artwork=List(artworks("Prog_Noir")),
         album=Some(albums("Prog_Noir")) 
-    ),playCount=PlayCount(max=10,current=1)),
-   UserPlayCount(
-    songMetadata=SongMetadata(
+    ),
+   SongMetadata(
       song("Tiny_Human"),
       artists = List(artists("Tiny_Human")),
       artwork=List(artworks("Tiny_Human")),
       album=Some(albums("Tiny_Human"))
-    ),playCount=PlayCount(max=10,current=1))
+    )
   )
 }
