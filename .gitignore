@@ -3,13 +3,14 @@ project/boot/
 .idea/
 .idea*
 ##
-## emacs stuff
+## emacs & ensime
 ##
 project/.ensime
 .ensime*/
 .ensime
 ensime_port
 .#*
+*.swp
 .history
 .cache
 native/
