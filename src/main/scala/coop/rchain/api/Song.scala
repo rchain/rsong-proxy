@@ -23,7 +23,7 @@ class Song[F[_]: Effect] extends Http4sDsl[F] {
       case GET -> Root  / "song" :? userId(id) +& perPage(pp) +& page(p) =>
         Ok(mySongs(id, Cursor(10,1)).asJson)
 
-      case GET -> Root  / "song" / id  :? userId(uid) =>
+      case GET -> Root  / "song" / id  / "playcount" :? userId(uid)  =>
         Ok(Json.obj("song" -> Json.fromString("id")))
 
       case GET -> Root  / "artwork" / id ⇒
