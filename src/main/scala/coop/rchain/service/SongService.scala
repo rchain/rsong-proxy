@@ -7,7 +7,7 @@ import coop.rchain.repo.SongRepo._
   * Des provides Repo services to api layer
   */
 object SongService {
-  def mySongs(userId: String, cursor: Cursor): List[UserPlayCount] = {
+  def mySongs(userId: String, cursor: Cursor): List[SongMetadata] = {
     songMetadata(userId)
   }
 }
