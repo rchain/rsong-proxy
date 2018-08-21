@@ -27,7 +27,7 @@ object ServerStream {
       .bindHttp(appCfg.getInt("api.http.port"), "0.0.0.0")
       .mountService(MiddleWear(statusApi))
       .mountService(MiddleWear(statusApi), s"/${apiVersion}/public")
-      .mountService(MiddleWear(userApi), s"/${apiVersion}" )
+      .mountService(MiddleWear(userApi), s"/${apiVersion}/user" )
       .mountService(MiddleWear(songApi), s"/${apiVersion}" )
       .serve
 }
