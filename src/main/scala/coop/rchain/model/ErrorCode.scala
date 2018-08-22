@@ -4,6 +4,8 @@ object ErrorCode extends Enumeration {
   type ErrorCode = Value
   val grpcEval,
       grpcDeploy,
+      grpcPropose,
+      grpcShow,
       rholang,
       network,
       contractFile,

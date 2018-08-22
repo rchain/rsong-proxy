@@ -16,7 +16,7 @@ service DeployService {
   rpc addBlock(BlockMessage) returns (DeployServiceResponse) {}
   rpc createBlock(google.protobuf.Empty) returns (DeployServiceResponse) {}
   rpc showBlock(BlockQuery) returns (BlockQueryResponse) {}
-  rpc showBlocks(google.protobuf.Empty) returns (BlocksResponse) {}
+  rpc showBlocks(google.protobuf.Empty) returns (stream BlockInfo) {}
   rpc listenForDataAtName(Channel) returns (ListeningNameDataResponse) {}
   rpc listenForContinuationAtName(Channels) returns (ListeningNameContinuationResponse) {}
 }
@@ -136,7 +136,7 @@ message ApprovedBlockCandidate {
 }
 
 message UnapprovedBlock {
-  ApprovedBlockCandidate candidate = 1; 
+  ApprovedBlockCandidate candidate = 1;
   int64                  timestamp = 2;
   int64                  duration  = 3;
 }
@@ -148,12 +148,12 @@ message Signature {
 }
 
 message BlockApproval {
-  ApprovedBlockCandidate candidate = 1; 
+  ApprovedBlockCandidate candidate = 1;
   Signature              sig       = 2;
 }
 
 message ApprovedBlock  {
-  ApprovedBlockCandidate candidate = 1; 
+  ApprovedBlockCandidate candidate = 1;
   repeated Signature     sigs      = 2;
 }
 
@@ -189,8 +189,8 @@ message Header {
 }
 
 message DeployCost {
-    Deploy deploy = 1; //Sha256 hash of the DeployData
-    PCost Cost = 2 ;
+  Deploy deploy = 1; //Sha256 hash of the DeployData
+  PCost Cost = 2 ;
 }
 
 message Body {
