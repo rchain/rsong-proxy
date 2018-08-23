@@ -62,19 +62,24 @@ object SongRepo {
                 duration_ms=1000L)) ,
               language="EN") ) 
 
-  val songMetadata: String => List[SongMetadata] = userId =>
-  List(
+  val mocSongs = List(
     SongMetadata(
       song("Prog_Noir"),
       artists = List(artists("Prog_Noir")),
       artwork=List(artworks("Prog_Noir")),
-        album=Some(albums("Prog_Noir")) 
+      album=Some(albums("Prog_Noir"))
     ),
-   SongMetadata(
+    SongMetadata(
       song("Tiny_Human"),
       artists = List(artists("Tiny_Human")),
       artwork=List(artworks("Tiny_Human")),
       album=Some(albums("Tiny_Human"))
     )
   )
+  def apply(): SongRepo = new SongRepo()
+}
+  class SongRepo {
+    import SongRepo._
+  val songMetadataList:  Cursor => List[SongMetadata] = cursor => mocSongs
+  val songMetadata: String => SongMetadata = id => mocSongs.head
 }

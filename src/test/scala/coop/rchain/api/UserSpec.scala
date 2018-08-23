@@ -8,7 +8,8 @@ import cats.syntax.applicative._
 import com.typesafe.scalalogging.Logger
 import org.http4s._
 import org.http4s.dsl.io._
-
+import coop.rchain.service.SongService
+import coop.rchain.repo.SongRepo
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -44,6 +45,6 @@ class UserSpec extends Specification {
   private[this] val retSong: Response[IO] = {
     val ff = List.empty[Int].pure[Future]
     val getSong = Request[IO](Method.GET, Uri.uri("/song?userId=user123&perPage=10&page=1"))
-    new SongApi[IO].service.orNotFound(getSong).unsafeRunSync()
+    new SongApi[IO](SongService(SongRepo())).service.orNotFound(getSong).unsafeRunSync()
   }
 }
