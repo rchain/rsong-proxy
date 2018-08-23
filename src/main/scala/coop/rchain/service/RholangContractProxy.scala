@@ -8,13 +8,14 @@ import scala.util.{Failure, Success, Try}
 
 object RholangContractProxy {
 
-  val (host, port) = (appCfg.getString("grpc.host"),
-    appCfg.getInt("grpc.ports.external"))
+  val (host, port) =
+    (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
 
   val grpc = RholangProxy(host, port)
 
   def apply(): RholangContractProxy = new RholangContractProxy(grpc)
-  def apply(grpc: RholangProxy): RholangContractProxy = new RholangContractProxy(grpc)
+  def apply(grpc: RholangProxy): RholangContractProxy =
+    new RholangContractProxy(grpc)
 }
 
 class RholangContractProxy(grpc: RholangProxy) {
@@ -26,7 +27,7 @@ class RholangContractProxy(grpc: RholangProxy) {
     ) match {
       case Success(s) =>
         uri.close
-          Right(s)
+        Right(s)
       case Failure(e) =>
         uri.close
         Left(Err(ErrorCode.contractFile, fileName, None))

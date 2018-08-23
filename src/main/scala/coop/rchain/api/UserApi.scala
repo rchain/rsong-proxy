@@ -16,17 +16,17 @@ class UserApi[F[_]: Effect] extends Http4sDsl[F] {
 
   val service: HttpService[F] = {
     HttpService[F] {
-      case GET -> Root  / id =>
-        if( svc.find(id).isEmpty )
+      case GET -> Root / id =>
+        if (svc.find(id).isEmpty)
           NotFound(id)
         else
-        Ok(svc.find(id).asJson)
+          Ok(svc.find(id).asJson)
 
-      case req @ POST -> Root / id     =>
+      case req @ POST -> Root / id =>
         Ok(svc.newUser(id).asJson)
 
-      case req @ PUT  -> Root / id / "playcount"   =>
-        Accepted(svc.updatePlayCount(id=id, playCount=100))
+      case req @ PUT -> Root / id / "playcount" =>
+        Accepted(svc.updatePlayCount(id = id, playCount = 100))
     }
   }
 }

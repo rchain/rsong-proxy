@@ -41,10 +41,12 @@ class UserSpec extends Specification {
     retSong.status.code must beEqualTo(200)
   }
 
-
   private[this] val retSong: Response[IO] = {
     val ff = List.empty[Int].pure[Future]
-    val getSong = Request[IO](Method.GET, Uri.uri("/song?userId=user123&perPage=10&page=1"))
-    new SongApi[IO](SongService(SongRepo())).service.orNotFound(getSong).unsafeRunSync()
+    val getSong =
+      Request[IO](Method.GET, Uri.uri("/song?userId=user123&perPage=10&page=1"))
+    new SongApi[IO](SongService(SongRepo())).service
+      .orNotFound(getSong)
+      .unsafeRunSync()
   }
 }

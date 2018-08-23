@@ -14,22 +14,21 @@ import coop.rchain.service._
 import com.typesafe.scalalogging.Logger
 import coop.rchain.domain.Protocol._
 
-
 class SongApi[F[_]: Effect](svc: SongService) extends Http4sDsl[F] {
 
   val service: HttpService[F] = {
-    object perPage extends OptionalQueryParamDecoderMatcher[Int] ("per_page")
-    object page extends OptionalQueryParamDecoderMatcher[Int] ("page")
-    object userId extends QueryParamDecoderMatcher[String] ("userId")
+    object perPage extends OptionalQueryParamDecoderMatcher[Int]("per_page")
+    object page extends OptionalQueryParamDecoderMatcher[Int]("page")
+    object userId extends QueryParamDecoderMatcher[String]("userId")
 
     HttpService[F] {
-      case GET -> Root  / "song" :? userId(id) +& perPage(pp) +& page(p) =>
-        Ok(svc.mySongs( Cursor(10,1)))
+      case GET -> Root / "song" :? userId(id) +& perPage(pp) +& page(p) =>
+        Ok(svc.mySongs(Cursor(10, 1)))
 
-      case GET -> Root  / "song" / id  :? userId(uid)  =>
-        Ok(svc.mySong( SongRequest(id, uid)))
+      case GET -> Root / "song" / id :? userId(uid) =>
+        Ok(svc.mySong(SongRequest(id, uid)))
 
-      case GET -> Root  / "artwork" / id ⇒
+      case GET -> Root / "artwork" / id ⇒
         Ok(Json.obj("message" -> Json.fromString("under construction")))
 
     }
