@@ -5,7 +5,7 @@ import org.specs2._
 import coop.rchain.utils.Globals._
 import coop.rchain.service.RholangContractProxy
 
-class DeployRholangGrpcSpec extends Specification { def is =s2"""
+class RholangProxySpec extends Specification { def is =s2"""
    Rnode Specification
       Deploy Rholang contract $e1
       propose locks $e2
@@ -13,9 +13,9 @@ class DeployRholangGrpcSpec extends Specification { def is =s2"""
       deploy and poropse add user to contract $e5
     """
 
-  val log=Logger[DeployRholangGrpcSpec]
+  val log=Logger[RholangProxySpec]
   val host = appCfg.getString("grpc.host")
-  val grpcDeploy = DeployRholangGrpc("localhost", 40401)
+  val grpcDeploy = RholangProxy("localhost", 40401)
 
     def e1 = {
       val computed = RholangContractProxy(grpcDeploy)
@@ -45,7 +45,7 @@ class DeployRholangGrpcSpec extends Specification { def is =s2"""
 
 
   def e5 = {
-    val grpcDeploy = DeployRholangGrpc("localhost", 40401)
+    val grpcDeploy = RholangProxy("localhost", 40401)
     val contract =
       """
         |@["Immersion", "newUserId"]!("123UniqueUser543Kayvan1")

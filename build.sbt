@@ -1,5 +1,26 @@
+import CompilerSettings._
+
+lazy val rchainUri = uri("https://github.com/rchain/rchain.git#dev")
+
+lazy val rchainModels = ProjectRef(rchainUri, "models")
+
+lazy val projectSettings = Seq(
+  organization := "coop.rchain",
+  scalaVersion := "2.12.6",
+  resolvers ++= Seq(
+    Resolver.sonatypeRepo("releases"),
+    Resolver.sonatypeRepo("snapshots")),
+  scalafmtOnCompile := true
+)
+
+lazy val compilerSettings = CompilerSettings.options ++ Seq(
+  crossScalaVersions := Seq("2.11.12", scalaVersion.value))
+
+lazy val commonSettings = projectSettings // ++ compilerSettings
 
 lazy val root = (project in file("."))
+  .dependsOn(rchainModels)
+  .settings(commonSettings: _*)
   .settings(
     organization := "coop.rchain",
     name := "immersion-rc-proxy",

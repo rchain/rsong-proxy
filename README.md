@@ -64,9 +64,20 @@ docker images | grep 'immersion-rc-proxy'
 ```
 
 ### Running tests:
+tests are:
+- unit tests
+- integration tests
+
+#### Unit tests
 ```
-curl localhost:9000/v1/song?userId=123
-curl localhost:9000/v1/user/123
+sbt clean test
+```
+
+#### Integration tests
+Integration tests assumes a local rnode instance build ftom the `latest` [rchain dev branch](https://github.com/rchain/rchain)
+
+```
+sbt clean it:test
 ```
 
 ## url Inventory

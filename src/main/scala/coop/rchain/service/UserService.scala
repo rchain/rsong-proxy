@@ -2,7 +2,7 @@ package coop.rchain.service
 
 import cats.effect.{Effect, IO}
 import com.typesafe.scalalogging.Logger
-import coop.rchain.model._
+import coop.rchain.domain._
 import cats.implicits._
 
 object UserService {
@@ -21,12 +21,12 @@ object UserService {
           active = true,
           lastLogin = System.currentTimeMillis(),
           playCount = 100,
-          Map(
-            "key-1" -> "value-1",
-            "key-2" -> "value-2",
-            "key-3" -> "value-3",
-            "key-4" -> "value-4")
-        ).some else None
+          Map("key-1" -> "value-1",
+              "key-2" -> "value-2",
+              "key-3" -> "value-3",
+              "key-4" -> "value-4")
+        ).some
+      else None
     }
 
     def updatePlayCount(id: String, playCount: Int) = {
@@ -37,18 +37,14 @@ object UserService {
     }
 
     def newUser(id: String): User = {
-      User(
-        id = id,
-        name = None,
-        active = true,
-        lastLogin = System.currentTimeMillis,
-        playCount = 100,
-        Map(
-          "key-1" -> "value-1",
-          "key-2" -> "value-2"))
+      User(id = id,
+           name = None,
+           active = true,
+           lastLogin = System.currentTimeMillis,
+           playCount = 100,
+           Map("key-1" -> "value-1", "key-2" -> "value-2"))
 
     }
   }
-
 
 }

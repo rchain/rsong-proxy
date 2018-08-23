@@ -17,20 +17,19 @@ object Bootstrap extends StreamApp[IO] {
 
 object ServerStream {
   import api.middleware._
-  val songRepo: SongRepo = SongRepo()
-  val songService: SongService = SongService(songRepo)
+  val songService: SongService = SongService(SongRepo())
 
   val apiVersion = appCfg.getString("api.version")
   def statusApi[F[_]: Effect] = new Status[F].service
   def userApi[F[_]: Effect] = new UserApi[F].service
-  def songApi[F[_]: Effect] =   new SongApi[F](songService).service
+  def songApi[F[_]: Effect] = new SongApi[F](songService).service
 
   def stream[F[_]: Effect](implicit ec: ExecutionContext) =
     BlazeBuilder[F]
       .bindHttp(appCfg.getInt("api.http.port"), "0.0.0.0")
       .mountService(MiddleWear(statusApi))
       .mountService(MiddleWear(statusApi), s"/${apiVersion}/public")
-      .mountService(MiddleWear(userApi), s"/${apiVersion}/user" )
-      .mountService(MiddleWear(songApi), s"/${apiVersion}" )
+      .mountService(MiddleWear(userApi), s"/${apiVersion}/user")
+      .mountService(MiddleWear(songApi), s"/${apiVersion}")
       .serve
 }
