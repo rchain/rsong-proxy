@@ -95,21 +95,21 @@ new metaDataMapStore, songMapStore, userMapStore, remunerate in {
   } |
 
   // ISSUE: are mints and purses and such worthwhile for the demo?
-  new pubKeyToBalanceStore, stderr(`rho:io:stderr`) in {
+  new pubKeyToBalanceStore, debug(`rho:io:stderr`) in {
     pubKeyToBalanceStore!({}) |
 
-    stderr!("@@contract remunerate...") |
+    debug!("contract remunerate...") |
     contract remunerate(@metaData, done) = {
-      stderr!(["@@remunerate:", metaData]) |
+      debug!(["remunerate:", metaData]) |
       for (@start <- pubKeyToBalanceStore) {
-        stderr!(["@@start:", start]) |
+        debug!(["start:", start]) |
         new payEach in {
           // ISSUE: what if metaData is not a map?
           // ISSUE: what if there is no songWriters key?
           payEach!(metaData.get("songwriters"), start) |
 
           contract payEach(@writers, @current) = {
-            stderr!(["@@payEach:", writers, current]) |
+            // debug!(["payEach:", writers, current]) |
             // ISSUE: what if writers is not a list?
             match writers {
               [first, ...rest] => {
@@ -119,7 +119,7 @@ new metaDataMapStore, songMapStore, userMapStore, remunerate in {
                     current.getOrElse(first.get("pubKey"), 0) + first.get("share")))
               }
               [] => {
-                stderr!(["@@finish:", current]) |
+                debug!(["finish:", current]) |
                 pubKeyToBalanceStore!(current) |
                 done!(Nil)
               }

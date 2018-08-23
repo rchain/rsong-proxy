@@ -1,4 +1,4 @@
-new bobIdOut, myJamIdOut, stderr(`rho:io:stderr`) in {
+new bobIdOut, myJamIdOut, testLog(`rho:io:stderr`) in {
   @["Immersion", "store"]!("my jam data...", {
     "Artist Name": "Simon & Garfunkel",
     "Title Name": "El Cóndor Pasa",
@@ -27,17 +27,27 @@ new bobIdOut, myJamIdOut, stderr(`rho:io:stderr`) in {
   @["Immersion", "newUserId"]!(*bobIdOut) |
 
   for (@bobId <- bobIdOut; @myJamId <- myJamIdOut) {
-    stderr!(["bob", bobId]) |
+    testLog!(["bob", bobId]) |
     new countOut in {
       @["Immersion", "playCount"]!(bobId, *countOut) |
       for (@count <- countOut) {
-        stderr!(["count", count])
+        testLog!(["count", count])
       }
     } |
     new permittedOut in {
       @["Immersion", "play"]!(myJamId, bobId, *permittedOut) |
       for (@permitted <- permittedOut) {
-        stderr!(["permitted?", permitted])
+        testLog!(["permitted A?", permitted])
+      }
+      |
+      @["Immersion", "play"]!(myJamId, bobId, *permittedOut) |
+      for (@permitted <- permittedOut) {
+        testLog!(["permitted B?", permitted])
+      }
+      |
+      @["Immersion", "play"]!(myJamId, bobId, *permittedOut) |
+      for (@permitted <- permittedOut) {
+        testLog!(["permitted C?", permitted])
       }
     }
   }
