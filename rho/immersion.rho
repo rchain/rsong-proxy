@@ -95,33 +95,72 @@ new metaDataMapStore, songMapStore, userMapStore, remunerate in {
   } |
 
   // ISSUE: are mints and purses and such worthwhile for the demo?
-  new pubKeyToBalanceStore, debug(`rho:io:stderr`) in {
-    pubKeyToBalanceStore!({}) |
+  new mintStore, zeroNNStore, pubKeyToPurseStore, debug(`rho:io:stderr`) in {
+    @"MakeMint"!(*mintStore) |
+    @["MakeMint", "int2NN"]!(0, *zeroNNStore) |
+    pubKeyToPurseStore!({}) |
 
     debug!("contract remunerate...") |
     contract remunerate(@metaData, done) = {
       debug!(["remunerate:", metaData]) |
-      for (@start <- pubKeyToBalanceStore) {
-        debug!(["start:", start]) |
-        new payEach in {
+
+      for (@mint <- mintStore) {
+        mintStore!(mint) | // peek
+        debug!(["mint:", mint]) |
+
+        new payEach, payOne in {
           // ISSUE: what if metaData is not a map?
           // ISSUE: what if there is no songWriters key?
-          payEach!(metaData.get("songwriters"), start) |
+          for (@start <- pubKeyToPurseStore) {
+            payEach!(metaData.get("songwriters"), start) |
 
-          contract payEach(@writers, @current) = {
-            // debug!(["payEach:", writers, current]) |
-            // ISSUE: what if writers is not a list?
-            match writers {
-              [first, ...rest] => {
-                payEach!(rest,
-                  // ISSUE: what if first has no pubKey?
-                  current.set(first.get("pubKey"),
-                    current.getOrElse(first.get("pubKey"), 0) + first.get("share")))
+            contract payEach(@writers, @current) = {
+              debug!(["payEach:", writers, current]) |
+              // ISSUE: what if writers is not a list?
+              match writers {
+                [artist, ...rest] => {
+                  new newPurseMapOut in {
+                    payOne!(artist, current, *newPurseMapOut) |
+                    for (@newPurseMap <- newPurseMapOut) {
+                      payEach!(rest, newPurseMap)
+                    }
+                  }
+                }
+                [] => {
+                  pubKeyToPurseStore!(current) |
+                  done!(Nil)
+                }
               }
-              [] => {
-                debug!(["finish:", current]) |
-                pubKeyToBalanceStore!(current) |
-                done!(Nil)
+            } |
+            contract payOne(@artist, @current, newPurseMapOut) = {
+              debug!(["payOne:", artist]) |
+              new maybeMyPurseOut, myPurseOut, shareNNOut, paymentPurseOut in {
+                @["MakeMint", "int2NN"]!(artist.get("share"), *shareNNOut) |
+                for (@shareNN <- shareNNOut) {
+                  @[mint, "makePurse"]!(shareNN, *paymentPurseOut) |
+
+                  // ISSUE: what if artist has no pubKey?
+                  maybeMyPurseOut!(current.get(artist.get("pubKey"))) |
+                  for (@maybeMyPurse <- maybeMyPurseOut; @zeroNN <- zeroNNStore) {
+                    zeroNNStore!(zeroNN) |
+                    if (maybeMyPurse == Nil) {
+                      @[mint, "makePurse"]!(zeroNN, *myPurseOut) |
+                      for (@peek <- myPurseOut) {
+                        debug!(["new purse for:", artist.get("name")]) |
+                        myPurseOut!(peek) |
+                        newPurseMapOut!(current.set(artist.get("pubKey"), peek))
+                      }
+                    } else {
+                      debug!(["already have purse for:", artist.get("name")]) |
+                      myPurseOut!(maybeMyPurse) |
+                      newPurseMapOut!(current)
+                    }
+                  } |
+                  for (@myPurse <- myPurseOut; @paymentPurse <- paymentPurseOut) {
+                    debug!(["paying", artist.get("share"), " to ", artist.get("name")]) |
+                    @[myPurse, "deposit"]!(shareNN, paymentPurse, Nil) // ISSUE: wait for ack?
+                  }
+                }
               }
             }
           }
