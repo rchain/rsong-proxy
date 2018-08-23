@@ -19,7 +19,7 @@ class DeployRholangGrpcSpec extends Specification { def is =s2"""
 
     def e1 = {
       val computed = RholangContractProxy(grpcDeploy)
-        .deploy("/rho/immersion.rho")
+        .deploy("/rho/tut-iterate.rho")
       log.debug(s"===========deployed contract===========")
       log.debug(s"from deploying the immersion contract: \n ${computed}")
       log.debug(s"===========End deployed contract===========")
