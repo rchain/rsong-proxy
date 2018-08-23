@@ -12,7 +12,7 @@ class UserApi[F[_]: Effect] extends Http4sDsl[F] {
 
   val svc = UserService()
 
-  implicit val userProto = jsonOf[F, coop.rchain.model.User]
+  implicit val userProto = jsonOf[F, coop.rchain.domain.User]
 
   val service: HttpService[F] = {
     HttpService[F] {

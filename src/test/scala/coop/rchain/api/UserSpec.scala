@@ -24,8 +24,8 @@ class UserSpec extends Specification {
 
   val log = Logger[UserSpec]
   val api = new UserApi[IO].service
-  implicit val userDecoder: Decoder[coop.rchain.model.User] = deriveDecoder
-  implicit val userEncoder: Encoder[coop.rchain.model.User] = deriveEncoder
+  implicit val userDecoder: Decoder[coop.rchain.domain.User] = deriveDecoder
+  implicit val userEncoder: Encoder[coop.rchain.domain.User] = deriveEncoder
 
   def e1 = {
     val createUserObject = Request[IO](Method.POST, Uri.uri("/user-1234"))
@@ -34,7 +34,7 @@ class UserSpec extends Specification {
     val userSting = new String(c, java.nio.charset.StandardCharsets.UTF_8)
     val user = for {
       j <- parse(userSting)
-      u <- j.as[coop.rchain.model.User]
+      u <- j.as[coop.rchain.domain.User]
     } yield u
     user.toOption.isDefined === true
     user.toOption.get.id === "user-1234"

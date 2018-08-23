@@ -1,7 +1,7 @@
 package coop.rchain.api
 
 import cats.effect.Effect
-import coop.rchain.model.Cursor
+import coop.rchain.domain.Cursor
 import io.circe.Json
 import org.http4s.HttpService
 import org.http4s.circe._
@@ -12,7 +12,7 @@ import io.circe.generic.auto._
 import io.circe.syntax._
 import coop.rchain.service._
 import com.typesafe.scalalogging.Logger
-import coop.rchain.model.Protocol._
+import coop.rchain.domain.Protocol._
 
 
 class SongApi[F[_]: Effect](svc: SongService) extends Http4sDsl[F] {

@@ -1,6 +1,6 @@
 package coop.rchain.service
 
-import coop.rchain.repo.DeployRholangGrpc
+import coop.rchain.repo.RholangProxy
 import org.specs2._
 
 class RholangContractProxySpec extends Specification  { def is =s2"""

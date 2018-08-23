@@ -1,4 +1,4 @@
-package coop.rchain.model
+package coop.rchain.domain
 
 object ErrorCode extends Enumeration {
   type ErrorCode = Value

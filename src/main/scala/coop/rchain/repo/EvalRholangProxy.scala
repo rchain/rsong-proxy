@@ -3,12 +3,12 @@ package coop.rchain.repo
 import coop.rchain.node.model.repl.{CmdRequest, EvalRequest, ReplGrpc}
 import io.grpc._
 
-object EvalRholangGrpc {
-  def apply(host: String, port: Int): EvalRholangGrpc =
-    new EvalRholangGrpc(host, port)
+object EvalRholangProxy {
+  def apply(host: String, port: Int): EvalRholangProxy =
+    new EvalRholangProxy(host, port)
 }
 
-class EvalRholangGrpc(host: String, port: Int) {
+class EvalRholangProxy(host: String, port: Int) {
   private lazy val channel =
     ManagedChannelBuilder.forAddress(host, port).usePlaintext(true).build
 

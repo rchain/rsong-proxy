@@ -3,7 +3,7 @@ package coop.rchain.api.middleware
 import cats.data.{Kleisli, OptionT}
 import cats.effect.{Effect, IO}
 import cats.implicits._
-import coop.rchain.model.Domain
+import coop.rchain.domain.Domain
 import org.http4s._
 import org.http4s.implicits._
 import org.http4s.dsl.io._

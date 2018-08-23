@@ -17,8 +17,7 @@ object Bootstrap extends StreamApp[IO] {
 
 object ServerStream {
   import api.middleware._
-  val songRepo: SongRepo = SongRepo()
-  val songService: SongService = SongService(songRepo)
+  val songService: SongService = SongService(SongRepo())
 
   val apiVersion = appCfg.getString("api.version")
   def statusApi[F[_]: Effect] = new Status[F].service

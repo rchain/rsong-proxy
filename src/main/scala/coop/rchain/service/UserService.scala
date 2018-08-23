@@ -2,7 +2,7 @@ package coop.rchain.service
 
 import cats.effect.{Effect, IO}
 import com.typesafe.scalalogging.Logger
-import coop.rchain.model._
+import coop.rchain.domain._
 import cats.implicits._
 
 object UserService {

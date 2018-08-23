@@ -1,4 +1,4 @@
-package coop.rchain.model
+package coop.rchain.domain
 
 sealed trait Domain
 

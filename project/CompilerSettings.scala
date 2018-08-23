@@ -1,7 +1,7 @@
 import sbt._
 
 object CompilerSettings {
-  val scalacOptions = Seq(
+  val options = Seq(
     "-deprecation",
     "-unchecked",
     "-explaintypes",

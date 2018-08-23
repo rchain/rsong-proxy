@@ -1,4 +1,4 @@
-package coop.rchain.model
+package coop.rchain.domain
 
 object Protocol {
   sealed trait ValueObject
