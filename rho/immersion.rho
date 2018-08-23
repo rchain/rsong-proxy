@@ -1,5 +1,5 @@
 // Immersion contract
-// store song & metadata, including playcounts; return songid
+// store song & metadata, including artists to remunerate; return songid
 // retrieve song given songid
 // retrieve set of songs, metadata, & corresponding songids
 // get new userid with 50 plays
@@ -7,7 +7,7 @@
 // getPlaysRemaining(userid)
 
 
-new metaDataMapStore, songMapStore, userMapStore in {
+new metaDataMapStore, songMapStore, userMapStore, remunerate in {
   // Maps songId to [metadata, songDataId]
   metaDataMapStore!({}) |
   // Maps songDataId to songData
@@ -17,13 +17,14 @@ new metaDataMapStore, songMapStore, userMapStore in {
   
   // songDataIn: arbitrary, usually bytearray
   // songMetaDataIn: map
-  // songIdOut: name on which new songId gets sent
+  // songIdOut: name on which new songId (ByteArray) gets sent
   contract @["Immersion", "store"](@songDataIn, @songMetadataIn, songIdOut) = {
-    new songId, songDataId in {
+    new songName, songDataId in {
       for (@metaDataMap <- metaDataMapStore; @songMap <- songMapStore) {
-        metaDataMapStore!(metaDataMap.set(*songId.toByteArray(), [songMetadataIn.set("playCount", 0), *songDataId.toByteArray()])) |
-        songMapStore!(songMap.set(*songDataId, songDataIn)) |
-        songIdOut!(*songId)
+        // issue why bother with ByteArray for songDataId?
+        metaDataMapStore!(metaDataMap.set(*songName.toByteArray(), [songMetadataIn, *songDataId.toByteArray()])) |
+        songMapStore!(songMap.set(*songDataId, *songDataId.toByteArray())) |
+        songIdOut!(*songName.toByteArray())
       }
     }
   } |
@@ -46,12 +47,12 @@ new metaDataMapStore, songMapStore, userMapStore in {
     }
   } |
   
-  // userIdOut: name on which to send new user id
+  // userIdOut: name on which to send new user id (ByteArray)
   contract @["Immersion", "newUserId"](userIdOut) = {
-    new userId in {
+    new userName in {
       for (@userMap <- userMapStore) {
-        userMapStore!(userMap.set(*userId.toByteArray(), 50)) |
-        userIdOut!(*userId)
+        userMapStore!(userMap.set(*userName.toByteArray(), 50)) |
+        userIdOut!(*userName.toByteArray())
       }
     }
   } |
@@ -61,6 +62,8 @@ new metaDataMapStore, songMapStore, userMapStore in {
   // permittedOut: boolean
   contract @["Immersion", "play"](@songIdIn, @userIdIn, permittedOut) = {
     for (@metaDataMap <- metaDataMapStore; @userMap <- userMapStore) {
+      metaDataMapStore!(metaDataMap) |  // peek
+
       new playsRemainingOut in {
         playsRemainingOut!(userMap.get(userIdIn)) |
         for (@playsRemaining <- playsRemainingOut) {
@@ -69,16 +72,10 @@ new metaDataMapStore, songMapStore, userMapStore in {
             for (@md <- mdOut) {
               if (playsRemaining == Nil or playsRemaining == 0 or md == Nil) {
                 userMapStore!(userMap) |
-                metaDataMapStore!(metaDataMap) |
                 permittedOut!(false)
               } else {
                 userMapStore!(userMap.set(userIdIn, playsRemaining - 1)) |
-                new playCountOut in {
-                  playCountOut!(md.get("playCount")) |
-                  for (@playCount <- playCountOut) {
-                    metaDataMapStore!(metaDataMap.set(songIdIn, md.set("playCount", playCount + 1)))
-                  }
-                } |
+                remunerate!(md.nth(0), Nil) |  // ISSUE: no need for sequencing, right?
                 permittedOut!(true)
               }
             }
@@ -94,6 +91,42 @@ new metaDataMapStore, songMapStore, userMapStore in {
     for (@userMap <- userMapStore) {
       userMapStore!(userMap) |
       countOut!(userMap.get(userIdIn))
+    }
+  } |
+
+  // ISSUE: are mints and purses and such worthwhile for the demo?
+  new pubKeyToBalanceStore, stderr(`rho:io:stderr`) in {
+    pubKeyToBalanceStore!({}) |
+
+    stderr!("@@contract remunerate...") |
+    contract remunerate(@metaData, done) = {
+      stderr!(["@@remunerate:", metaData]) |
+      for (@start <- pubKeyToBalanceStore) {
+        stderr!(["@@start:", start]) |
+        new payEach in {
+          // ISSUE: what if metaData is not a map?
+          // ISSUE: what if there is no songWriters key?
+          payEach!(metaData.get("songwriters"), start) |
+
+          contract payEach(@writers, @current) = {
+            stderr!(["@@payEach:", writers, current]) |
+            // ISSUE: what if writers is not a list?
+            match writers {
+              [first, ...rest] => {
+                payEach!(rest,
+                  // ISSUE: what if first has no pubKey?
+                  current.set(first.get("pubKey"),
+                    current.getOrElse(first.get("pubKey"), 0) + first.get("share")))
+              }
+              [] => {
+                stderr!(["@@finish:", current]) |
+                pubKeyToBalanceStore!(current) |
+                done!(Nil)
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

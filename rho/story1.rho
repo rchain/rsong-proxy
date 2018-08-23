@@ -1,0 +1,44 @@
+new bobIdOut, myJamIdOut, stderr(`rho:io:stderr`) in {
+  @["Immersion", "store"]!("my jam data...", {
+    "Artist Name": "Simon & Garfunkel",
+    "Title Name": "El Cóndor Pasa",
+    // https://musicbrainz.org/release/8d44b76f-a05b-434b-9781-79b60b0d5253
+    "Album Name": "Bridge Over Troubled Water",
+    "songwriters": [
+      {
+        "name": "Paul Simon (of Simon & Garfunkel)",
+        // ISSUE: rholang has no floating point numbers
+        "share": 60,
+        "pubKey": "3122c39dbd785d3bada0b8445c07d401af931646d4a5d486bc6e2c8088241079".hexToBytes()
+      },
+      {
+        "name": "Jorge Milchberg",
+        "share": 15,
+        "pubKey": "90685cf270025cddab375b3de595e9b87548c5f05f9e5bf17502d7cfcb7259f7".hexToBytes()
+      },
+      {
+        "name": "Daniel Alomía Robles",
+        "share": 25,
+        "pubKey": "155d6fbdc9d0520575012f9a03a90c41f0736be9a4fcfe4d5e5b5574faee365a".hexToBytes()
+      }
+    ]
+  }, *myJamIdOut) |
+
+  @["Immersion", "newUserId"]!(*bobIdOut) |
+
+  for (@bobId <- bobIdOut; @myJamId <- myJamIdOut) {
+    stderr!(["bob", bobId]) |
+    new countOut in {
+      @["Immersion", "playCount"]!(bobId, *countOut) |
+      for (@count <- countOut) {
+        stderr!(["count", count])
+      }
+    } |
+    new permittedOut in {
+      @["Immersion", "play"]!(myJamId, bobId, *permittedOut) |
+      for (@permitted <- permittedOut) {
+        stderr!(["permitted?", permitted])
+      }
+    }
+  }
+}
