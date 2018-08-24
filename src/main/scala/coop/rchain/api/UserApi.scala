@@ -1,32 +1,29 @@
 package coop.rchain.api
 
-import cats.effect.{Effect, IO}
-import coop.rchain.service.UserService
+import cats.effect._
+
+import coop.rchain.service.UserService.UserService
 import io.circe.syntax._
-import io.circe.generic.auto._
-import org.http4s._
+
 import org.http4s.circe._
-import org.http4s.dsl.Http4sDsl
 
-class UserApi[F[_]: Effect] extends Http4sDsl[F] {
+import org.http4s._
+import org.http4s.dsl.io._
 
-  val svc = UserService()
+class UserApi(svc: UserService) {
 
-  implicit val userProto = jsonOf[F, coop.rchain.domain.User]
+  val service = HttpService[IO] {
 
-  val service: HttpService[F] = {
-    HttpService[F] {
-      case GET -> Root / id =>
-        if (svc.find(id).isEmpty)
-          NotFound(id)
-        else
-          Ok(svc.find(id).asJson)
+    case GET -> Root / id =>
+      if (svc.find(id).isEmpty)
+        NotFound(id)
+      else
+        Ok(svc.find(id).get.asJson)
 
-      case req @ POST -> Root / id =>
-        Ok(svc.newUser(id).asJson)
+    case req @ POST -> Root / id =>
+      Ok(svc.newUser(id))
 
-      case req @ PUT -> Root / id / "playcount" =>
-        Accepted(svc.updatePlayCount(id = id, playCount = 100))
-    }
+    case req @ PUT -> Root / id / "playcount" =>
+      Accepted(svc.updatePlayCount(id = id, playCount = 100))
   }
 }

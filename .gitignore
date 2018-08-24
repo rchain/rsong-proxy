@@ -2,6 +2,7 @@ target/
 project/boot/
 .idea/
 .idea*
+*.log
 ##
 ## emacs & ensime
 ##
