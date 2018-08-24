@@ -31,7 +31,7 @@ new metaDataMapStore, songMapStore, userMapStore, remunerate in {
   
   // songIdIn: bytearray
   // songDataOut: name on which songData gets sent
-  contract @["Immersion", "retrieve"](@songIdIn, songDataOut) = {
+  contract @["Immersion", "retrieveSong"](@songIdIn, songDataOut) = {
     for (@metaDataMap <- metaDataMapStore; @songMap <- songMapStore) {
       metaDataMapStore!(metaDataMap) |
       songMapStore!(songMap) |
@@ -40,7 +40,7 @@ new metaDataMapStore, songMapStore, userMapStore, remunerate in {
   } |
   
   // metaDataMapOut: name on which to send map from song ids to metadata
-  contract @["Immersion", "retrieve"](metaDataMapOut) = {
+  contract @["Immersion", "retrieveMetaData"](metaDataMapOut) = {
     for (@metaDataMap <- metaDataMapStore) {
       metaDataMapStore!(metaDataMap) |
       metaDataMapOut!(metaDataMap)
