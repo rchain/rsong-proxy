@@ -1,6 +1,5 @@
 package coop.rchain.repo
 
-import com.dropbox.core.v2.paper.ListUsersOnPaperDocResponse
 import coop.rchain.domain._
 
 object SongRepo {

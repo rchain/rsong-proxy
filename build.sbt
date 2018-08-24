@@ -27,7 +27,7 @@ lazy val root = (project in file("."))
     scalaVersion := "2.12.6",
     libraryDependencies ++= {
       object V {
-        val http4s = "0.18.14"
+        val http4s = "0.19+"
         val specs2 = "4.2.0"
         val logback = "1.2.3"
         val scalalogging = "3.9.0"
@@ -35,11 +35,10 @@ lazy val root = (project in file("."))
         val scalapb= "0.7.4"
         val dropbox="3.0.8"
         val circie="0.9.3"
-        val monix="3.0+"
+        val catsEffect="1.0.0-RC3",
       }
       Seq(
-        "io.monix" %% "monix" % V.monix,
-        "com.dropbox.core" % "dropbox-core-sdk" % V.dropbox,
+        "org.typelevel" %% "cats-effect" % V.catsEffect,
         "org.http4s" %% "http4s-blaze-server" % V.http4s,
         "org.http4s" %% "http4s-circe" % V.http4s,
         "io.circe" %% "circe-core" % V.circie,
