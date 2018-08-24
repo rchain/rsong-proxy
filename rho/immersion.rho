@@ -95,19 +95,24 @@ new metaDataMapStore, songMapStore, userMapStore, remunerate in {
   } |
 
   // ISSUE: are mints and purses and such worthwhile for the demo?
-  new mintStore, pubKeyToPurseStore, debug(`rho:io:stderr`) in {
+  new mintStore, pubKeyToPurseStore, showBalances, debug(`rho:io:stderr`) in {
     @"MakeMint"!(*mintStore) |
     pubKeyToPurseStore!({}) |
 
     debug!("contract remunerate...") |
     contract remunerate(@metaData, done) = {
-      debug!(["remunerate:", metaData]) |
+      debug!(["remunerate:", metaData.get("Title Name"), "by", metaData.get("Artist Name")]) |
 
-      new payEach, payOne in {
+      new payEach, payOne, newKeysOut in {
         // ISSUE: what if metaData is not a map?
         // ISSUE: what if there is no songWriters key?
         for (@start <- pubKeyToPurseStore) {
           payEach!(metaData.get("songwriters"), start) |
+          for (@newKeys <- newKeysOut) {
+            showBalances!(metaData.get("songwriters"), Nil) |
+            pubKeyToPurseStore!(newKeys) |
+            done!(Nil)
+          } |
 
           contract payEach(@writers, @current) = {
             // debug!(["payEach:", writers, current]) |
@@ -121,15 +126,14 @@ new metaDataMapStore, songMapStore, userMapStore, remunerate in {
                   }
                 }
               }
-                [] => {
-                pubKeyToPurseStore!(current) |
-                done!(Nil)
+              [] => {
+                newKeysOut!(current)
               }
             }
           } |
-          contract payOne(@artist, @current, newPurseMapOut) = {
+          contract payOne(@artist, @current, purseMapOut) = {
             // debug!(["payOne:", artist]) |
-            new maybeMyPurseOut, myPurseOut, paymentPurseOut in {
+            new maybeMyPurseOut, myPurseOut, paymentPurseOut, newPurseMapOut in {
               for (@mint <- mintStore) {
                 mintStore!(mint) | // peek
                 @[mint, "makePurse"]!(artist.get("share"), *paymentPurseOut) |
@@ -143,6 +147,7 @@ new metaDataMapStore, songMapStore, userMapStore, remunerate in {
                       debug!(["new purse for:", artist.get("name")]) |
                       myPurseOut!(peek) |
                       newPurseMapOut!(current.set(artist.get("pubKey"), peek)) |
+
                       // publish their wallet at their public key
                       @"BasicWallet"!(peek, "ed25519", artist.get("pubKey"), artist.get("pubKey"))
                     }
@@ -152,11 +157,41 @@ new metaDataMapStore, songMapStore, userMapStore, remunerate in {
                     newPurseMapOut!(current)
                   }
                 } |
-                for (@myPurse <- myPurseOut; @paymentPurse <- paymentPurseOut) {
+                for (@myPurse <- myPurseOut; @paymentPurse <- paymentPurseOut; @purseMap <- newPurseMapOut) {
                   debug!(["paying", artist.get("share"), " to ", artist.get("name")]) |
-                  @[myPurse, "deposit"]!(artist.get("share"), paymentPurse, Nil) // ISSUE: wait for ack?
+                  new paidAck in {
+                    @[myPurse, "deposit"]!(artist.get("share"), paymentPurse, *paidAck) |
+                    for (_ <- paidAck) {
+                      purseMapOut!(purseMap)
+                    }
+                  }
                 }
               }
+            }
+          }
+        }
+      }
+    } |
+    contract showBalances(@writers, done) = {
+      // debug!(["showBalances: ", writers]) |
+      for (@pubKeyToPurse <- pubKeyToPurseStore) {
+        // debug!(["showBalances keyToPurse: ", pubKeyToPurse]) |
+        pubKeyToPurseStore!(pubKeyToPurse) |
+        new showAll in {
+          showAll!(writers) |
+
+          contract showAll(@writers) = {
+            match writers {
+              [artist, ...rest] => {
+                new balanceOut in {
+                  @[pubKeyToPurse.get(artist.get("pubKey")), "getBalance"]!(*balanceOut) |
+                  for (@balance <- balanceOut) {
+                    debug!([artist.get("name"), " has ", balance])
+                  }
+                } |
+                showAll!(rest)
+              }
+              [] => done!(Nil)
             }
           }
         }
