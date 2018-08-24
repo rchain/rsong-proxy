@@ -1,7 +1,6 @@
 package coop.rchain.utils
 
 import com.typesafe.config.ConfigFactory
- 
 
 object Globals {
   val cfg = ConfigFactory.load

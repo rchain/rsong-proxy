@@ -13,7 +13,8 @@ trait AuthRepository[F[_], A] {
 object AuthRepository {
   val userName = appCfg.getString("api.http.auth.user.name")
   val password = appCfg.getString("api.http.auth.user.password")
-  implicit def authUserRepo[F[_]](implicit F: Sync[F]): AuthRepository[F, BasicCredentials] =
+  implicit def authUserRepo[F[_]](
+      implicit F: Sync[F]): AuthRepository[F, BasicCredentials] =
     new AuthRepository[F, BasicCredentials] {
       private val storage = scala.collection.mutable.Set[BasicCredentials](
         BasicCredentials(userName, password)

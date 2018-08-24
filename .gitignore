@@ -2,14 +2,16 @@ target/
 project/boot/
 .idea/
 .idea*
+*.log
 ##
-## emacs stuff
+## emacs & ensime
 ##
 project/.ensime
 .ensime*/
 .ensime
 ensime_port
 .#*
+*.swp
 .history
 .cache
 native/

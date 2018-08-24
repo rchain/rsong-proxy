@@ -64,11 +64,42 @@ docker images | grep 'immersion-rc-proxy'
 ```
 
 ### Running tests:
+tests are:
+- unit tests
+- integration tests
+
+#### Unit tests
 ```
-curl localhost:9000/v1/song?userId=123
-curl localhost:9000/v1/user/123
+sbt clean test
 ```
 
+#### Integration tests
+Integration tests assumes a local rnode instance build ftom the `latest` [rchain dev branch](https://github.com/rchain/rchain)
+
+```
+sbt clean it:test
+```
+
+## url Inventory
+```
+host='localhost:9000'
+
+## create a new user 
+curl -X POST $host/v1/user/<user_id>
+
+## retrieve  user  object
+curl  $host/v1/user/<user_id>
+
+## reset playcount
+curl -X PUT $host/v1/user/<user_id>/playcount
+
+## retrive a user's song
+curl -v  GET $host/v1/song/song1?userId=123 | jq
+
+##  retrive user's songs
+curl -v  GET $host/v1/song\?userId=user123\&perPage=10\&page=1 | jq
+
+```
 ## Built With
 [circle-ci](https://circleci.com/gh/kayvank)
 

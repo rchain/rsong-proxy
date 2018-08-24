@@ -1,35 +1,41 @@
 package coop.rchain
 
-import cats.effect.{Effect, IO}
-import fs2.StreamApp
+import cats.effect._
+
 import org.http4s.server.blaze.BlazeBuilder
-
-import scala.concurrent.ExecutionContext
-import api.{Song, User, Status}
+import cats.syntax.all._
+import api.{SongApi, Status, UserApi}
 import utils.Globals._
-import repo.ContractService
+import coop.rchain.service._
+import coop.rchain.repo._
 
-object Bootstrap extends StreamApp[IO] {
+object Bootstrap extends IOApp {
+
   import scala.concurrent.ExecutionContext.Implicits.global
-  def stream(args: List[String], requestShutdown: IO[Unit]) =
-    ServerStream.stream[IO]
-}
-
-object ServerStream {
 
   import api.middleware._
 
-  val grpcServer = ContractService(appCfg.getInt("grpc.port"))
-  val apiVersion = appCfg.getString("api.version")
-  def statusApi[F[_]: Effect] = new Status[F].service
-  def userApi[F[_]: Effect] = new User[F].service
-  def songApi[F[_]: Effect] =   new Song[F].service
+  val songService: SongService = SongService(SongRepo())
 
-  def stream[F[_]: Effect](implicit ec: ExecutionContext) =
-    BlazeBuilder[F]
+  val apiVersion = appCfg.getString("api.version")
+
+  def statusApi = new Status().service
+
+  def userApi = new UserApi(UserService()).service
+
+  def songApi = new SongApi(songService).service
+
+  def run(args: List[String]): IO[ExitCode] = {
+
+    BlazeBuilder[IO]
       .bindHttp(appCfg.getInt("api.http.port"), "0.0.0.0")
+      .mountService(MiddleWear(statusApi))
       .mountService(MiddleWear(statusApi), s"/${apiVersion}/public")
-      .mountService(MiddleWear(userApi), s"/${apiVersion}" )
-      .mountService(MiddleWear(songApi), s"/${apiVersion}" )
+      .mountService(MiddleWear(userApi), s"/${apiVersion}/user")
+      .mountService(MiddleWear(songApi), s"/${apiVersion}")
       .serve
+      .compile
+      .drain
+      .as(ExitCode.Success)
+  }
 }
