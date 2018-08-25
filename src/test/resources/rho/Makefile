@@ -15,7 +15,7 @@ story1.rho.loaded: story1.rho immersion.rho.loaded
 	rnode eval $<
 	touch $@
 
-immersion.rho.loaded: immersion.rho Mint.rho.loaded
+immersion.rho.loaded: ../../../main/resources/rho/immersion.rho Mint.rho.loaded
 	rnode eval $<
 	touch $@
 
