@@ -19,12 +19,11 @@ new metaDataMapStore, songMapStore, userMapStore, remunerate in {
   // songMetaDataIn: map
   // songIdOut: name on which new songId (ByteArray) gets sent
   contract @["Immersion", "store"](@songDataIn, @songMetadataIn, songIdOut) = {
-    new songName, songDataId in {
+    new songId, songDataId in {
       for (@metaDataMap <- metaDataMapStore; @songMap <- songMapStore) {
-        // issue why bother with ByteArray for songDataId?
-        metaDataMapStore!(metaDataMap.set(*songName.toByteArray(), [songMetadataIn, *songDataId.toByteArray()])) |
-        songMapStore!(songMap.set(*songDataId, *songDataId.toByteArray())) |
-        songIdOut!(*songName.toByteArray())
+        metaDataMapStore!(metaDataMap.set(*songId.toByteArray(), [songMetadataIn, *songDataId.toByteArray()])) |
+        songMapStore!(songMap.set(*songDataId, songDataIn)) |
+        songIdOut!(*songId.toByteArray())
       }
     }
   } |
@@ -49,10 +48,10 @@ new metaDataMapStore, songMapStore, userMapStore, remunerate in {
   
   // userIdOut: name on which to send new user id (ByteArray)
   contract @["Immersion", "newUserId"](userIdOut) = {
-    new userName in {
+    new userId in {
       for (@userMap <- userMapStore) {
-        userMapStore!(userMap.set(*userName.toByteArray(), 50)) |
-        userIdOut!(*userName.toByteArray())
+        userMapStore!(userMap.set(*userId.toByteArray(), 50)) |
+        userIdOut!(*userId.toByteArray())
       }
     }
   } |
