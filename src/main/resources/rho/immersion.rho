@@ -16,7 +16,14 @@ new metaDataMapStore, songMapStore, userMapStore, remunerate in {
   userMapStore!({}) |
   
   // songDataIn: arbitrary, usually bytearray
-  // songMetaDataIn: map
+  // songMetaDataIn: map with
+  //  "Title Name" - title of song
+  //  "Artist Name" - artist of song
+  //  "songWriters" key with a list of [
+  //    "pubKey" - ed25519 public key (ByteArray of length 32)
+  //    "share" - int between 0 and 100: percent of revenue share
+  //    "name" - display name for this songwriter
+  //  ]
   // songIdOut: name on which new songId (ByteArray) gets sent
   contract @["Immersion", "store"](@songDataIn, @songMetadataIn, songIdOut) = {
     new songId, songDataId in {
@@ -74,7 +81,9 @@ new metaDataMapStore, songMapStore, userMapStore, remunerate in {
                 permittedOut!(false)
               } else {
                 userMapStore!(userMap.set(userIdIn, playsRemaining - 1)) |
-                remunerate!(md.nth(0), Nil) |  // ISSUE: no need for sequencing, right?
+                // ISSUE: we assume this succeeds; i.e. that metadata
+                // supplied to "store" is correct.
+                remunerate!(md.nth(0), Nil) |
                 permittedOut!(true)
               }
             }
@@ -93,7 +102,6 @@ new metaDataMapStore, songMapStore, userMapStore, remunerate in {
     }
   } |
 
-  // ISSUE: are mints and purses and such worthwhile for the demo?
   new mintStore, pubKeyToPurseStore, showBalances, debug(`rho:io:stderr`) in {
     @"MakeMint"!(*mintStore) |
     pubKeyToPurseStore!({}) |
@@ -103,8 +111,6 @@ new metaDataMapStore, songMapStore, userMapStore, remunerate in {
       debug!(["remunerate:", metaData.get("Title Name"), "by", metaData.get("Artist Name")]) |
 
       new payEach, payOne, newKeysOut in {
-        // ISSUE: what if metaData is not a map?
-        // ISSUE: what if there is no songWriters key?
         for (@start <- pubKeyToPurseStore) {
           payEach!(metaData.get("songwriters"), start) |
           for (@newKeys <- newKeysOut) {
@@ -115,7 +121,6 @@ new metaDataMapStore, songMapStore, userMapStore, remunerate in {
 
           contract payEach(@writers, @current) = {
             // debug!(["payEach:", writers, current]) |
-            // ISSUE: what if writers is not a list?
             match writers {
               [artist, ...rest] => {
                 new newPurseMapOut in {
@@ -137,7 +142,6 @@ new metaDataMapStore, songMapStore, userMapStore, remunerate in {
                 mintStore!(mint) | // peek
                 @[mint, "makePurse"]!(artist.get("share"), *paymentPurseOut) |
 
-                // ISSUE: what if artist has no pubKey?
                 maybeMyPurseOut!(current.get(artist.get("pubKey"))) |
                 for (@maybeMyPurse <- maybeMyPurseOut) {
                   if (maybeMyPurse == Nil) {
