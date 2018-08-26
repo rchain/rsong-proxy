@@ -1,66 +1,73 @@
 package coop.rchain.repo
 
 import com.typesafe.scalalogging.Logger
+import coop.rchain.casper.protocol.ListeningNameDataResponse
+import coop.rchain.domain.{DeployAndProposeResponse, Err}
+import coop.rchain.models.{Channel, Expr, Par, ParSet}
+import coop.rchain.models.Channel.ChannelInstance.Quote
+import coop.rchain.models.Expr.ExprInstance.GString
 import org.specs2._
 import coop.rchain.utils.Globals._
 import coop.rchain.service.RholangContractProxy
+import coop.rchain.rholang.interpreter._
+import java.io.StringReader
 
 class RholangProxySpec extends Specification { def is =s2"""
    Rnode Specification
-      Deploy Rholang contract $e1
-      propose locks $e2
-      show block $e3
-      deploy and poropse add user to contract $e5
+
+     create new contract form file $ok
+     add new user and get playCount for the user $addUser
+     show data at contract names $dataAtName
     """
 
+  /**
+    *
+  deploy and propose a new orig contract  $e0
+     deploy and propose a new user $e1
+  deploy usercontract as a string $e2
+    *
+    */
   val log=Logger[RholangProxySpec]
   val host = appCfg.getString("grpc.host")
-  val grpcDeploy = RholangProxy("localhost", 40401)
+  val grpc = RholangProxy("localhost", 40401)
+  val contractProxy = RholangContractProxy(grpc)
 
-    def e1 = {
-      val computed = RholangContractProxy(grpcDeploy)
-        .deploy("/rho/tut-iterate.rho")
-      log.debug(s"===========deployed contract===========")
-      log.debug(s"from deploying the immersion contract: \n ${computed}")
-      log.debug(s"===========End deployed contract===========")
+
+  def createContract  = {
+    val computed:Either[Err, DeployAndProposeResponse] = contractProxy.deployAndPropose("/rho/immersion.rho")
+    log.info(s"Deployed & proposed block: ${computed}")
+    computed.isRight === true
+  }
+    def addUser = {
+      val computed:Either[Err, DeployAndProposeResponse] = contractProxy.deployAndPropose("/rho/new_user.rho")
+      log.info(s"Deployed & proposed block: ${computed}")
       computed.isRight === true
     }
 
-  def e2 = {
-    val computed= grpcDeploy.propseBlock
-    log.debug(s"------proposed block result ----------")
-    log.debug(s" ${computed}")
-    log.debug(s"------End proposed block result ----------")
-    computed.toOption.isDefined === true
+
+  def dataAtName = {
+    val names = List(
+    """["Immersion", "newUserId"]""",
+    """["Immersion", "playCount"]"""
+    )
+    val computed = names map (x => grpc.dataAtName(grpc.asPar(x).toOption.get) )
+    val userPars: Seq[Par]= computed.head.blockResults.flatMap( x=>x.postBlockData)
+    val userPars2: Seq[Par]= computed.head.blockResults.flatMap( x=>x.postBlockData)
+    import coop.rchain.models.ParSet._
+    import coop.rchain.models.rholang.implicits._
+
+    val parset: ParSet = ParSet(userPars.toBuffer,false)
+    val parse2: ParSet = ParSet(userPars.toBuffer,true)
+    val result = userPars2.map(x => x.toProtoString)
+    val exp: Expr =  parset
+    val str = parset.getGString
+    log.info(s"playCountj ???? :${result}")
+    log.info(s"playCount Expr  :${exp}")
+
+    computed.head.status ==="Success"
+    computed.tail.head.status ==="Success"
   }
 
-
-  def e3 = {
-    val computed= grpcDeploy.showBlocks
-    log.debug(s"+++++++++++++++++++++ show blocks +++++++++++++++++")
-    log.debug(s"show-blocks = ${computed}")
-    log.debug(s"+++++++++++++++++End show blocks +++++++++++++++++")
-    computed.toOption.isDefined === true
-  }
-
-
-  def e5 = {
-    val grpcDeploy = RholangProxy("localhost", 40401)
-    val contract =
-      """
-        |@["Immersion", "newUserId"]!("123UniqueUser543Kayvan1")
-      """.stripMargin
-    log.debug(s"deploying contract: ${contract}")
-    val computed = grpcDeploy.deployContract(contract)
-
-    log.debug(s"################deployed user-contract ############ ")
-   computed.fold(
-     e => log.error(s"$e"),
-     s => log.info(s)
-     )
-    log.debug(s"##############End deployed user-contract ############ ")
-    computed.isRight === true
-   }
 
 }
 

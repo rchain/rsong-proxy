@@ -1,6 +1,6 @@
 package coop.rchain.service
 
-import coop.rchain.domain.{Err, ErrorCode}
+import coop.rchain.domain.{Err, ErrorCode, DeployAndProposeResponse}
 import coop.rchain.repo.RholangProxy
 import coop.rchain.utils.Globals._
 
@@ -33,10 +33,11 @@ class RholangContractProxy(grpc: RholangProxy) {
         Left(Err(ErrorCode.contractFile, fileName, None))
     }
   }
-  def deploy(fileName: String): Either[Err, String] =
+  def deployAndPropose(
+      fileName: String): Either[Err, DeployAndProposeResponse] =
     for {
       r <- immersionConstract(fileName)
-      g <- grpc.deployContract(r)
-    } yield g
+      e <- grpc.deployAndPropse(r)
+    } yield e
 
 }

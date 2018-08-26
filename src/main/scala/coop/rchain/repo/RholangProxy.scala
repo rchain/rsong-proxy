@@ -3,9 +3,18 @@ package coop.rchain.repo
 import coop.rchain.casper.protocol._
 import coop.rchain.domain.{Err, ErrorCode}
 import com.google.protobuf.empty._
+import coop.rchain.models.Channel.ChannelInstance.Quote
+import coop.rchain.models.{Channel, Par}
+import coop.rchain.models.Expr.ExprInstance.GString
 import io.grpc.ManagedChannelBuilder
+import coop.rchain.domain._
+import coop.rchain.domain.ErrorCode._
+import coop.rchain.rholang.interpreter._
+import java.io.StringReader
+import coop.rchain.models.rholang.implicits._
 
 object RholangProxy {
+
   def apply(host: String, port: Int): RholangProxy =
     new RholangProxy(host, port)
 }
@@ -34,7 +43,7 @@ class RholangProxy(host: String, port: Int) {
   def showBlocks =
     deployService.showBlocks(Empty()).toList
 
-  def propseBlock = {
+  def proposeBlock = {
     val response: DeployServiceResponse = deployService.createBlock(Empty())
     response.success match {
       case true  => Right(response.message)
@@ -42,5 +51,29 @@ class RholangProxy(host: String, port: Int) {
     }
   }
 
-  def dataAtName(channel: String): ListeningNameDataResponse = ???
+  def deployAndPropse(contract: String) = {
+    for {
+      d <- deployContract(contract)
+      p <- proposeBlock
+    } yield DeployAndProposeResponse(d, p)
+  }
+
+  def asPar(name: String): Either[Err, Par] =
+    Interpreter.buildNormalizedTerm(new StringReader(name)).runAttempt match {
+      case Right(r) => Right(r)
+      case Left(e)  => Left(Err(nameToPar, e.getMessage, None))
+    }
+
+  def dataAtName(s: String) = {
+    val par: Par = GString(s)
+    val ch: Channel = Channel(Quote(par))
+    val rep = deployService.listenForDataAtName(ch)
+    rep
+  }
+
+  def dataAtName(par: Par) = {
+    val ch: Channel = Channel(Quote(par))
+    val rep = deployService.listenForDataAtName(ch)
+    rep
+  }
 }
