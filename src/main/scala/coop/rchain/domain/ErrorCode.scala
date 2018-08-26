@@ -2,7 +2,7 @@ package coop.rchain.domain
 
 object ErrorCode extends Enumeration {
   type ErrorCode = Value
-  val grpcEval, grpcDeploy, grpcPropose, grpcShow, rholang, network,
+  val grpcEval, grpcDeploy, grpcPropose, grpcShow, rholang, nameToPar, network,
   contractFile, unknown = Value
 }
 

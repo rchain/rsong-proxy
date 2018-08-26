@@ -1,0 +1,8 @@
+////////////////////
+// add user
+////////////////////
+new userid, countout, testLog(`rho:io:stderr`) in {
+  @["Immersion", "newUserId"]!(*userid)
+  | for(@newuser <- userid) {
+    @["Immersion","playCount"]!(newuser,*countout)
+ } }

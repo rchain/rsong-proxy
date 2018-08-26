@@ -7,7 +7,7 @@
 // getPlaysRemaining(userid)
 
 
-new metaDataMapStore, songMapStore, userMapStore, remunerate in {
+new metaDataMapStore, songMapStore, userMapStore, remunerate, testLog(`rho:io:stderr`) in {
   // Maps songId to [metadata, songDataId]
   metaDataMapStore!({}) |
   // Maps songDataId to songData

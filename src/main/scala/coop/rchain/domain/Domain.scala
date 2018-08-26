@@ -64,3 +64,5 @@ case class WorldView(
     songMetadata: SongMetadata,
     playCount: PlayCount
 ) extends Domain
+
+case class DeployAndProposeResponse(fromDeploy: String, fromPropose: String)
