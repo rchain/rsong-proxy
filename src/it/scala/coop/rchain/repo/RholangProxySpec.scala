@@ -12,11 +12,13 @@ import coop.rchain.service.RholangContractProxy
 import coop.rchain.rholang.interpreter._
 import java.io.StringReader
 
+import coop.rchain.rholang.syntax.rholang
+
 class RholangProxySpec extends Specification { def is =s2"""
    Rnode Specification
 
-     create new contract form file $ok
-     add new user and get playCount for the user $addUser
+     create new contract form file $addUser
+     aliceContract $ok
      show data at contract names $dataAtName
     """
 
@@ -33,39 +35,58 @@ class RholangProxySpec extends Specification { def is =s2"""
   val contractProxy = RholangContractProxy(grpc)
 
 
+  def aliceContract  = {
+    val computed:Either[Err, DeployAndProposeResponse] = contractProxy.deployAndPropose("/rho/alice.rho")
+    log.info(s"Deployed & proposed block: ${computed}")
+    computed.isRight === true
+  }
+
   def createContract  = {
     val computed:Either[Err, DeployAndProposeResponse] = contractProxy.deployAndPropose("/rho/immersion.rho")
     log.info(s"Deployed & proposed block: ${computed}")
     computed.isRight === true
   }
     def addUser = {
-      val computed:Either[Err, DeployAndProposeResponse] = contractProxy.deployAndPropose("/rho/new_user.rho")
-      log.info(s"Deployed & proposed block: ${computed}")
+//      ( 1 to 5).foreach{ x =>
+//        val computed: Either[Err, DeployAndProposeResponse] =
+//          contractProxy.deployAndPropose("/rho/new_user.rho")
+//        log.info(s"(x) - Deployed & proposed block: ${computed}")
+//      }
+
+      val computed: Either[Err, DeployAndProposeResponse] =
+        contractProxy.deployAndPropose("/rho/new_user.rho")
       computed.isRight === true
     }
 
+
+  import coop.rchain.models.ParSet._
+  import coop.rchain.models.rholang.implicits._
+  import coop.rchain.models.serialization.implicits._
+  import coop.rchain.domain.ParDecoder._
+  import coop.rchain.rholang.interpreter.PrettyPrinter._
 
   def dataAtName = {
     val names = List(
     """["Immersion", "newUserId"]""",
     """["Immersion", "playCount"]"""
     )
-    val computed = names map (x => grpc.dataAtName(grpc.asPar(x).toOption.get) )
-    val userPars: Seq[Par]= computed.head.blockResults.flatMap( x=>x.postBlockData)
-    val userPars2: Seq[Par]= computed.head.blockResults.flatMap( x=>x.postBlockData)
-    import coop.rchain.models.ParSet._
-    import coop.rchain.models.rholang.implicits._
 
-    val parset: ParSet = ParSet(userPars.toBuffer,false)
-    val parse2: ParSet = ParSet(userPars.toBuffer,true)
-    val result = userPars2.map(x => x.toProtoString)
-    val exp: Expr =  parset
-    val str = parset.getGString
-    log.info(s"playCountj ???? :${result}")
-    log.info(s"playCount Expr  :${exp}")
+    val computed = grpc.dataAtName(grpc.asPar(names(0)).toOption.get)
 
-    computed.head.status ==="Success"
-    computed.tail.head.status ==="Success"
+    val userostBlocks= computed.blockResults.map(_.postBlockData)
+    val expressions = userostBlocks.map(x =>  {
+    val e: Par = ParSet(x).exprs(0)
+     val xx = e.asDePar()
+//      log.info(s"-------xx :${xx}")
+
+    val s = PrettyPrinter().buildString(e)
+//        log.info( s"pretty printing $s}")
+          s
+      })
+
+//    log.info(s"userExpr :${expressions}")
+     1 === 0
+
   }
 
 

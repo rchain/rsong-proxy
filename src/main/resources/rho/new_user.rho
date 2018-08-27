@@ -4,5 +4,9 @@
 new userid, countout, testLog(`rho:io:stderr`) in {
   @["Immersion", "newUserId"]!(*userid)
   | for(@newuser <- userid) {
-    @["Immersion","playCount"]!(newuser,*countout)
- } }
+       testLog!(["newuser",newuser])
+  | @["Immersion","playCount"]!(newuser,*countout)
+ } | for(@cnt <- countout) {
+    testLog!(["cnt",cnt])
+}
+}

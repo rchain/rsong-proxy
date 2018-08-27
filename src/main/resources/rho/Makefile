@@ -15,7 +15,6 @@ user.rho.loaded: new_user.rho immersion.rho.loaded
 
 immersion.rho.loaded: immersion.rho Mint.rho.loaded
 	rnode eval $<
-	touch $@
 
 Mint.rho.loaded: $(MAKE_MINT_RHO) rnode.pid
 	rnode eval $<
