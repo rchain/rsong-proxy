@@ -1,41 +1,36 @@
 package coop.rchain
 
 import cats.effect._
+import cats.implicits._
 
 import org.http4s.server.blaze.BlazeBuilder
-import cats.syntax.all._
-import api.{SongApi, Status, UserApi}
+import api._
 import utils.Globals._
-import coop.rchain.service._
-import coop.rchain.repo._
+import service._
+import repo._
+import scala.concurrent.ExecutionContext.Implicits.global
+import api.middleware._
 
 object Bootstrap extends IOApp {
 
-  import scala.concurrent.ExecutionContext.Implicits.global
+  def run(args: List[String]) =
+    ServerStream.stream[IO].compile.drain.as(ExitCode.Success)
 
-  import api.middleware._
-
-  val songService: SongService = SongService(SongRepo())
-
+}
+object ServerStream {
   val apiVersion = appCfg.getString("api.version")
 
-  def statusApi = new Status().service
+  def songService = new SongService(SongRepo())
+  def statusApi[F[_]: Effect] = new Status[F].routes
+  def userApi[F[_]: Effect] = new UserApi[F](UserService()).routes
+  def songApi[F[_]: Effect] = new SongApi[F](songService).routes
 
-  def userApi = new UserApi(UserService()).service
-
-  def songApi = new SongApi(songService).service
-
-  def run(args: List[String]): IO[ExitCode] = {
-
-    BlazeBuilder[IO]
+  def stream[F[_]: ConcurrentEffect] =
+    BlazeBuilder[F]
       .bindHttp(appCfg.getInt("api.http.port"), "0.0.0.0")
       .mountService(MiddleWear(statusApi))
       .mountService(MiddleWear(statusApi), s"/${apiVersion}/public")
       .mountService(MiddleWear(userApi), s"/${apiVersion}/user")
-      .mountService(MiddleWear(songApi), s"/${apiVersion}")
+      .mountService(MiddleWear(songApi), "/${apiVersion}")
       .serve
-      .compile
-      .drain
-      .as(ExitCode.Success)
-  }
 }
