@@ -1,30 +1,28 @@
 package coop.rchain.repo
 
 import com.typesafe.scalalogging.Logger
-import coop.rchain.models.Expr.ExprInstance.GString
 import coop.rchain.models._
 import org.specs2._
 import coop.rchain.utils.Globals._
 import coop.rchain.service.RholangContractProxy
 import coop.rchain.domain.ParDecoder._
-import coop.rchain.models.Channel.ChannelInstance.Quote
 
 class RholangProxySpec extends Specification {
   def is =
     s2"""
    Rnode Specification
 
-     create new contract form file $ok //createContract
+     create new contract form file $ok//createContract
      add user $ok //addUser
-     show data at contract names $ok //dataAtName
+     show data at contract names $dataAtName
     """
 
   val log = Logger[RholangProxySpec]
   val host = appCfg.getString("grpc.host")
   val grpc = RholangProxy("localhost", 40401)
   val contractProxy = RholangContractProxy(grpc)
-  val contract = "/rho/moc.rho" 
-  val userContract = "/rho/new_user.rho"
+  val contract = "/rho/moc_contract.rho"
+  val userContract = "/rho/moc_add_user.rho"
 
 
   def createContract = {
@@ -45,21 +43,20 @@ class RholangProxySpec extends Specification {
   def dataAtName = {
     val names = List(
     """["Immersion", "newUserId"]""",
-    """["Immersion", "playCount"]"""
+    """["Immersion", "playCount"]""",
+    """"userId""""
     )
-    val par: Par = GString(names.head)
-    val ch = Channel(Quote(par))
+//    val userIdCont = grpc.dataAtContWithTerm(names(0))
+//    log.info(s"_computedCONT--->  = ${userIdCont}")
 
-    val asG = GString(names.head)
-    val _computed = grpc.dataAtNameWithTerm(names(0))
-    log.info(s"_computed = ${_computed}")
-    val _computedCont = grpc.dataAtContWithTerm(names(0))
-    log.info(s"_computedCONT--->  = ${_computedCont}")
-
-    val computed = _computed.toOption.get
-    val userostBlocks= computed.blockResults.map(_.postBlockData)
-    val expressions = userostBlocks.map(x => x.map(e => (e.asDePar(), PrettyPrinter().buildString(e))))
-      log.info(s"-------xx :${expressions}")
+    val userIdData = grpc.dataAtNameWithTerm(names(0))
+    log.info(s"_computed = ${userIdData}")
+    val computed = userIdData.toOption.get
+    val userIdBlockData= computed.blockResults.flatMap(_.postBlockData)
+    val blockData = userIdBlockData.map(e => (e.asDePar()))
+    val blockDataPrettyPrint = userIdBlockData.map(e => PrettyPrinter().buildString(e))
+    log.info(s"--blockData :${blockData}")
+    log.info(s"--PrettyPrint blockData :${blockDataPrettyPrint}")
      1 === 0
 
   }
