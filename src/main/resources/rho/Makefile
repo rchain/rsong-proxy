@@ -13,10 +13,13 @@ user.rho.loaded: new_user.rho immersion.rho.loaded
 	rnode eval $<
 	touch $@
 
-immersion.rho.loaded: immersion.rho Mint.rho.loaded
+immersion.rho.loaded: moc.rho Mint.rho.loaded
 	rnode eval $<
 
 Mint.rho.loaded: $(MAKE_MINT_RHO) rnode.pid
 	rnode eval $<
 	rnode eval $(NON_NEGATIVE_NUMBER_RHO)
 	touch $@
+
+clean: 
+	rm  *.loaded

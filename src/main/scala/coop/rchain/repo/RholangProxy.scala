@@ -23,6 +23,7 @@ class RholangProxy(host: String, port: Int) {
   private lazy val channel =
     ManagedChannelBuilder.forAddress(host, port).usePlaintext(true).build
   private lazy val deployService = DeployServiceGrpc.blockingStub(channel)
+  def shutdown = channel.shutdownNow()
 
   def deployContract(contract: String) = {
     val resp = deployService.doDeploy(
@@ -58,11 +59,22 @@ class RholangProxy(host: String, port: Int) {
     } yield DeployAndProposeResponse(d, p)
   }
 
-  def asPar(name: String): Either[Err, Par] =
-    Interpreter.buildNormalizedTerm(new StringReader(name)).runAttempt match {
-      case Right(r) => Right(r)
+  def dataAtContWithTerm(
+      name: String): Either[Err, ListeningNameContinuationResponse] = {
+    val par = Interpreter.buildNormalizedTerm(new StringReader(name)).runAttempt
+    par.map(p => dataAtCont(p)) match {
       case Left(e)  => Left(Err(nameToPar, e.getMessage, None))
+      case Right(r) => Right(r)
     }
+  }
+  def dataAtNameWithTerm(
+      name: String): Either[Err, ListeningNameDataResponse] = {
+    val par = Interpreter.buildNormalizedTerm(new StringReader(name)).runAttempt
+    par.map(p => dataAtName(p)) match {
+      case Left(e)  => Left(Err(nameToPar, e.getMessage, None))
+      case Right(r) => Right(r)
+    }
+  }
 
   def dataAtName(s: String) = {
     val par: Par = GString(s)
@@ -71,6 +83,11 @@ class RholangProxy(host: String, port: Int) {
     rep
   }
 
+  def dataAtCont(par: Par) = {
+    val ch: Channel = Channel(Quote(par))
+    val rep = deployService.listenForContinuationAtName(Channels(Seq(ch)))
+    rep
+  }
   def dataAtName(par: Par) = {
     val ch: Channel = Channel(Quote(par))
     val rep = deployService.listenForDataAtName(ch)

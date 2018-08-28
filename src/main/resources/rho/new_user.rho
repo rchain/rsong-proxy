@@ -1,12 +1,13 @@
 ////////////////////
 // add user
 ////////////////////
-new userid, countout, testLog(`rho:io:stderr`) in {
-  @["Immersion", "newUserId"]!(*userid)
-  | for(@newuser <- userid) {
-       testLog!(["newuser",newuser])
-  | @["Immersion","playCount"]!(newuser,*countout)
- } | for(@cnt <- countout) {
-    testLog!(["cnt",cnt])
-}
+new userId, countOut , stdout(`rho:io:stderr`)in {
+  @["Immersion", "newUserId"]!(*userId) |
+  for(@newUser <- userId) {
+      stdout!(["newUser",newUser ])
+      | @["Immersion","playCount"]!(newUser, *countOut)
+     | for(@count <- countOut) {
+           stdout!(["count",count ])
+     }
+   }
 }

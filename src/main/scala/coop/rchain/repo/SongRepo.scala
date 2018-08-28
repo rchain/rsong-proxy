@@ -1,5 +1,7 @@
 package coop.rchain.repo
 
+import java.io.{BufferedInputStream, FileInputStream}
+
 import coop.rchain.domain._
 
 object SongRepo {
@@ -89,10 +91,19 @@ object SongRepo {
       album = Some(albums("Tiny_Human"))
     )
   )
+
   def apply(): SongRepo = new SongRepo()
 }
 class SongRepo {
   import SongRepo._
   val songMetadataList: Cursor => List[SongMetadata] = cursor => mocSongs
   val songMetadata: String => SongMetadata = id => mocSongs.head
+
+  def load(fileName: String) = {
+    val bis = new BufferedInputStream(new FileInputStream(fileName))
+    Stream.continually(bis.read).takeWhile(-1 !=).map(_.toByte).toArray
+  }
+  def getSong(name: String) = {
+    load(name)
+  }
 }

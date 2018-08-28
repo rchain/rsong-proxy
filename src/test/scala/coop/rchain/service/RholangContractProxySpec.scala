@@ -13,8 +13,5 @@ class RholangContractProxySpec extends Specification {
       .immersionConstract("/rho/immersion.rho")
       .isRight === true
   }
-  def e2 = {
-    val proxy = RholangProxy("localhost",
-  }
 
 }

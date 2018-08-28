@@ -1,0 +1,11 @@
+new testLog(`rho:io:stderr`) in {
+  contract @["Immersion", "newUserId"](userIdOut) = {
+    new userId in {
+        userIdOut!(*userId.toByteArray()) 
+    }
+  } |
+  contract @["Immersion", "playCount"](@newuser,playCountOut) = {
+        playCountOut!(50) 
+  }
+
+}
