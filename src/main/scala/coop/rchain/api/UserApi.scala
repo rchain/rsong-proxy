@@ -1,9 +1,9 @@
 package coop.rchain.api
 
 import cats.effect._
+import coop.rchain.service.UserService
 import org.http4s.HttpRoutes
 import org.http4s.circe._
-import coop.rchain.service.UserService.UserService
 import org.http4s.dsl.Http4sDsl
 
 class UserApi[F[_]: Sync](svc: UserService) extends Http4sDsl[F] {
@@ -14,9 +14,7 @@ class UserApi[F[_]: Sync](svc: UserService) extends Http4sDsl[F] {
         NotFound(id)
       else
         Ok(svc.find(id).get)
-    case req @ POST -> Root / id =>
-      Ok(svc.newUser(id))
     case req @ PUT -> Root / id / "playcount" =>
-      Accepted(svc.updatePlayCount(id = id, playCount = 100))
+      Accepted(svc.updatePlayCount(userId = id, playCount = 100))
   }
 }

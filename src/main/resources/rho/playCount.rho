@@ -1,0 +1,9 @@
+///////////
+// get play coun
+///////////
+new stdout(`rho:io:stdout`)in {
+  @["Immersion", "palyCount"]!("3a220a201ed7362b0a0616fc64bdf7bbd2c08fde6224b7be2bd1d4ec11d4c258e8ffcdab4a080000000000000000","pCount") |
+   for(@pc <- @"pCount" ) {
+      stdout ! (["play-count", pc])
+   }
+}

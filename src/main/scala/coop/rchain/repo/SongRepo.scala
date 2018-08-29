@@ -103,7 +103,23 @@ class SongRepo {
     val bis = new BufferedInputStream(new FileInputStream(fileName))
     Stream.continually(bis.read).takeWhile(-1 !=).map(_.toByte).toArray
   }
+
   def getSong(name: String) = {
     load(name)
+  }
+  def valueOf(bytes: List[Byte]) =
+    bytes.map { b =>
+      String.format("%02X", new java.lang.Integer(b & 0xff))
+    }.mkString
+
+  def storeSong(songData: Array[Byte]) = {
+
+    """
+      |@["Immersion", "store"]!(
+      |  "<songdata>".hexToBytes(),
+      |  {"artist": "Bee Gees", ...},
+      |  "songId"
+      |)
+    """.stripMargin
   }
 }
