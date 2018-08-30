@@ -1,29 +1,40 @@
 package coop.rchain.api
 
 import cats.effect._
-
-import coop.rchain.service.UserService.UserService
-import io.circe.syntax._
-
+import com.typesafe.scalalogging.Logger
+import coop.rchain.domain.{Err, ErrorCode}
+import coop.rchain.service.UserService
+import io.circe.Json
+import org.http4s.{HttpRoutes, Status}
 import org.http4s.circe._
+import org.http4s.dsl.Http4sDsl
 
-import org.http4s._
-import org.http4s.dsl.io._
+class UserApi[F[_]: Sync](svc: UserService) extends Http4sDsl[F] {
 
-class UserApi(svc: UserService) {
-
-  val service = HttpService[IO] {
-
+  val log = Logger("UserApi")
+  val routes: HttpRoutes[F] = HttpRoutes.of[F] {
     case GET -> Root / id =>
-      if (svc.find(id).isEmpty)
-        NotFound(id)
-      else
-        Ok(svc.find(id).get.asJson)
+      svc
+        .find(id)
+        .fold(
+          e =>
+            if (e.code == ErrorCode.nameNotFount) NotFound(s"${e}")
+            else InternalServerError(s"${e.code} ; ${e.msg}"), //NotFound(id),
+          r => Ok(Json.obj(id -> Json.fromString(r)))
+        )
 
     case req @ POST -> Root / id =>
-      Ok(svc.newUser(id))
+      svc
+        .newUser(id)
+        .fold(
+          e =>
+            if (e.code == ErrorCode.nameNotFount) NotFound(s"${e}")
+            else InternalServerError(s"${e.code} ; ${e.msg}"), //NotFound(id),
+          r => Ok(Json.obj(id -> Json.fromString("is created")))
+        )
 
     case req @ PUT -> Root / id / "playcount" =>
-      Accepted(svc.updatePlayCount(id = id, playCount = 100))
+      Accepted(svc.updatePlayCount(userId = id, playCount = 100))
   }
+
 }

@@ -1,31 +1,45 @@
 package coop.rchain.repo
 
+import java.io.StringReader
 import coop.rchain.casper.protocol._
 import coop.rchain.domain.{Err, ErrorCode}
 import com.google.protobuf.empty._
 import coop.rchain.models.Channel.ChannelInstance.Quote
 import coop.rchain.models.{Channel, Par}
 import coop.rchain.models.Expr.ExprInstance.GString
-import io.grpc.ManagedChannelBuilder
+import io.grpc.{ManagedChannel, ManagedChannelBuilder}
 import coop.rchain.domain._
 import coop.rchain.domain.ErrorCode._
 import coop.rchain.rholang.interpreter._
-import java.io.StringReader
+import com.typesafe.scalalogging.Logger
 import coop.rchain.models.rholang.implicits._
+import scala.util._
+import coop.rchain.utils.Globals._
 
 object RholangProxy {
 
-  def apply(host: String, port: Int): RholangProxy =
-    new RholangProxy(host, port)
+  lazy val (host, port) =
+    (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
+
+  def apply(channel: ManagedChannel): RholangProxy =
+    new RholangProxy(channel)
+
+  def apply(host: String, port: Int): RholangProxy = {
+    val channel =
+      ManagedChannelBuilder.forAddress(host, port).usePlaintext(true).build
+    new RholangProxy(channel)
+  }
 }
 
-class RholangProxy(host: String, port: Int) {
-  private lazy val channel =
-    ManagedChannelBuilder.forAddress(host, port).usePlaintext(true).build
-  private lazy val deployService = DeployServiceGrpc.blockingStub(channel)
+class RholangProxy(channel: ManagedChannel) {
 
-  def deployContract(contract: String) = {
-    val resp = deployService.doDeploy(
+  private lazy val grpc = DeployServiceGrpc.blockingStub(channel)
+  private lazy val log = Logger[RholangProxy]
+
+  def shutdown = channel.shutdownNow()
+
+  def deploy(contract: String) = {
+    val resp = grpc.doDeploy(
       DeployData()
         .withTerm(contract)
         .withTimestamp(System.currentTimeMillis())
@@ -40,40 +54,82 @@ class RholangProxy(host: String, port: Int) {
     else Left(Err(ErrorCode.grpcDeploy, resp.message, Some(contract)))
   }
 
+  val deployFromFile: String => Either[Err, String] = path =>
+    for {
+      c <- immersionConstract(path)
+      d <- deploy(c)
+    } yield d
+
   def showBlocks =
-    deployService.showBlocks(Empty()).toList
+    grpc.showBlocks(Empty()).toList
 
   def proposeBlock = {
-    val response: DeployServiceResponse = deployService.createBlock(Empty())
+    val response: DeployServiceResponse = grpc.createBlock(Empty())
     response.success match {
-      case true  => Right(response.message)
+      case true =>
+        Right(response.message)
       case false => Left(Err(ErrorCode.grpcPropose, response.message, None))
     }
   }
 
-  def deployAndPropse(contract: String) = {
+  def deployAndPropose(contract: String) =
     for {
-      d <- deployContract(contract)
+      d <- deploy(contract)
       p <- proposeBlock
     } yield DeployAndProposeResponse(d, p)
-  }
 
-  def asPar(name: String): Either[Err, Par] =
-    Interpreter.buildNormalizedTerm(new StringReader(name)).runAttempt match {
-      case Right(r) => Right(r)
+  def dataAtContWithTerm(
+      name: String): Either[Err, ListeningNameContinuationResponse] = {
+    val par = Interpreter.buildNormalizedTerm(new StringReader(name)).runAttempt
+    par.map(p => dataAtCont(p)) match {
       case Left(e)  => Left(Err(nameToPar, e.getMessage, None))
+      case Right(r) => Right(r)
     }
-
-  def dataAtName(s: String) = {
-    val par: Par = GString(s)
-    val ch: Channel = Channel(Quote(par))
-    val rep = deployService.listenForDataAtName(ch)
-    rep
+  }
+  def dataAtNameWithTerm(
+      name: String): Either[Err, ListeningNameDataResponse] = {
+    val par = Interpreter.buildNormalizedTerm(new StringReader(name)).runAttempt
+    par.map(p => dataAtName(p)) match {
+      case Left(e)  => Left(Err(nameToPar, e.getMessage, None))
+      case Right(r) => r
+    }
   }
 
-  def dataAtName(par: Par) = {
-    val ch: Channel = Channel(Quote(par))
-    val rep = deployService.listenForDataAtName(ch)
-    rep
+  def dataAtName(name: String): Either[Err, ListeningNameDataResponse] = {
+    val par: Par = GString(name)
+    dataAtName(par)
   }
+
+  def dataAtName(par: Par): Either[Err, ListeningNameDataResponse] = {
+    val ch: Channel = Channel(Quote(par))
+    val res = grpc.listenForDataAtName(ch)
+    res.status match {
+      case "Success" => Right(res)
+      case _ =>
+        Left(Err(ErrorCode.nameNotFount, s"no data for par: ${par}", None))
+    }
+  }
+
+  def dataAtCont(par: Par) = {
+    val ch: Channel = Channel(Quote(par))
+    grpc.listenForContinuationAtName(Channels(Seq(ch)))
+  }
+
+  val immersionConstract: String => Either[Err, String] = fileName => {
+    val stream = getClass.getResourceAsStream(fileName)
+    Try(
+      scala.io.Source.fromInputStream(stream).getLines.reduce(_ + _ + "\n")
+    ) match {
+      case Success(s) =>
+        stream.close
+        Right(s)
+      case Failure(e) =>
+        stream.close
+        Left(Err(ErrorCode.contractFile, fileName, None))
+    }
+  }
+
+  val propose: String => Either[Err, DeployAndProposeResponse] = deployResp =>
+    proposeBlock map (x =>
+      DeployAndProposeResponse(fromDeploy = deployResp, fromPropose = x))
 }

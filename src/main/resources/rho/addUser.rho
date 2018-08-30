@@ -1,0 +1,11 @@
+////////////////////
+// add user
+////////////////////
+//new stdout(`rho:io:stdout`)in {
+  @["Immersion", "newUserId"]!("userId")
+//|
+//  for(@newUser <- @"userId") {
+//       @["Immersion","playCount"]!(newUser, "countOut") |
+//        "userId" ! (newUser)
+//   }
+//}

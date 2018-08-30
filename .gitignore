@@ -3,6 +3,8 @@ project/boot/
 .idea/
 .idea*
 *.log
+*.loaded
+*.pid
 ##
 ## emacs & ensime
 ##

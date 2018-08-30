@@ -1,0 +1,7 @@
+////////////////////
+// add user
+
+////////////////////
+new userId in {
+  @["Immersion", "newUserId"]!("userId")
+}

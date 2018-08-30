@@ -42,7 +42,7 @@ lazy val root = (project in file("."))
     scalaVersion := "2.12.6",
     libraryDependencies ++= {
       object V {
-        val http4s = "0.19+"
+        val http4s = "0.19.0-M1"
         val specs2 = "4.2.0"
         val logback = "1.2.3"
         val scalalogging = "3.9.0"
@@ -54,13 +54,14 @@ lazy val root = (project in file("."))
       }
       Seq(
        "io.monix" %% "monix" % "3.0.0-RC1" ,
-        "org.typelevel" %% "cats-effect" % V.catsEffect,
-        "org.http4s" %% "http4s-blaze-server" % V.http4s,
+        // "org.typelevel" %% "cats-effect" % V.catsEffect,
+
+       "org.http4s" %% "http4s-dsl" % V.http4s,
+       "org.http4s" %% "http4s-blaze-server" % V.http4s,
         "org.http4s" %% "http4s-circe" % V.http4s,
         "io.circe" %% "circe-core" % V.circie,
         "io.circe" %% "circe-generic" % V.circie,
         "io.circe" %% "circe-parser" % V.circie,
-        "org.http4s" %% "http4s-dsl" % V.http4s,
         "org.specs2" %% "specs2-core" % V.specs2 % "it, test",
         "com.typesafe" %  "config" % V.config,
         "com.typesafe.scala-logging" %% "scala-logging" % V.scalalogging, 
@@ -79,6 +80,7 @@ PB.targets in Compile := Seq(
 // scalacOptions := CompilerSettings.scalacOptions
 
 Test / parallelExecution := false
+parallelExecution in IntegrationTest := false
 
 enablePlugins(JavaServerAppPackaging)
 

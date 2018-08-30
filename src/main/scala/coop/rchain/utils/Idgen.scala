@@ -15,5 +15,5 @@ object IdGen {
       .toLowerCase
 
   //TODO temp driver for idGen. Ideally should be based on a composite user-attributes
-  val genUserId: String = idGen(java.util.UUID.randomUUID.toString)
+  val uuid: String = (java.util.UUID.randomUUID.toString)
 }

@@ -9,12 +9,9 @@ class RholangContractProxySpec extends Specification {
       classpath contains rholang contract $e1
   """
   def e1 = {
-    RholangContractProxy()
+    RholangProxy("localhost", 40401)
       .immersionConstract("/rho/immersion.rho")
       .isRight === true
-  }
-  def e2 = {
-    val proxy = RholangProxy("localhost",
   }
 
 }
