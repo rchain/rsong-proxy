@@ -3,11 +3,15 @@ package coop.rchain.domain
 import cats.Monoid
 import com.google.protobuf.ByteString
 import com.typesafe.scalalogging.Logger
-import coop.rchain.casper.protocol.DataWithBlockInfo
+import coop.rchain.casper.protocol.{
+  DataWithBlockInfo,
+  ListeningNameDataResponse
+}
 import coop.rchain.models.Channel.ChannelInstance.Quote
 import coop.rchain.models.Expr.ExprInstance
 import coop.rchain.models._
 import coop.rchain.models.rholang.implicits._
+import coop.rchain.rholang.interpreter.PrettyPrinter
 
 object ParDecoder {
 
@@ -108,6 +112,15 @@ object ParDecoder {
 
       }
       par.exprs.headOption.map(x => x.asDeExp()).getOrElse(DeParConverter())
+    }
+  }
+  implicit class BlockToString(l: ListeningNameDataResponse) {
+    def asString = {
+      for {
+        p <- l.blockResults
+        b <- p.postBlockData
+        s = PrettyPrinter().buildString(b)
+      } yield s
     }
   }
 }

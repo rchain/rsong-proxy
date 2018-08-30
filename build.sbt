@@ -80,6 +80,7 @@ PB.targets in Compile := Seq(
 // scalacOptions := CompilerSettings.scalacOptions
 
 Test / parallelExecution := false
+parallelExecution in IntegrationTest := false
 
 enablePlugins(JavaServerAppPackaging)
 

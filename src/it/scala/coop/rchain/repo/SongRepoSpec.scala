@@ -2,11 +2,12 @@ package coop.rchain.repo
 
 import com.typesafe.scalalogging.Logger
 import org.specs2._
+import coop.rchain.utils.HexBytesUtil._
 
 class SongRepoSpec extends Specification { def is =
   s2"""
        SongRepository Specifications
-          load the song in memory $load
+          base16 song conversion $ok //load to speed up
           upload song to RChain $toRchain
 
   """
@@ -15,9 +16,9 @@ class SongRepoSpec extends Specification { def is =
   val songRepo = SongRepo()
 
   def load =  {
-   val song = songRepo.load(songfile)
+   val song = songRepo.loadSongFile(songfile)
     log.info(s"loaded size = ${song.size}")
-    1 === 1
+    hex2bytes(bytes2hex(song)) === song
   }
   def toRchain = 1 ===1
 }

@@ -96,21 +96,18 @@ object SongRepo {
 }
 class SongRepo {
   import SongRepo._
+  import coop.rchain.utils.HexBytesUtil._
+
   val songMetadataList: Cursor => List[SongMetadata] = cursor => mocSongs
   val songMetadata: String => SongMetadata = id => mocSongs.head
 
-  def load(fileName: String) = {
+  def loadSongFile(fileName: String) = {
     val bis = new BufferedInputStream(new FileInputStream(fileName))
     Stream.continually(bis.read).takeWhile(-1 !=).map(_.toByte).toArray
   }
 
-  def getSong(name: String) = {
-    load(name)
-  }
-  def valueOf(bytes: List[Byte]) =
-    bytes.map { b =>
-      String.format("%02X", new java.lang.Integer(b & 0xff))
-    }.mkString
+//  val loadToBase16: String => String = fileName =>
+//    (loadSongFile _ andThen bytes2hex)(fileName)
 
   def storeSong(songData: Array[Byte]) = {
 
