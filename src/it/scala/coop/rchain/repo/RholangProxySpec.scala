@@ -15,8 +15,6 @@ class RholangProxySpec extends Specification {
      show black mush show changens $ok//showBlocks
      show data at contract names $ok//getUser
      playcount ask $ok//computePlayCount
-     fetch users playcount ask $findUserPlayCount
-    """
 
   val log = Logger[RholangProxySpec]
   val host = appCfg.getString("grpc.host")

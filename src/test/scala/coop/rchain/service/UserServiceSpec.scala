@@ -8,7 +8,6 @@ class UserServiceSpec extends Specification {
   def is = s2"""
    user service specs
        new user rholang terms correctly $newUserRhoBuild
-       playcount rholang terms correctly $playCountRhorBuild
     """
   import coop.rchain.service.UserService._
   val log = Logger[UserServiceSpec]
@@ -19,9 +18,4 @@ class UserServiceSpec extends Specification {
     computed.isEmpty === false
   }
 
-  def playCountRhorBuild = {
-    val computed: String = playCountRhoTerm("john-smith")
-    log.info(s"term-spec : ${computed}")
-    computed.isEmpty === false
-  }
 }

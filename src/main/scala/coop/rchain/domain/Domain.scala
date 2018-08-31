@@ -11,6 +11,12 @@ case class PlayList(entity: Entity) extends Domain
 object AudioTypes {
   val t: Map[String, String] = Map("Stereo" -> "Stereo", "3D" -> "3D")
 }
+case class Interval[T](from: T, to: Option[T])
+case class TemporalInterval(
+    inMillis: Interval[Long],
+    inUtc: Interval[String]
+)
+
 case class Cursor(from: Int, to: Int) extends Domain
 
 case class Metadata(k: String, v: String) extends Domain

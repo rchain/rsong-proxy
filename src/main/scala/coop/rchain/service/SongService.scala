@@ -24,5 +24,7 @@ class SongService(repo: SongRepo) {
       playCount = PlayCount(current = 99)
     ).asJson
 
+  def saveSong(song: Song, metadata: SongMetadata) = ???
+
 //  def getSong(name: String) = repo.load(name)
 }
