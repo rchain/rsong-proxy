@@ -35,16 +35,19 @@ case class Audio(
 
 case class Song(
   id: String,
+  name: String,
+  title: String,
   audio: List[Audio],
   language: String
 ) extends Domain
 
 case class Album(
   id: String,
-  artworks: List[Artwork],
   name: String,
-  duration_ms: Long,
+  title: String,
+  artworks: List[Artwork],
   artists: List[Artist],
+  duration_ms: Long,
   uri: String
 ) extends  Domain
 

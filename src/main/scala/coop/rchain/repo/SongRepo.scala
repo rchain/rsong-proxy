@@ -19,9 +19,9 @@ object SongRepo {
         "https://s3.amazonaws.com/dev-q2io-rchain/v2/assets/art-work/TinyHuman.jpg")
   )
   val artists = Map(
-    "Broke" -> Artist(id = "Broke", name = "Broke"),
-    "Euphoria" -> Artist(id = "Euphoria", name = "Euphoria"),
-    "Tiny_Human" -> Artist(id = "Tiny_Human", name = "Tiny_Human")
+    "Broke" -> Artist(id = "Mycle-Wastman", name = "Mycle Wastman"),
+    "Euphoria" -> Artist(id = "California-Guitar-Trio", name = "California Guitar Trio"),
+    "Tiny_Human" -> Artist(id = "Imogen-Heap", name = "Imogen Heap")
   )
 
   val albums = Map(
@@ -29,6 +29,7 @@ object SongRepo {
       id = "Broke",
       artworks = List(artworks("Broke")),
       name = "Broke",
+      title = "Broke",
       duration_ms = 10000,
       artists = List(artists("Broke")),
       uri =
@@ -38,6 +39,7 @@ object SongRepo {
       id = "Euphoria",
       artworks = List(artworks("Euphoria")),
       name = "Euphoria",
+      title = "Euphoria",
       duration_ms = 10000,
       artists = List(artists("Euphoria")),
       uri =
@@ -46,7 +48,8 @@ object SongRepo {
     "Tiny_Human" -> Album(
       id = "album-id-Tiny_Human",
       artworks = List(artworks("Tiny_Human")),
-      name = "Tiny_Human_1st_album",
+      name = "Tiny Human 1st album",
+      title = "Tiny Human 1st album",
       duration_ms = 10000,
       artists = List(artists("Tiny_Human")),
       uri =
@@ -58,16 +61,22 @@ object SongRepo {
     "Broke" ->
       Song(
         id = "Broke",
+        name = "Broke",
+        title= "Broke",
         audio = List(
           Audio(effect = AudioTypes.t("3D"),
-            uri =
-              "https://s3.amazonaws.com/dev-q2io-rchain/v2/assets/music/Broke_Immersive.izr",
-            duration_ms = 1000L)),
+            uri = "https://s3.amazonaws.com/dev-q2io-rchain/v2/assets/music/Broke_Immersive.izr",
+            duration_ms = 1000L),
+          Audio(effect = AudioTypes.t("Stereo"),
+            uri="https://s3.amazonaws.com/dev-q2io-rchain/v2/assets/music/Broke_Stereo.izr",
+            duration_ms = 1000L) ),
         language = "EN"
       ),
     "Tiny_Human" ->
       Song(
         id = "Tiny_Human",
+        name = "Tiny Human",
+        title = "Tiny Human",
         audio = List(
           Audio(
             effect = AudioTypes.t("3D"),
@@ -85,6 +94,8 @@ object SongRepo {
     "Euphoria" ->
       Song(
         id = "Euphoria",
+        name = "Euphoria",
+        title = "Euphoria",
         audio = List(
           Audio(
             effect = AudioTypes.t("3D"),
