@@ -34,7 +34,7 @@ class UserApi[F[_]: Sync](svc: UserService) extends Http4sDsl[F] {
         )
 
     case req @ PUT -> Root / id / "playcount" =>
-      Accepted(svc.updatePlayCount(userId = id, playCount = 100))
+      Accepted(Json.obj("status" -> Json.fromString("under construction")))
   }
 
 }

@@ -8,15 +8,14 @@ import coop.rchain.service._
 import org.specs2.matcher.MatchResult
 
 class RholangProxySpec extends Specification {
-  def is =
-    s2"""
+  def is = s2"""
    Rnode Specification
      create new contract form fle $ok//deployContract
      add user $ok//addUser
      show black mush show changens $ok//showBlocks
      show data at contract names $ok//getUser
-     playcount ask $playCount
-     fetch users playcount ask $ok//fetchUserPlayCount
+     playcount ask $ok//computePlayCount
+     fetch users playcount ask $findUserPlayCount
     """
 
   val log = Logger[RholangProxySpec]
@@ -55,18 +54,19 @@ class RholangProxySpec extends Specification {
     (results.isRight && !results.toOption.get.isEmpty) === true
   }
 
-  def playCount = {
+  def computePlayCount = {
     log.info(s"asking for playcount for userId : ${userName}")
-    val results = userService.playCoutnAsk(userName)
+    val results = userService.computePlayCount(userName)
     log.info(s"rsult ret from playCOuntAsk: ${results}")
     results.isRight === true
   }
-//  def fetchUserPlayCount = {
-//    log.info(s"fetch user playcount for userId : ${userName}")
-//    var results = userService.playCount(userName)
-//    log.info(s"FETCH playvount rsult ret from playCOuntAsk: ${results}")
-//
-//    results.isRight === true
-//  }
+
+  def findUserPlayCount = {
+    log.info(s"fetch user playcount for userId : ${userName}")
+    val results = userService.findPlayCount(userName)
+    log.info(s"FETCH playvount rsult ret from playCOuntAsk: ${results}")
+
+    results.isRight === true
+  }
 }
 

@@ -3,6 +3,7 @@ package coop.rchain.service
 import com.typesafe.scalalogging.Logger
 import coop.rchain.domain._
 import cats.implicits._
+import coop.rchain.models.Par
 import coop.rchain.repo.RholangProxy
 import coop.rchain.rholang.interpreter.PrettyPrinter
 import io.circe._
@@ -29,9 +30,6 @@ object UserService {
   private val (host, port) =
     (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
 
-  def playCountRhoTerm(name: String): String =
-    s"""@["Immersion", "playCount"]!("${name}", "${name}-${COUNT_OUT}")"""
-
   def newUserRhoTerm(name: String): String =
     s"""@["Immersion", "newUserId"]!("${name}")"""
 
@@ -48,43 +46,37 @@ class UserService(grpc: RholangProxy) {
   val newUser: String => Either[Err, DeployAndProposeResponse] = user =>
     (newUserRhoTerm _ andThen grpc.deployAndPropose _)(user)
 
-  def find(userId: String): Either[Err, String] =
-    dataAtName(s""""${userId}"""")
+  def find(rName: String): Either[Err, String] =
+    for {
+      d <- dataAtNameAsPar(s""""${rName}"""")
+      e <- dataAtName(d)
+    } yield e
 
-  def dataAtName(term: String) = {
+  def dataAtNameAsPar(term: String) =
     for {
       z <- grpc.dataAtName(term)
       pars = z.blockResults.flatMap(_.postBlockData)
+    } yield pars
 
-      e = pars.map(p => PrettyPrinter().buildString(p))
-      nameId <- if (e.isEmpty)
-        Left(
-          Err(ErrorCode.nameNotFount,
-              s"Rholang name not fount for ${term}",
-              None))
-      else Right(e.head)
-    } yield nameId
+  def dataAtName(pars: Seq[Par]) = {
+    val e = pars.map(p => PrettyPrinter().buildString(p))
+    if (e.isEmpty)
+      Left(Err(ErrorCode.nameNotFount, s"Rholang name not found${}", None))
+    else Right(e.head)
   }
 
   import coop.rchain.protocol.ParOps._
 
-  val playCoutnAsk: String => Either[Err, Seq[String]] = userId => {
+  val computePlayCount: String => Either[Err, DeployAndProposeResponse] =
+    userId =>
+      for {
+        rhoName <- find(userId)
+        queryName = s"""("$rhoName".hexToBytes(),"${userId}-${COUNT_OUT}")"""
+        term = s"""@["Immersion", "playCount"]!${queryName}"""
+        m <- grpc.deployAndPropose(term)
+      } yield m
 
-    val rName = s""""${userId}""""
-    val count = for {
-      z <- grpc.dataAtName(rName)
-      userPars = z.blockResults.flatMap(_.postBlockData)
-      userPar <- if (userPars.headOption.isDefined) Right(userPars.head);
-      else
-        Left(Err(ErrorCode.nameNotFount, s"no name found for $userId", None))
-      coutPar <- (s""""${COUNT_OUT}"""").asPar
-      e <- grpc.dataAtName(coutPar ++ userPar)
-      dp = e.asString
-//        count = PrettyPrinter().buildString(e)
-    } yield dp
-    log.info(s"++++ playCount = ${count}")
-    count
-  }
-  def updatePlayCount(userId: String, playCount: Int): Json = Json.obj()
+  val findPlayCount: String => Either[Err, String] = userId =>
+    find(s"$userId-$COUNT_OUT")
 
 }
