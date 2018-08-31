@@ -29,9 +29,25 @@ object RholangProxy {
       ManagedChannelBuilder.forAddress(host, port).usePlaintext(true).build
     new RholangProxy(channel)
   }
+
+  def parsToChannel(pars: Seq[Par]): Channel = {
+    val p = pars.foldLeft(new Par())(_ ++ _)
+    Channel(Quote(p))
+  }
+
+  def parToChannel(par: Par): Channel = Channel(Quote(par))
+
+  def asPar(name: String): Either[Err, Par] = {
+    val par = Interpreter.buildNormalizedTerm(new StringReader(name)).runAttempt
+    par match {
+      case Left(e)  => Left(Err(nameToPar, e.getMessage, None))
+      case Right(r) => Right(r)
+    }
+  }
 }
 
 class RholangProxy(channel: ManagedChannel) {
+  import RholangProxy._
 
   private lazy val grpc = DeployServiceGrpc.blockingStub(channel)
   private lazy val log = Logger[RholangProxy]
@@ -86,6 +102,7 @@ class RholangProxy(channel: ManagedChannel) {
       case Right(r) => Right(r)
     }
   }
+
   def dataAtNameWithTerm(
       name: String): Either[Err, ListeningNameDataResponse] = {
     val par = Interpreter.buildNormalizedTerm(new StringReader(name)).runAttempt
@@ -101,8 +118,7 @@ class RholangProxy(channel: ManagedChannel) {
   }
 
   def dataAtName(par: Par): Either[Err, ListeningNameDataResponse] = {
-    val ch: Channel = Channel(Quote(par))
-    val res = grpc.listenForDataAtName(ch)
+    val res = (parToChannel _ andThen grpc.listenForDataAtName _)(par)
     res.status match {
       case "Success" => Right(res)
       case _ =>

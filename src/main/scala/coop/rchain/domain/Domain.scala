@@ -30,7 +30,7 @@ case class Artist(id: String, name: String) extends Domain
 case class Audio(
     effect: String,
     uri: String,
-    duration_ms: Long
+    NameKeNameKeyyduration_ms: Long
 ) extends Domain
 
 case class Song(
@@ -66,3 +66,20 @@ case class WorldView(
 ) extends Domain
 
 case class DeployAndProposeResponse(fromDeploy: String, fromPropose: String)
+
+object NameKey extends Enumeration {
+  type NameKey = Value
+  val newUserId, store, playCount, retrieveSong, retrieveMetadata, remunerate,
+  play = Value
+}
+object CotractQueryNames {
+  val contractNames = Map(
+    NameKey.newUserId -> """["Immersion", "newUserId"]""",
+    NameKey.store -> """["Immersion", "store"]""",
+    NameKey.playCount -> """["Immersion", "playCount"]""",
+    NameKey.retrieveSong -> """["Immersion", "retrieveSong"]""",
+    NameKey.retrieveMetadata -> """["Immersion", "retrieveMetadata"]""",
+    NameKey.remunerate -> """["Immersion", "remunerate"]""",
+    NameKey.play -> """["Immersion", "play"]"""
+  )
+}
