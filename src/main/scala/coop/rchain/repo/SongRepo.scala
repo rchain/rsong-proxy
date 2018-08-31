@@ -48,8 +48,8 @@ object SongRepo {
     "Tiny_Human" -> Album(
       id = "album-id-Tiny_Human",
       artworks = List(artworks("Tiny_Human")),
-      name = "Tiny Human 1st album",
-      title = "Tiny Human 1st album",
+      name = "Tiny Human",
+      title = "Tiny Human",
       duration_ms = 10000,
       artists = List(artists("Tiny_Human")),
       uri =
