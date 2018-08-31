@@ -5,7 +5,7 @@ import com.typesafe.scalalogging.Logger
 import coop.rchain.domain.{Err, ErrorCode}
 import coop.rchain.service.UserService
 import io.circe.Json
-import org.http4s.{HttpRoutes, Status}
+import org.http4s.{HttpRoutes}
 import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
 

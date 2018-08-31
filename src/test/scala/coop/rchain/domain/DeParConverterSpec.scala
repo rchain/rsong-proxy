@@ -2,8 +2,8 @@ package coop.rchain.domain
 
 import com.typesafe.scalalogging.Logger
 import org.specs2._
-import coop.rchain.domain.ParDecoder._
 import cats.Monoid
+import coop.rchain.protocol.Protocol.DeParConverter
 
 class DeParConverterSpec extends Specification {
   def is = s2"""

@@ -30,7 +30,7 @@ case class Artist(id: String, name: String) extends Domain
 case class Audio(
     effect: String,
     uri: String,
-    NameKeNameKeyyduration_ms: Long
+    duration_ms: Long
 ) extends Domain
 
 case class Song(

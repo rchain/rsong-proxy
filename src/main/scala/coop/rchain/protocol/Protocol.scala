@@ -1,43 +1,45 @@
-package coop.rchain.domain
+package coop.rchain.protocol
 
-import cats.Monoid
 import com.google.protobuf.ByteString
+import coop.rchain.domain.{PlayCount, SongMetadata}
+import cats.Monoid
 import com.typesafe.scalalogging.Logger
-import coop.rchain.casper.protocol.{
-  DataWithBlockInfo,
-  ListeningNameDataResponse
-}
-import coop.rchain.models.Channel.ChannelInstance.Quote
+import coop.rchain.models.rholang.implicits._
 import coop.rchain.models.Expr.ExprInstance
 import coop.rchain.models._
-import coop.rchain.models.rholang.implicits._
 import coop.rchain.rholang.interpreter.PrettyPrinter
+import coop.rchain.casper.protocol.ListeningNameDataResponse
 
-object ParDecoder {
+object Protocol {
+  sealed trait ValueObject
+  case class SongRequest(
+      songId: String,
+      userId: String
+  ) extends ValueObject
+
+  case class SongResponse(
+      songMetadata: SongMetadata,
+      playCount: PlayCount
+  ) extends ValueObject
 
   case class DeParConverter(asInt: List[Int] = List(),
                             asString: List[String] = List(),
                             asUri: List[String] = List(),
                             asByteArray: List[ByteString] = List())
 
-  def fromName(dataWithBlockInfo: DataWithBlockInfo) = {
-    val pars = dataWithBlockInfo.postBlockData
-  }
-
   implicit val DeParMonoid = new Monoid[DeParConverter] {
     def empty: DeParConverter = DeParConverter()
     def combine(d1: DeParConverter, d2: DeParConverter): DeParConverter =
-      DeParConverter(
-        asInt = d1.asInt ::: d2.asInt,
-        asString = d1.asString ::: d2.asString,
-        asUri = d1.asUri ::: d2.asUri,
-        asByteArray = d1.asByteArray ::: d2.asByteArray
-      )
+      DeParConverter(asInt = d1.asInt ::: d2.asInt,
+                     asString = d1.asString ::: d2.asString,
+                     asUri = d1.asUri ::: d2.asUri,
+                     asByteArray = d1.asByteArray ::: d2.asByteArray)
   }
 
-  val log = Logger[DeParConverter]
-
   implicit class DeExpr(exp: Expr) {
+
+    val log = Logger[DeExpr]
+
     def asSeqDeExp(exprs: Seq[Expr]) = {
       exprs
         .map(x => x.asDeExp())
@@ -101,7 +103,6 @@ object ParDecoder {
   implicit class DecodePar(par: Par) {
 
     def asDePar(): DeParConverter = {
-      log.info(s"deparing ${par}")
       par match {
         case Par(_, _, _, exprs, _, _, _, _, _, _) if (!exprs.isEmpty) =>
           exprs

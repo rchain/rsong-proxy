@@ -10,6 +10,7 @@ import io.circe.syntax._
 import io.circe.generic.auto._
 import coop.rchain.repo.RholangProxy._
 import coop.rchain.models.rholang.implicits._
+import coop.rchain.protocol.Protocol._
 
 object UserService {
   val COUNT_OUT = "countOut"
@@ -65,20 +66,25 @@ class UserService(grpc: RholangProxy) {
     } yield rholangId
   }
 
-  val playCoutnAsk: String => Either[Err, String] =
-    userId => {
-      val rName = s""""${userId}""""
-      for {
-        z <- grpc.dataAtNameWithTerm(rName)
-        userPars = z.blockResults.flatMap(_.postBlockData)
-        userPar <- if (userPars.headOption.isDefined) Right(userPars.head);
-        else
-          Left(Err(ErrorCode.nameNotFount, s"no name found for $userId", None))
-        coutPar <- asPar(COUNT_OUT)
-        e <- grpc.dataAtName(coutPar ++ userPar)
-        count = PrettyPrinter().buildString(e)
-      } yield count
-    }
+  import coop.rchain.protocol.ParDecoder._
+
+  val playCoutnAsk: String => Either[Err, Seq[String]] = userId => {
+
+    val rName = s""""${userId}""""
+    val count = for {
+      z <- grpc.dataAtNameWithTerm(rName)
+      userPars = z.blockResults.flatMap(_.postBlockData)
+      userPar <- if (userPars.headOption.isDefined) Right(userPars.head);
+      else
+        Left(Err(ErrorCode.nameNotFount, s"no name found for $userId", None))
+      coutPar <- asPar(s""""${COUNT_OUT}"""")
+      e <- grpc.dataAtName(coutPar ++ userPar)
+      dp = e.asString
+//        count = PrettyPrinter().buildString(e)
+    } yield dp
+    log.info(s"++++ playCount = ${count}")
+    count
+  }
   def updatePlayCount(userId: String, playCount: Int): Json = Json.obj()
 
 }

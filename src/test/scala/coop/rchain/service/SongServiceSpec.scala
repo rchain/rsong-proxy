@@ -1,9 +1,9 @@
 package coop.rchain.service
 
 import coop.rchain.repo.SongRepo
-import coop.rchain.domain.Protocol
 import com.typesafe.scalalogging.Logger
 import coop.rchain.domain._
+import coop.rchain.protocol.Protocol
 import org.specs2._
 
 class SongServiceSpec extends Specification {
