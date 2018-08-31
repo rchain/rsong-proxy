@@ -24,9 +24,11 @@ class SongApi[F[_]: Effect] extends Http4sDsl[F] {
         Ok(mySongs(id, Cursor(10,1)).asJson)
 
       case GET -> Root  / "song" / id  :? userId(uid)  =>
-        Ok(mySongs(id, Cursor(10,1)).head.asJson)
-
-
+        val ret = mySongs(id)
+        ret match {
+          case Some(song) => Ok(song.asJson)
+          case None => NotFound(id)
+        }
 
       case GET -> Root  / "artwork" / id ⇒
         Ok(Json.obj("message" -> Json.fromString("under construction")))
