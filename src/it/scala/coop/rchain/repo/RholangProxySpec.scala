@@ -1,35 +1,29 @@
 package coop.rchain.repo
 
 import com.typesafe.scalalogging.Logger
+import coop.rchain.domain.NameKey
 import org.specs2._
 import coop.rchain.utils.Globals._
 import coop.rchain.service._
 import org.specs2.matcher.MatchResult
 
 class RholangProxySpec extends Specification {
-  def is =
-    s2"""
+  def is = s2"""
    Rnode Specification
-     create new contract form file $deployContract
-     show black mush show changens $showBlocks
+     create new contract form fle $ok//deployContract
      add user $ok//addUser
-     show data at contract names $ok //dataAtName
+     show black mush show changens $ok//showBlocks
+     show data at contract names $ok//getUser
+     playcount ask $ok//computePlayCount
+     fetch users playcount ask $findUserPlayCount
     """
 
   val log = Logger[RholangProxySpec]
   val host = appCfg.getString("grpc.host")
   val proxy = RholangProxy("localhost", 40401)
+  val userService = UserService(proxy)
+  val userName="john-smith"
 
-  val contractNames = Map(
-    "newUserId" -> """["Immersion", "newUserId"]""",
-     "store" ->  """["Immersion", "store"]""",
-    "playCount" ->  """["Immersion", "playCount"]""",
-    "retrieveSong" ->  """["Immersion", "retrieveSong"]""",
-    "retrieveMetadata" ->  """["Immersion", "retrieveMetadata"]""",
-    "remunerate" ->  """["Immersion", "remunerate"]""",
-    "play" ->  """["Immersion", "play"]"""
-  )
-  val userNames = (1 to 5).map(_ => java.util.UUID.randomUUID.toString)
 
   def deployContract = {
 
@@ -46,24 +40,33 @@ class RholangProxySpec extends Specification {
   }
 
   def addUser ={
-
-    val results = UserService(proxy).newUser(userNames.head)
+    log.info(s"adding user: ${userName}")
+    val results = userService.newUser(userName)
     log.info(s"useradd completed with result: ${results}")
     results.isLeft === false
   }
-  import coop.rchain.models.rholang.implicits._
-  import coop.rchain.rholang.interpreter._
-  import coop.rchain.domain.ParDecoder._
 
-  def dataAtName:MatchResult[Boolean] = {
-    val testName = contractNames("newUserId")
-    log.info(s"""attempting the listenAtName: $testName)}""")
-    val results = for {
-      grpcRes <- proxy.dataAtNameWithTerm(testName)
-      _ = log.info(s"grpcResults of name-retrivals = ${grpcRes}")
-    } yield grpcRes.asString
-    log.info(s"grpcResults Name  as string ${results}")
-    (results.isRight && results.toOption.get.headOption.isDefined) === true
+
+  def getUser:MatchResult[Boolean] = {
+    log.info(s"attempting the listenAtName: ${userName}")
+    val results = userService.find(userName)
+    log.info(s"grpcResults of name-retrivals = ${results}")
+    (results.isRight && !results.toOption.get.isEmpty) === true
+  }
+
+  def computePlayCount = {
+    log.info(s"asking for playcount for userId : ${userName}")
+    val results = userService.computePlayCount(userName)
+    log.info(s"rsult ret from playCOuntAsk: ${results}")
+    results.isRight === true
+  }
+
+  def findUserPlayCount = {
+    log.info(s"fetch user playcount for userId : ${userName}")
+    val results = userService.findPlayCount(userName)
+    log.info(s"FETCH playvount rsult ret from playCOuntAsk: ${results}")
+
+    results.isRight === true
   }
 }
 

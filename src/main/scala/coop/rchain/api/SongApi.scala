@@ -5,7 +5,7 @@ import coop.rchain.domain.Cursor
 import io.circe.Json
 import org.http4s.circe._
 import coop.rchain.service._
-import coop.rchain.domain.Protocol._
+import coop.rchain.protocol.Protocol._
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 

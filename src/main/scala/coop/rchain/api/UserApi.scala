@@ -5,7 +5,7 @@ import com.typesafe.scalalogging.Logger
 import coop.rchain.domain.{Err, ErrorCode}
 import coop.rchain.service.UserService
 import io.circe.Json
-import org.http4s.{HttpRoutes, Status}
+import org.http4s.{HttpRoutes}
 import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
 
@@ -34,7 +34,7 @@ class UserApi[F[_]: Sync](svc: UserService) extends Http4sDsl[F] {
         )
 
     case req @ PUT -> Root / id / "playcount" =>
-      Accepted(svc.updatePlayCount(userId = id, playCount = 100))
+      Accepted(Json.obj("status" -> Json.fromString("under construction")))
   }
 
 }

@@ -1,43 +1,26 @@
-package coop.rchain.domain
+package coop.rchain.protocol
+
+import java.io.StringReader
 
 import cats.Monoid
-import com.google.protobuf.ByteString
 import com.typesafe.scalalogging.Logger
-import coop.rchain.casper.protocol.{
-  DataWithBlockInfo,
-  ListeningNameDataResponse
-}
+import coop.rchain.casper.protocol.ListeningNameDataResponse
+import coop.rchain.domain.{Err, ErrorCode}
 import coop.rchain.models.Channel.ChannelInstance.Quote
 import coop.rchain.models.Expr.ExprInstance
 import coop.rchain.models._
 import coop.rchain.models.rholang.implicits._
-import coop.rchain.rholang.interpreter.PrettyPrinter
+import coop.rchain.protocol.Protocol.DeParConverter
+import coop.rchain.rholang.interpreter.{Interpreter, PrettyPrinter}
 
-object ParDecoder {
+object ParOps {
 
-  case class DeParConverter(asInt: List[Int] = List(),
-                            asString: List[String] = List(),
-                            asUri: List[String] = List(),
-                            asByteArray: List[ByteString] = List())
-
-  def fromName(dataWithBlockInfo: DataWithBlockInfo) = {
-    val pars = dataWithBlockInfo.postBlockData
-  }
-
-  implicit val DeParMonoid = new Monoid[DeParConverter] {
-    def empty: DeParConverter = DeParConverter()
-    def combine(d1: DeParConverter, d2: DeParConverter): DeParConverter =
-      DeParConverter(
-        asInt = d1.asInt ::: d2.asInt,
-        asString = d1.asString ::: d2.asString,
-        asUri = d1.asUri ::: d2.asUri,
-        asByteArray = d1.asByteArray ::: d2.asByteArray
-      )
-  }
-
-  val log = Logger[DeParConverter]
+  val log = Logger("DeParConverter")
 
   implicit class DeExpr(exp: Expr) {
+
+    val log = Logger[DeExpr]
+
     def asSeqDeExp(exprs: Seq[Expr]) = {
       exprs
         .map(x => x.asDeExp())
@@ -80,13 +63,13 @@ object ParDecoder {
           case "Set" =>
             log.info(s"its set. recursive set call")
             e.getESetBody.ps
-              .map(x => x.asDePar())
+              .map(x => x.asDePar)
               .foldLeft(DeParConverter())((a, c) =>
                 Monoid[DeParConverter].combine(c, a))
           case "List" =>
             log.info(s"its set. recursive call")
             e.getEListBody.ps
-              .map(x => x.asDePar())
+              .map(x => x.asDePar)
               .foldLeft(DeParConverter())((a, c) =>
                 Monoid[DeParConverter].combine(c, a))
           case _ =>
@@ -99,9 +82,7 @@ object ParDecoder {
   }
 
   implicit class DecodePar(par: Par) {
-
-    def asDePar(): DeParConverter = {
-      log.info(s"deparing ${par}")
+    def asDePar: DeParConverter = {
       par match {
         case Par(_, _, _, exprs, _, _, _, _, _, _) if (!exprs.isEmpty) =>
           exprs
@@ -114,6 +95,13 @@ object ParDecoder {
       par.exprs.headOption.map(x => x.asDeExp()).getOrElse(DeParConverter())
     }
   }
+//  implicit class DecodeParSeq(parSeq: Seq[Par]) {
+//    def asDepar(): DeParConverter = {
+//      val par = parSeq.foldLeft(Par())(_ ++ _)
+//      par.asDePar()
+//    }
+//  }
+
   implicit class BlockToString(l: ListeningNameDataResponse) {
     def asString = {
       for {
@@ -121,6 +109,21 @@ object ParDecoder {
         b <- p.postBlockData
         s = PrettyPrinter().buildString(b)
       } yield s
+    }
+  }
+  implicit class P2C(par: Par) {
+    def asChannel: Channel = Channel(Quote(par))
+  }
+
+  import coop.rchain.models.rholang.implicits._
+  implicit class String2Par(rTerm: String) {
+    def asPar: Either[Err, Par] = {
+      val par =
+        Interpreter.buildNormalizedTerm(new StringReader(rTerm)).runAttempt
+      par match {
+        case Left(e)  => Left(Err(ErrorCode.nameToPar, e.getMessage, None))
+        case Right(r) => Right(r)
+      }
     }
   }
 }
