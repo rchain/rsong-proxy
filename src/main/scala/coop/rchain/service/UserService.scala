@@ -2,29 +2,16 @@ package coop.rchain.service
 
 import com.typesafe.scalalogging.Logger
 import coop.rchain.domain._
-import cats.implicits._
 import coop.rchain.models.Par
 import coop.rchain.repo.RholangProxy
 import coop.rchain.rholang.interpreter.PrettyPrinter
 import io.circe._
 import io.circe.syntax._
 import io.circe.generic.auto._
-import coop.rchain.repo.RholangProxy._
-import coop.rchain.models.rholang.implicits._
-import coop.rchain.protocol.Protocol._
 
 object UserService {
-  val COUNT_OUT = "countOut"
+  val COUNT_OUT = "playCountOut"
   val logger = Logger[UserService.type]
-
-  def newUser(id: String): Json = {
-    User(id = id,
-         name = None,
-         active = true,
-         lastLogin = System.currentTimeMillis,
-         playCount = 100,
-         Map("key-1" -> "value-1", "key-2" -> "value-2")).asJson
-  }
 
   import coop.rchain.utils.Globals._
   private val (host, port) =
@@ -35,16 +22,17 @@ object UserService {
 
   def apply(): UserService =
     new UserService(RholangProxy(host, port))
+
   def apply(grpc: RholangProxy): UserService =
     new UserService(grpc)
-
 }
-class UserService(grpc: RholangProxy) {
+
+class UserService(proxy: RholangProxy) {
   import UserService._
   val log = Logger[UserService]
 
   val newUser: String => Either[Err, DeployAndProposeResponse] = user =>
-    (newUserRhoTerm _ andThen grpc.deployAndPropose _)(user)
+    (newUserRhoTerm _ andThen proxy.deployAndPropose _)(user)
 
   def find(rName: String): Either[Err, String] =
     for {
@@ -54,7 +42,7 @@ class UserService(grpc: RholangProxy) {
 
   def dataAtNameAsPar(term: String) =
     for {
-      z <- grpc.dataAtName(term)
+      z <- proxy.dataAtName(term)
       pars = z.blockResults.flatMap(_.postBlockData)
     } yield pars
 
@@ -73,7 +61,7 @@ class UserService(grpc: RholangProxy) {
         rhoName <- find(userId)
         queryName = s"""("$rhoName".hexToBytes(),"${userId}-${COUNT_OUT}")"""
         term = s"""@["Immersion", "playCount"]!${queryName}"""
-        m <- grpc.deployAndPropose(term)
+        m <- proxy.deployAndPropose(term)
       } yield m
 
   val findPlayCount: String => Either[Err, String] = userId =>
