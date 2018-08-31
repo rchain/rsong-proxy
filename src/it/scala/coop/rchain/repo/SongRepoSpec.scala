@@ -7,7 +7,7 @@ import coop.rchain.utils.HexBytesUtil._
 class SongRepoSpec extends Specification { def is =
   s2"""
        SongRepository Specifications
-          base16 song conversion $ok //load to speed up
+          base16 song conversion $load to speed up
           upload song to RChain $toRchain
 
   """

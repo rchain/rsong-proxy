@@ -33,6 +33,8 @@ class SongServiceSpec extends Specification {
   }
 
   def rSongJson = {
+    val rsongMetadata = RSongData.rsongMetaData.asJson
+    log.info(s"rosongMetadat: ${rsongMetadata}")
 
     //TODO pending completion
     1 === 1

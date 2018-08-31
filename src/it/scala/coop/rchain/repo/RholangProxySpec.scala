@@ -15,13 +15,13 @@ class RholangProxySpec extends Specification {
      show black mush show changens $ok//showBlocks
      show data at contract names $ok//getUser
      playcount ask $ok//computePlayCount
+"""
 
   val log = Logger[RholangProxySpec]
   val host = appCfg.getString("grpc.host")
   val proxy = RholangProxy("localhost", 40401)
   val userService = UserService(proxy)
   val userName="john-smith"
-
 
   def deployContract = {
 
