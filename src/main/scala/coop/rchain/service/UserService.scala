@@ -35,8 +35,10 @@ object UserService {
   def newUserRhoTerm(name: String): String =
     s"""@["Immersion", "newUserId"]!("${name}")"""
 
-  def apply(): UserService = new UserService(RholangProxy(host, port))
-  def apply(grpc: RholangProxy): UserService = new UserService(grpc)
+  def apply(): UserService =
+    new UserService(RholangProxy(host, port))
+  def apply(grpc: RholangProxy): UserService =
+    new UserService(grpc)
 
 }
 class UserService(grpc: RholangProxy) {
@@ -46,38 +48,36 @@ class UserService(grpc: RholangProxy) {
   val newUser: String => Either[Err, DeployAndProposeResponse] = user =>
     (newUserRhoTerm _ andThen grpc.deployAndPropose _)(user)
 
-  def find(userId: String): Either[Err, String] = {
-    val rName = s""""${userId}""""
-    log.debug(s"searching for $rName")
-    dataAtName(rName)
-  }
+  def find(userId: String): Either[Err, String] =
+    dataAtName(s""""${userId}"""")
 
   def dataAtName(term: String) = {
     for {
-      z <- grpc.dataAtNameWithTerm(term)
+      z <- grpc.dataAtName(term)
       pars = z.blockResults.flatMap(_.postBlockData)
+
       e = pars.map(p => PrettyPrinter().buildString(p))
-      rholangId <- if (e.isEmpty)
+      nameId <- if (e.isEmpty)
         Left(
           Err(ErrorCode.nameNotFount,
               s"Rholang name not fount for ${term}",
               None))
       else Right(e.head)
-    } yield rholangId
+    } yield nameId
   }
 
-  import coop.rchain.protocol.ParDecoder._
+  import coop.rchain.protocol.ParOps._
 
   val playCoutnAsk: String => Either[Err, Seq[String]] = userId => {
 
     val rName = s""""${userId}""""
     val count = for {
-      z <- grpc.dataAtNameWithTerm(rName)
+      z <- grpc.dataAtName(rName)
       userPars = z.blockResults.flatMap(_.postBlockData)
       userPar <- if (userPars.headOption.isDefined) Right(userPars.head);
       else
         Left(Err(ErrorCode.nameNotFount, s"no name found for $userId", None))
-      coutPar <- asPar(s""""${COUNT_OUT}"""")
+      coutPar <- (s""""${COUNT_OUT}"""").asPar
       e <- grpc.dataAtName(coutPar ++ userPar)
       dp = e.asString
 //        count = PrettyPrinter().buildString(e)

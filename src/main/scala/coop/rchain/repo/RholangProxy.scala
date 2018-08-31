@@ -6,7 +6,6 @@ import coop.rchain.domain.{Err, ErrorCode}
 import com.google.protobuf.empty._
 import coop.rchain.models.Channel.ChannelInstance.Quote
 import coop.rchain.models.{Channel, Par}
-import coop.rchain.models.Expr.ExprInstance.GString
 import io.grpc.{ManagedChannel, ManagedChannelBuilder}
 import coop.rchain.domain._
 import coop.rchain.domain.ErrorCode._
@@ -30,20 +29,6 @@ object RholangProxy {
     new RholangProxy(channel)
   }
 
-  def parsToChannel(pars: Seq[Par]): Channel = {
-    val p = pars.foldLeft(new Par())(_ ++ _)
-    Channel(Quote(p))
-  }
-
-  def parToChannel(par: Par): Channel = Channel(Quote(par))
-
-  def asPar(name: String): Either[Err, Par] = {
-    val par = Interpreter.buildNormalizedTerm(new StringReader(name)).runAttempt
-    par match {
-      case Left(e)  => Left(Err(nameToPar, e.getMessage, None))
-      case Right(r) => Right(r)
-    }
-  }
 }
 
 class RholangProxy(channel: ManagedChannel) {
@@ -103,22 +88,14 @@ class RholangProxy(channel: ManagedChannel) {
     }
   }
 
-  def dataAtNameWithTerm(
-      name: String): Either[Err, ListeningNameDataResponse] = {
-    val par = Interpreter.buildNormalizedTerm(new StringReader(name)).runAttempt
-    par.map(p => dataAtName(p)) match {
-      case Left(e)  => Left(Err(nameToPar, e.getMessage, None))
-      case Right(r) => r
-    }
-  }
-
+  import coop.rchain.protocol.ParOps._
   def dataAtName(name: String): Either[Err, ListeningNameDataResponse] = {
-    val par: Par = GString(name)
-    dataAtName(par)
+    name.asPar.flatMap(p => dataAtName(p))
   }
 
+  import coop.rchain.protocol.ParOps._
   def dataAtName(par: Par): Either[Err, ListeningNameDataResponse] = {
-    val res = (parToChannel _ andThen grpc.listenForDataAtName _)(par)
+    val res = grpc.listenForDataAtName(par.asChannel)
     res.status match {
       case "Success" => Right(res)
       case _ =>

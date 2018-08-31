@@ -7,7 +7,6 @@ import coop.rchain.protocol.Protocol.DeParConverter
 
 class DeParConverterSpec extends Specification {
   def is = s2"""
-
   Depar specifications
      monoid test $e1
   """
