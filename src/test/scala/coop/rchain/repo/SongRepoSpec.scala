@@ -1,22 +1,22 @@
-package coop.rchain.service
+package coop.rchain.repo
 
-import io.circe.generic.auto._
-import io.circe.syntax._
-import coop.rchain.repo.SongRepo
 import com.typesafe.scalalogging.Logger
 import coop.rchain.domain._
-import coop.rchain.protocol.{Protocol, RSongModel}
+import coop.rchain.protocol.Protocol
+import coop.rchain.service.SongService
 import coop.rchain.service.moc.RSongData
+import io.circe.generic.auto._
+import io.circe.syntax._
 import org.specs2._
 
-class SongServiceSpec extends Specification {
+class SongRepoSpec extends Specification {
   def is = s2"""
    Song Service Specification
       retrieve a cursor compliant list of available songs $e1
       retrieve a song $e2
       JSON RSong protocol $rSongJson
 """
-  val log = Logger[SongServiceSpec]
+  val log = Logger[SongRepoSpec]
   val repo = SongRepo()
   val svc = SongService(repo)
 

@@ -32,9 +32,5 @@ class SongApi[F[_]: Sync](svc: SongService) extends Http4sDsl[F] {
 
       case GET -> Root / "artwork" / id ⇒
         Ok(Json.obj("message" -> Json.fromString("under construction")))
-//      case GET -> Root / "song" / name =>
-//        val songfile =
-//          "/home/kayvan/dev/workspaces/workspace-rchain/immersion-rc-proxy/src/test/resources/assets/Prog_Noir_iN3D.izr"
-//        Ok(svc.getSong(songfile + name))
     }
 }

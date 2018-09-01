@@ -2,12 +2,12 @@ package coop.rchain.repo
 
 import com.typesafe.scalalogging.Logger
 import coop.rchain.domain.AudioTypes
-import coop.rchain.protocol.RSongModel.RSongAsset
+import coop.rchain.domain.RSongModel._
 import coop.rchain.service.moc.RSongData
 import org.specs2._
 import coop.rchain.utils.HexBytesUtil._
 
-class SongRepoSpec extends Specification {
+class SongRepoITSpec extends Specification {
   def is =
     s2"""
        SongRepository Specifications
@@ -16,7 +16,7 @@ class SongRepoSpec extends Specification {
   """
 //  val proxy = RholangProxy("35.237.70.229", 40401)
   val proxy = RholangProxy("localhost", 40401)
-  val log = Logger[SongRepoSpec]
+  val log = Logger[SongRepoITSpec]
   val songfile = "/home/kayvan/dev/workspaces/workspace-rchain/immersion-rc-proxy/src/test/resources/assets/Prog_Noir_iN3D.izr"
 //  vall songfile = "/home/kayvan/Downloads/labels-long.ps"
   val songRepo = SongRepo()
@@ -39,10 +39,10 @@ class SongRepoSpec extends Specification {
     val rsongAsset = RSongAsset(
       rsong=RSongData.rsong,
       audioType = AudioTypes.t("Stereo"),
-      audioData = song,
+      audioData = songData,
       uri="rho://cool-song101"
     )
-    val fromRnode = repository.toRnode(rsongAsset)
+    val fromRnode = repository.deployAndPropose(rsongAsset)
     log.info(s" responve from jamming songs to rnode: ${fromRnode}")
     fromRnode.isRight === true
 

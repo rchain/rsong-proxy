@@ -95,12 +95,6 @@ object ParOps {
       par.exprs.headOption.map(x => x.asDeExp()).getOrElse(DeParConverter())
     }
   }
-//  implicit class DecodeParSeq(parSeq: Seq[Par]) {
-//    def asDepar(): DeParConverter = {
-//      val par = parSeq.foldLeft(Par())(_ ++ _)
-//      par.asDePar()
-//    }
-//  }
 
   implicit class BlockToString(l: ListeningNameDataResponse) {
     def asString = {
