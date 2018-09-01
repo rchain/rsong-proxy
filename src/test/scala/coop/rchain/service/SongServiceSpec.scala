@@ -1,11 +1,12 @@
 package coop.rchain.service
 
-import io.circe.generic.auto._, io.circe.syntax._
+import io.circe.generic.auto._
+import io.circe.syntax._
 import coop.rchain.repo.SongRepo
 import com.typesafe.scalalogging.Logger
 import coop.rchain.domain._
-import coop.rchain.protocol.Protocol
-import coop.rchain.domain.RSongModel
+import coop.rchain.protocol.{Protocol, RSongModel}
+import coop.rchain.service.moc.RSongData
 import org.specs2._
 
 class SongServiceSpec extends Specification {

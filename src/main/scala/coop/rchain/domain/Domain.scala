@@ -88,12 +88,12 @@ object NameKey extends Enumeration {
 
 object ImmersionNames {
   val contractNames = Map(
-    NameKey.newUserId -> """["Immersion", "newUserId"]""",
-    NameKey.store -> """["Immersion", "store"]""",
-    NameKey.playCount -> """["Immersion", "playCount"]""",
-    NameKey.retrieveSong -> """["Immersion", "retrieveSong"]""",
-    NameKey.retrieveMetadata -> """["Immersion", "retrieveMetadata"]""",
-    NameKey.remunerate -> """["Immersion", "remunerate"]""",
-    NameKey.play -> """["Immersion", "play"]"""
+    NameKey.newUserId -> """@["Immersion", "newUserId"]""",
+    NameKey.store -> """@["Immersion", "store"]""",
+    NameKey.playCount -> """@["Immersion", "playCount"]""",
+    NameKey.retrieveSong -> """@["Immersion", "retrieveSong"]""",
+    NameKey.retrieveMetadata -> """@["Immersion", "retrieveMetadata"]""",
+    NameKey.remunerate -> """@["Immersion", "remunerate"]""",
+    NameKey.play -> """@["Immersion", "play"]"""
   )
 }

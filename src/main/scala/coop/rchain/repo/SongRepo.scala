@@ -2,13 +2,14 @@ package coop.rchain.repo
 
 import java.io.{BufferedInputStream, FileInputStream}
 
-import coop.rchain.domain.RSongModel.RSongAsset
+import coop.rchain.protocol.RSongModel.RSongAsset
 import coop.rchain.domain._
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.parser._
 import io.circe.syntax._
 import ImmersionNames._
+import com.google.protobuf.ByteString
 import com.typesafe.scalalogging.Logger
 import coop.rchain.utils.Globals._
 
@@ -35,10 +36,8 @@ class SongRepo(proxy: RholangProxy) {
   }
 
   def asTermToStoreSong(asset: RSongAsset) = {
-    val songMetadataIn = s"""${asset.rsong.asJson}""""
-    val songDataIn = s"""${asset.audioDatat}.hexToBytes()"""
-    val songIdOut = s""""${asset.rsong.isrc}-${asset.audioType}""""
-    s"""${contractNames(NameKey.store)}!($songDataIn, $songMetadataIn, $songIdOut)"""
+    log.info(s"asTermToStoreSong received : ${asset.rsong}")
+    s"""@["Immersion", "store"]!("${ByteString.copyFrom(asset.audioData)}", ${asset.rsong.asJson.toString}, "${asset.rsong.isrc}-${asset.audioType}")"""
   }
 
   def toRnode(asset: RSongAsset) =

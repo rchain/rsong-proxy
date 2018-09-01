@@ -19,6 +19,7 @@ class RholangProxySpec extends Specification {
 
   val log = Logger[RholangProxySpec]
   val host = appCfg.getString("grpc.host")
+//  val proxy = RholangProxy("35.237.70.229", 40401)
   val proxy = RholangProxy("localhost", 40401)
   val userService = UserService(proxy)
   val userName="john-smith"

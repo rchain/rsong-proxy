@@ -19,4 +19,6 @@ object HexBytesUtil {
     }
   }
 
+  def chunk(buf: String): List[(String, Int)] =
+    buf.grouped(1 + buf.size / 50000).zipWithIndex.toList
 }

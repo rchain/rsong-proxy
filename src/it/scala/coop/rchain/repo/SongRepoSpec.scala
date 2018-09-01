@@ -1,8 +1,9 @@
 package coop.rchain.repo
 
 import com.typesafe.scalalogging.Logger
-import coop.rchain.domain.{AudioTypes, RSongData}
-import coop.rchain.domain.RSongModel.RSongAsset
+import coop.rchain.domain.AudioTypes
+import coop.rchain.protocol.RSongModel.RSongAsset
+import coop.rchain.service.moc.RSongData
 import org.specs2._
 import coop.rchain.utils.HexBytesUtil._
 
@@ -12,11 +13,12 @@ class SongRepoSpec extends Specification {
        SongRepository Specifications
           base16 song conversion $ok//load to speed up
           upload song to RChain $toRNodeTest
-
   """
+//  val proxy = RholangProxy("35.237.70.229", 40401)
   val proxy = RholangProxy("localhost", 40401)
   val log = Logger[SongRepoSpec]
   val songfile = "/home/kayvan/dev/workspaces/workspace-rchain/immersion-rc-proxy/src/test/resources/assets/Prog_Noir_iN3D.izr"
+//  vall songfile = "/home/kayvan/Downloads/labels-long.ps"
   val songRepo = SongRepo()
 
   def load = {
@@ -25,7 +27,7 @@ class SongRepoSpec extends Specification {
     hex2bytes(bytes2hex(song)) === song
   }
 
-  import coop.rchain.domain.RSongData._
+  import coop.rchain.service.moc.RSongData._
 
   def toRNodeTest = {
     val repository = SongRepo(proxy)
@@ -37,7 +39,7 @@ class SongRepoSpec extends Specification {
     val rsongAsset = RSongAsset(
       rsong=RSongData.rsong,
       audioType = AudioTypes.t("Stereo"),
-      audioDatat = songData,
+      audioData = song,
       uri="rho://cool-song101"
     )
     val fromRnode = repository.toRnode(rsongAsset)

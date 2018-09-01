@@ -73,12 +73,13 @@ class RholangProxy(channel: ManagedChannel) {
     }
   }
 
-  def deployAndPropose(contract: String) =
+  def deployAndPropose(contract: String) = {
+    log.info(s"received song contract : ${contract}")
     for {
       d <- deploy(contract)
       p <- proposeBlock
     } yield DeployAndProposeResponse(d, p)
-
+  }
   def dataAtContWithTerm(
       name: String): Either[Err, ListeningNameContinuationResponse] = {
     val par = Interpreter.buildNormalizedTerm(new StringReader(name)).runAttempt
@@ -102,7 +103,6 @@ class RholangProxy(channel: ManagedChannel) {
         Left(Err(ErrorCode.nameNotFount, s"no data for par: ${par}", None))
     }
   }
-
   def dataAtCont(par: Par) = {
     val ch: Channel = Channel(Quote(par))
     grpc.listenForContinuationAtName(Channels(Seq(ch)))

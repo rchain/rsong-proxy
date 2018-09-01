@@ -1,4 +1,6 @@
-package coop.rchain.domain
+package coop.rchain.protocol
+
+import coop.rchain.domain.{Album, Artist, Song, TemporalInterval}
 
 object RSongModel {
 
@@ -52,7 +54,7 @@ object RSongModel {
   case class RSongAsset(
       rsong: RSong,
       audioType: String,
-      audioData: String,
+      audioData: Array[Byte],
       uri: String
   )
 
