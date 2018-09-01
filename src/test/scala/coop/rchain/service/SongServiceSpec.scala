@@ -21,15 +21,15 @@ class SongServiceSpec extends Specification {
 
   def e2 = {
     val req = Protocol.SongRequest(songId = "song-123", userId = "user-123")
-    val computed = svc.mySong(req)
+    val computed = svc.aSong(req)
     log.debug(s"computed-songs = ${computed}")
     computed.toString.isEmpty === false
   }
 
   def e1 = {
-    val computed = svc.mySongs(Cursor(10, 1))
+    val computed = svc.allSongs("userid", Cursor(10, 1))
     log.debug(s"computed-songs = ${computed}")
-    (computed.asArray.isDefined && computed.asArray.get.size > 1) === true
+    (computed.headOption.isDefined) === true
   }
 
   def rSongJson = {

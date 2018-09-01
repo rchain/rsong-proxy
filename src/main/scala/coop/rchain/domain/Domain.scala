@@ -2,12 +2,6 @@ package coop.rchain.domain
 
 sealed trait Domain
 
-case class MetaDataMapStore()
-
-case class SongMapStore()
-
-case class UserMapStore()
-
 case class Entity(id: String, data: String) extends Domain
 
 case class PlayList(entity: Entity) extends Domain

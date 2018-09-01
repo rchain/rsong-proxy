@@ -8,8 +8,8 @@ object RSongData {
   val artwork =
     Artwork(id = (java.util.UUID.randomUUID.toString), uri = "http://uri")
 
-
-  val artists = List[Artist](Artist(id="artist-1", name="somecoolname", title="a cool title")),
+  val artists = List[Artist](
+    Artist(id = "artist-1", name = "somecoolname", title = "a cool title"))
   val album = Album(
     id = java.util.UUID.randomUUID.toString,
     artworks = List(artwork),
@@ -30,15 +30,13 @@ object RSongData {
     serviceId = (java.util.UUID.randomUUID.toString),
     featuredArtists = artists,
     musician = List("musicion-1", "musition-2"),
-    song=Song(
-    id="songId",
-    title="song title",
-      name="song name",
-      audio=List(Audio(
-        effect="Stereo",
-        uri="rchain://id123",
-        duration_ms=10000)),
-      language="Clingon")
+    song = Song(
+      id = "songId",
+      title = "song title",
+      name = "song name",
+      audio = List(
+        Audio(effect = "Stereo", uri = "rchain://id123", duration_ms = 10000)),
+      language = "Clingon")
   )
   val zonedDateTime = ZonedDateTime.now
   val utcZoneId = ZoneId.of("UTC")
