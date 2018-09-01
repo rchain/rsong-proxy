@@ -10,7 +10,7 @@ import org.specs2.matcher.MatchResult
 class RholangProxySpec extends Specification {
   def is = s2"""
    Rnode Specification
-     create new contract form fle $ok//deployContract
+     create new contract form fle $ok //deployContract
      add user $ok//addUser
      show black mush show changens $ok//showBlocks
      show data at contract names $ok//getUser

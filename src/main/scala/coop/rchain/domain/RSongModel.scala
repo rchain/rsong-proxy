@@ -49,4 +49,11 @@ object RSongModel {
       album: Album
   ) extends RSongModel
 
+  case class RSongAsset(
+      rsong: RSong,
+      audioType: String,
+      audioDatat: String,
+      uri: String
+  )
+
 }

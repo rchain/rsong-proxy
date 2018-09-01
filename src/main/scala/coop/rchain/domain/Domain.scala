@@ -86,7 +86,7 @@ object NameKey extends Enumeration {
   play = Value
 }
 
-object CotractQueryNames {
+object ImmersionNames {
   val contractNames = Map(
     NameKey.newUserId -> """["Immersion", "newUserId"]""",
     NameKey.store -> """["Immersion", "store"]""",
