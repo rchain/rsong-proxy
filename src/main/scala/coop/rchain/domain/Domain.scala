@@ -2,15 +2,21 @@ package coop.rchain.domain
 
 sealed trait Domain
 
-case class MetaDataMapStore()
-case class SongMapStore()
-case class UserMapStore()
 case class Entity(id: String, data: String) extends Domain
+
 case class PlayList(entity: Entity) extends Domain
 
 object AudioTypes {
   val t: Map[String, String] = Map("Stereo" -> "Stereo", "3D" -> "3D")
 }
+
+case class Interval[T](from: T, to: Option[T])
+
+case class TemporalInterval(
+    inMillis: Interval[Long],
+    inUtc: Interval[String]
+)
+
 case class Cursor(from: Int, to: Int) extends Domain
 
 case class Metadata(k: String, v: String) extends Domain
@@ -25,7 +31,11 @@ case class User(id: String,
 
 case class Artwork(id: String, uri: String) extends Domain
 
-case class Artist(id: String, name: String) extends Domain
+case class Artist(
+    id: String,
+    title: String,
+    name: String
+) extends Domain
 
 case class Audio(
     effect: String,
@@ -35,14 +45,17 @@ case class Audio(
 
 case class Song(
     id: String,
+    title: String,
+    name: String,
     audio: List[Audio],
     language: String
 ) extends Domain
 
 case class Album(
     id: String,
-    artworks: List[Artwork],
+    title: String,
     name: String,
+    artworks: List[Artwork],
     duration_ms: Long,
     artists: List[Artist],
     uri: String
@@ -72,14 +85,15 @@ object NameKey extends Enumeration {
   val newUserId, store, playCount, retrieveSong, retrieveMetadata, remunerate,
   play = Value
 }
-object CotractQueryNames {
+
+object ImmersionNames {
   val contractNames = Map(
-    NameKey.newUserId -> """["Immersion", "newUserId"]""",
-    NameKey.store -> """["Immersion", "store"]""",
-    NameKey.playCount -> """["Immersion", "playCount"]""",
-    NameKey.retrieveSong -> """["Immersion", "retrieveSong"]""",
-    NameKey.retrieveMetadata -> """["Immersion", "retrieveMetadata"]""",
-    NameKey.remunerate -> """["Immersion", "remunerate"]""",
-    NameKey.play -> """["Immersion", "play"]"""
+    NameKey.newUserId -> """@["Immersion", "newUserId"]""",
+    NameKey.store -> """@["Immersion", "store"]""",
+    NameKey.playCount -> """@["Immersion", "playCount"]""",
+    NameKey.retrieveSong -> """@["Immersion", "retrieveSong"]""",
+    NameKey.retrieveMetadata -> """@["Immersion", "retrieveMetadata"]""",
+    NameKey.remunerate -> """@["Immersion", "remunerate"]""",
+    NameKey.play -> """@["Immersion", "play"]"""
   )
 }

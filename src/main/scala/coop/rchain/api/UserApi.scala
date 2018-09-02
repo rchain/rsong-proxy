@@ -3,18 +3,18 @@ package coop.rchain.api
 import cats.effect._
 import com.typesafe.scalalogging.Logger
 import coop.rchain.domain.{Err, ErrorCode}
-import coop.rchain.service.UserService
+import coop.rchain.repo.UserRepo
 import io.circe.Json
-import org.http4s.{HttpRoutes}
+import org.http4s.HttpRoutes
 import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
 
-class UserApi[F[_]: Sync](svc: UserService) extends Http4sDsl[F] {
+class UserApi[F[_]: Sync](repo: UserRepo) extends Http4sDsl[F] {
 
   val log = Logger("UserApi")
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
     case GET -> Root / id =>
-      svc
+      repo
         .find(id)
         .fold(
           e =>
@@ -24,7 +24,7 @@ class UserApi[F[_]: Sync](svc: UserService) extends Http4sDsl[F] {
         )
 
     case req @ POST -> Root / id =>
-      svc
+      repo
         .newUser(id)
         .fold(
           e =>

@@ -7,23 +7,22 @@ import coop.rchain.utils.Globals._
 import coop.rchain.service._
 import org.specs2.matcher.MatchResult
 
-class RholangProxySpec extends Specification {
+class RholangProxyITSpec extends Specification {
   def is = s2"""
    Rnode Specification
-     create new contract form fle $ok//deployContract
+     create new contract form fle $ok //deployContract
      add user $ok//addUser
      show black mush show changens $ok//showBlocks
      show data at contract names $ok//getUser
      playcount ask $ok//computePlayCount
-     fetch users playcount ask $findUserPlayCount
-    """
+"""
 
-  val log = Logger[RholangProxySpec]
+  val log = Logger[RholangProxyITSpec]
   val host = appCfg.getString("grpc.host")
+//  val proxy = RholangProxy("35.237.70.229", 40401)
   val proxy = RholangProxy("localhost", 40401)
-  val userService = UserService(proxy)
+  val userService = UserRepo(proxy)
   val userName="john-smith"
-
 
   def deployContract = {
 

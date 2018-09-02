@@ -102,7 +102,6 @@ class RholangProxy(channel: ManagedChannel) {
         Left(Err(ErrorCode.nameNotFount, s"no data for par: ${par}", None))
     }
   }
-
   def dataAtCont(par: Par) = {
     val ch: Channel = Channel(Quote(par))
     grpc.listenForContinuationAtName(Channels(Seq(ch)))

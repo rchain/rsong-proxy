@@ -1,9 +1,8 @@
-package coop.rchain.service
+package coop.rchain.repo
 
-import coop.rchain.repo.RholangProxy
 import org.specs2._
 
-class RholangContractProxySpec extends Specification {
+class RholangProxySpec extends Specification {
   def is = s2"""
    Rholang Contract Specification
       classpath contains rholang contract $e1
