@@ -7,7 +7,13 @@ metadata:
 spec:
   containers:
   - name: immersion-rc-proxy-container
-    image: kayvank/immersion-rc-proxy:1.0-SNAPSHOT-9
+    image: kayvank/immersion-rc-proxy:1.1-SNAPSHOT-32
+    resources:
+      limits:
+        memory: "10G"
+      requests:
+        memory: "5G"
+
     env:
     - name: HTTP_PORT
       value: "9000"
@@ -18,8 +24,10 @@ spec:
     - name: API_VERSION
       value: "v1"
     - name: GRPC_SERVER
-      value: "0.0.0.0"
-    - name: GRPC_PORT
-      value: "5041"
+      value: "35.237.70.229"
+    - name: GRPC_PORT_INTERNAL=40404
+      value: "40401"
+    - name: GRPC_PORT_EXTERNAL
+      value: "40401"
     - name: DROPBOX_ACCESS_TOKEN
       value: "my-token"
