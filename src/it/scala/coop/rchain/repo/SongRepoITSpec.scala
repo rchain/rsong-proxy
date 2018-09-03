@@ -14,7 +14,7 @@ class SongRepoITSpec extends Specification {
           base16 song conversion $ok/load to speed up
           upload song to RChain $ok//toRNodeTest
           fetching song thru fetch2 from block $ok//fetch
-          fetching song thru fetch2 from block $fetch2
+          fetching song thru fetch2 from block $ok//fetch2
           cache rsong $ok//cacheRsong
   """
 //  val proxy = RholangProxy("35.237.70.229", 40401)

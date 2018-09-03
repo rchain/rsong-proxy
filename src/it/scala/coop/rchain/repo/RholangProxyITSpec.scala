@@ -15,7 +15,7 @@ class RholangProxyITSpec extends Specification {
      show black mush show changens $ok//showBlocks
      show data at contract names $ok//getUser
      compute playcount  $ok//computePlayCount
-     retrieve computed ask $ok//findUserPlayCount
+     retrieve computed ask $findUserPlayCount
 """
 
   val log = Logger[RholangProxyITSpec]
