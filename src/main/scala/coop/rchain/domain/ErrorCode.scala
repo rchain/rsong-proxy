@@ -4,7 +4,7 @@ object ErrorCode extends Enumeration {
   type ErrorCode = Value
   val grpcEval, grpcDeploy, grpcPropose, grpcShow, rholang, nameToPar,
   rsongHexConversion, rsongRetrival, rsongRevnetwork, contractFile,
-  playCountConversion, nameNotFount, unknown = Value
+  playCountConversion, nameNotFount, errorInCachingSong, unknown = Value
 }
 
 import ErrorCode._

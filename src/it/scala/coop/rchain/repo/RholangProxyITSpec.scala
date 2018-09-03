@@ -10,12 +10,12 @@ import org.specs2.matcher.MatchResult
 class RholangProxyITSpec extends Specification {
   def is = s2"""
    Rnode Specification
-     create new contract form fle $ok//deployContract
+     create new contract form fle $deployContract
      add user $ok//addUser
      show black mush show changens $ok//showBlocks
      show data at contract names $ok//getUser
      compute playcount  $ok//computePlayCount
-     retrieve computed ask $findUserPlayCount
+     retrieve computed ask $ok//findUserPlayCount
 """
 
   val log = Logger[RholangProxyITSpec]

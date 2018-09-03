@@ -112,16 +112,59 @@ class SongRepo(grpc: RholangProxy) {
 
   def dataAtName(pars: Seq[Par]) = Repo.dataAtName(pars)
 
-  // sotre song by isrc & type: isrc-Sterio or isrc-3D
-  def cacheSong(name: String, buf: Array[Byte]) = {
-    var out = None: Option[FileOutputStream]
-    try {
-      val out = Some(new FileOutputStream(s"${rsongPath}/${name}"))
-      println(s"++++++ storing the binfile to ${rsongPath}/${name}")
-      out.get.write(buf)
-    } finally {
-      if (out.isDefined) out.get.close
+  def storeFile(fileName: String,
+                songData: Array[Byte]): Either[Err, String] = {
+
+    var out: Option[FileOutputStream] = None
+    Try {
+      out = Some(new FileOutputStream(fileName))
+      out.get.write(songData)
+    } match {
+      case Success(_) =>
+        out.get.close
+        Right(fileName)
+      case Failure(e) =>
+        out.get.close
+        Left(Err(ErrorCode.errorInCachingSong, e.getMessage, None))
     }
   }
+
+  def writeSongToCache(name: String, file: File): Either[Err, String] = {
+    for {
+      b <- retrieveSong(name)
+      s <- storeFile(s"${rsongPath}/name", b)
+    } yield (s)
+  }
+
+  // sotre song by isrc & type: isrc-Sterio or isrc-3D
+  def cacheSong(name: String): Either[Err, String] = {
+    val fileName = s"${rsongPath}/${name}"
+    val file = new File(fileName)
+
+    if (file.exists())
+      Right((s"${rsongPath}/${name}"))
+    else {
+      writeSongToCache(name, file)
+    }
+  }
+
+//  // todo fix this as Try
+//  def cacheSong(file: File, buf: Array[Byte]): Unit = {
+//    var out: Option[FileOutputStream] = None
+//    try {
+//      val out = Some(new FileOutputStream(file))
+//      out.get.write(buf)
+//    } finally {
+//      if (out.isDefined) out.get.close
+//    }
+//  }
+//
+//  def cacheSong(file: File, name: String): Either[Err, String] = {
+//    for {
+//      s <- retrieveSong(name)
+//      _ = cacheSong(file, s)
+//      r = name
+//    } yield r
+//  }
 
 }
