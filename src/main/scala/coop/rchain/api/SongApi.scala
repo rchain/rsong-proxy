@@ -21,6 +21,7 @@ import monix.execution.CancelableFuture
 import coop.rchain.domain._
 import org.http4s.dsl.io._
 import org.http4s.headers._
+import org.http4s.Uri
 
 class SongApi[F[_]: Sync]() extends Http4sDsl[F] {
 
@@ -29,7 +30,9 @@ class SongApi[F[_]: Sync]() extends Http4sDsl[F] {
   object userId extends QueryParamDecoderMatcher[String]("userId")
 
   //TODO pass these as you instantiate calss
-  val songRepo = SongRepo()
+  val proxy = RholangProxy("localhost", 40401)
+  val songRepo = SongRepo(proxy)
+
   val userRepo = UserRepo()
   val svc = new SongService(SongRepo()) //TODO remove once we're off moc data
   val log = Logger("SongApi")
@@ -39,7 +42,8 @@ class SongApi[F[_]: Sync]() extends Http4sDsl[F] {
       case GET -> Root / "song" :? userId(id) +& perPage(pp) +& page(p) =>
         Ok(svc.allSongs(id, Cursor(10, 1)).asJson)
 
-      case GET -> Root / "song" / id :? userId(uid) =>
+      case GET -> Root / "song1" / id :? userId(uid) =>
+        println(s"-------- songid= ${id}")
         val link = songRepo.cacheSong(id)
         link.fold(
           l => {
@@ -47,7 +51,7 @@ class SongApi[F[_]: Sync]() extends Http4sDsl[F] {
             log.error(s"${l}")
             InternalServerError()
           },
-          r => TemporaryRedirect(Location(uri("/$r/")))
+          r => TemporaryRedirect(Location(Uri.fromString(s"$r").toOption.get))
         )
 
       case GET -> Root / "artwork" / id ⇒

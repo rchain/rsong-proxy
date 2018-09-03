@@ -96,15 +96,21 @@ class SongRepo(grpc: RholangProxy) {
   def retrieveSong(songName: String): Either[Err, Array[Byte]] = {
     val songAsString = for {
       sid <- find(songName)
+      _ = log.info(s"--- songAsString ${sid}")
       queryName = s"""("$sid".hexToBytes(),"${sid}-${SONG_OUT}")"""
+      _ = log.info(s"--- queryName= ${queryName}")
       term = s"""@["Immersion", "retrieveSong"]!${queryName}"""
+      _ = log.info(s"--- term = ${term}")
       m <- grpc.deployAndPropose(term)
       p <- Repo.find(grpc)(s"${sid}-${SONG_OUT}")
     } yield p
     songAsString match {
       case Right(s) =>
+        log.info(s"-- got song = ${s}")
         Right(HexBytesUtil.hex2bytes(s))
-      case Left(e) => Left(e)
+      case Left(e) =>
+        log.error(s"-- retreiveSong error: ${e}")
+        Left(e)
     }
   }
 
@@ -132,7 +138,7 @@ class SongRepo(grpc: RholangProxy) {
   def writeSongToCache(name: String): Either[Err, String] = {
     for {
       b <- retrieveSong(name)
-      s <- storeFile(s"${rsongPath}/name", b)
+      s <- storeFile(s"${rsongPath}/${name}", b)
     } yield (s)
   }
 
@@ -140,10 +146,11 @@ class SongRepo(grpc: RholangProxy) {
   def cacheSong(name: String): Either[Err, String] = {
     val fileName = s"${rsongPath}/${name}"
     val file = new File(fileName)
-
-    if (file.exists())
+    if (file.exists()) {
+      log.info(s"--- file ${fileName} already exist")
       Right((s"${rsongPath}/${name}"))
-    else {
+    } else {
+      log.info(s"file is not in cache. going to fetch file: ${fileName}")
       writeSongToCache(name)
     }
   }

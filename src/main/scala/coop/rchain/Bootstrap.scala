@@ -31,6 +31,6 @@ object ServerStream {
       .mountService(MiddleWear(statusApi))
       .mountService(MiddleWear(statusApi), s"/${apiVersion}/public")
       .mountService(MiddleWear(userApi), s"/${apiVersion}/user")
-      .mountService(MiddleWear(songApi), "/${apiVersion}")
+      .mountService(MiddleWear(songApi), s"/${apiVersion}")
       .serve
 }
