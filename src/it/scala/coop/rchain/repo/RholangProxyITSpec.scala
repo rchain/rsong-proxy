@@ -10,16 +10,16 @@ import org.specs2.matcher.MatchResult
 class RholangProxyITSpec extends Specification {
   def is = s2"""
    Rnode Specification
-     create new contract form fle $ok //deployContract
+     create new contract form fle $ok//deployContract
      add user $ok//addUser
      show black mush show changens $ok//showBlocks
      show data at contract names $ok//getUser
-     playcount ask $ok//computePlayCount
+     compute playcount  $ok//computePlayCount
+     retrieve computed ask $ok//findUserPlayCount
 """
 
   val log = Logger[RholangProxyITSpec]
   val host = appCfg.getString("grpc.host")
-//  val proxy = RholangProxy("35.237.70.229", 40401)
   val proxy = RholangProxy("localhost", 40401)
   val userService = UserRepo(proxy)
   val userName="john-smith"
@@ -34,7 +34,6 @@ class RholangProxyITSpec extends Specification {
   def showBlocks = {
     val blocks = proxy.showBlocks.map(_.toByteString.toStringUtf8)
     log.info(s"blocks size: ${blocks.size}")
-//    log.info(s"show-blocks output: ${blocks}")
     blocks.isEmpty ===  false
   }
 

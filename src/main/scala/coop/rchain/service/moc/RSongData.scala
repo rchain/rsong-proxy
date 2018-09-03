@@ -11,6 +11,7 @@ object RSongData {
 
   val artists = List[Artist](
     Artist(id = "artist-1", name = "somecoolname", title = "a cool title"))
+
   val album = Album(
     id = java.util.UUID.randomUUID.toString,
     artworks = List(artwork),
@@ -22,23 +23,20 @@ object RSongData {
   )
 
   val rsong = RSong(
-    id = (java.util.UUID.randomUUID.toString),
-    isrc = (java.util.UUID.randomUUID.toString),
-    iswc = (java.util.UUID.randomUUID.toString),
-    cwr = (java.util.UUID.randomUUID.toString),
-    upc = (java.util.UUID.randomUUID.toString),
+    id = "song-1234567890XX",
+    isrc = "song-1234567890XX",
+    iswc = "song-1234567890XX",
+    cwr = "song-1234567890XX",
+    upc = "song-1234567890XX",
+    title = "a cool song title",
+    name = "a cool song title",
     labelId = (java.util.UUID.randomUUID.toString),
     serviceId = (java.util.UUID.randomUUID.toString),
     featuredArtists = artists,
     musician = List("musicion-1", "musition-2"),
-    song = Song(
-      id = "songId",
-      title = "song title",
-      name = "song name",
-      audio = List(
-        Audio(effect = "Stereo", uri = "rchain://id123", duration_ms = 10000)),
-      language = "Clingon")
+    language = "Clingon"
   )
+
   val zonedDateTime = ZonedDateTime.now
   val utcZoneId = ZoneId.of("UTC")
 
@@ -67,10 +65,19 @@ object RSongData {
     rentToOwn = true,
     synchronizedWithPicture = true
   )
-  val rsongMetaData = RSongMetadata(
-    consumptionModel = consumptionModel,
-    label = label,
-    song = rsong,
-    album = album
+  val rsongMetaData =
+    RSongMetadata(consumptionModel = consumptionModel,
+                  label = label,
+                  song = rsong,
+                  album = album)
+
+  /**
+    song = Song(
+      id = "songId",
+      title = "song title",
+      name = "song name",
+      audio = List(
+        Audio(effect = "Stereo", uri = "rchain://id123", duration_ms = 10000)))
   )
+**/
 }
