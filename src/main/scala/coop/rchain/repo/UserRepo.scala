@@ -67,7 +67,7 @@ class UserRepo(grpc: RholangProxy) {
 
   def findPlayCount(userId: String): Either[Err, Int] =
     for {
-      c <- computePlayCount(s"$userId-$COUNT_OUT")
+      c <- computePlayCount(s"$userId")
       c <- Repo.find(grpc)(s"$userId-$COUNT_OUT")
       i <- asInt(c)
     } yield (i)

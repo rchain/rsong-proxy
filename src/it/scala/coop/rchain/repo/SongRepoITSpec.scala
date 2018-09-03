@@ -85,20 +85,16 @@ class SongRepoITSpec extends Specification {
 
   def fetch2 = {
     val name = "song-1234567890XX-Stereo"
-    val song = repository.retrieveSong(name)
+    val song = repository.cacheSong(name)
     log.info(s"${song.toOption.get.size}")
-    repository.cacheSong(name, song.toOption.get)
     (song.isLeft == false ) === true
   }
 
   def cacheRsong = {
     val name = "song-1234567890XX-Stereo"
-    val song = repository.retrieveSong(name)
-     for {
-       song <- repository.retrieveSong(name)
-       res = repository.writeSongToCache(name, song)
-     } yield (song)
-        1 === 0
+       val res = repository.writeSongToCache(name)
+    log.info(s"songsize = ${res.toOption.get.size}")
+    (res.isRight) === true
   }
 
 }

@@ -129,7 +129,7 @@ class SongRepo(grpc: RholangProxy) {
     }
   }
 
-  def writeSongToCache(name: String, file: File): Either[Err, String] = {
+  def writeSongToCache(name: String): Either[Err, String] = {
     for {
       b <- retrieveSong(name)
       s <- storeFile(s"${rsongPath}/name", b)
@@ -144,27 +144,8 @@ class SongRepo(grpc: RholangProxy) {
     if (file.exists())
       Right((s"${rsongPath}/${name}"))
     else {
-      writeSongToCache(name, file)
+      writeSongToCache(name)
     }
   }
-
-//  // todo fix this as Try
-//  def cacheSong(file: File, buf: Array[Byte]): Unit = {
-//    var out: Option[FileOutputStream] = None
-//    try {
-//      val out = Some(new FileOutputStream(file))
-//      out.get.write(buf)
-//    } finally {
-//      if (out.isDefined) out.get.close
-//    }
-//  }
-//
-//  def cacheSong(file: File, name: String): Either[Err, String] = {
-//    for {
-//      s <- retrieveSong(name)
-//      _ = cacheSong(file, s)
-//      r = name
-//    } yield r
-//  }
 
 }
