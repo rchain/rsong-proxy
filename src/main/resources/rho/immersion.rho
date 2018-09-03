@@ -29,7 +29,7 @@ new metaDataMapStore, songMapStore, userMapStore, remunerate, testLog(`rho:io:st
     new songId, songDataId in {
       for (@metaDataMap <- metaDataMapStore; @songMap <- songMapStore) {
         metaDataMapStore!(metaDataMap.set(*songId.toByteArray(), [songMetadataIn, *songDataId.toByteArray()])) |
-        songMapStore!(songMap.set(*songDataId, songDataIn)) |
+        songMapStore!(songMap.set(*songDataId.toByteArray(), songDataIn)) |
         songIdOut!(*songId.toByteArray())
       }
     }

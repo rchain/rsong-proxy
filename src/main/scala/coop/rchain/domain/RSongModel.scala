@@ -7,18 +7,23 @@ object RSongModel {
   case class SongBin(id: String, name: String, binData: String)
       extends RSongModel
 
+  case class ArtWork(id: String, uri: String)
+
   case class RSong(
       id: String,
       isrc: String,
       iswc: String,
       cwr: String,
       upc: String,
+      title: String,
+      name: String,
       labelId: String,
       serviceId: String,
       featuredArtists: List[Artist],
       musician: List[String],
-      song: Song
+      language: String
   ) extends RSongModel
+//      song: Song
 
   case class AuthorizedTerritory(
       territory: List[String],
