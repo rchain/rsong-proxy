@@ -62,7 +62,7 @@ class RholangProxyITSpec extends Specification {
   def findUserPlayCount = {
     log.info(s"fetch user playcount for userId : ${userName}")
     val results = userService.findPlayCount(userName)
-    log.info(s"FETCH playvount rsult ret from playCOuntAsk: ${results}")
+    log.info(s"FETCH playcount rsult ret from playCOuntAsk: ${results}")
 
     results.isRight === true
   }

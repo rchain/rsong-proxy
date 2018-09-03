@@ -6,6 +6,7 @@ import coop.rchain.models.Par
 import coop.rchain.rholang.interpreter.PrettyPrinter
 import io.circe._
 import io.circe.generic.auto._
+import scala.util._
 import io.circe.syntax._
 
 object UserRepo {
@@ -32,6 +33,14 @@ object UserRepo {
     new UserRepo(RholangProxy(host, port))
   def apply(grpc: RholangProxy): UserRepo =
     new UserRepo(grpc)
+
+  def asInt(s: String): Either[Err, Int] = {
+    Try(s.toInt) match {
+      case Success(i) => Right(i)
+      case Failure(e) =>
+        Left(Err(ErrorCode.playCountConversion, e.getMessage, None))
+    }
+  }
 }
 
 class UserRepo(grpc: RholangProxy) {
@@ -56,7 +65,11 @@ class UserRepo(grpc: RholangProxy) {
         m <- grpc.deployAndPropose(term)
       } yield m
 
-  val findPlayCount: String => Either[Err, String] = userId =>
-    Repo.find(grpc)(s"$userId-$COUNT_OUT")
+  def findPlayCount(userId: String): Either[Err, Int] =
+    for {
+      c <- computePlayCount(s"$userId-$COUNT_OUT")
+      c <- Repo.find(grpc)(s"$userId-$COUNT_OUT")
+      i <- asInt(c)
+    } yield (i)
 
 }

@@ -16,7 +16,6 @@ class SongRepoSpec extends Specification {
       retrieve a cursor compliant list of available songs $e1
       retrieve a song $e2
       JSON RSong protocol $rSongJson
-      cache the binary filelll $cacheRsong
 """
   val log = Logger[SongRepoSpec]
   val repo = SongRepo()
@@ -41,12 +40,6 @@ class SongRepoSpec extends Specification {
 
     //TODO pending completion
     1 === 1
-  }
-  def cacheRsong = {
-    val buf = hex2bytes("e04fd020ea3a6910a2d808002b30309d")
-    repo.cacheSong("test-bin-file", buf)
-    1 === 1
-
   }
 
 }

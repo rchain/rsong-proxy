@@ -18,7 +18,7 @@ class UserApi[F[_]: Sync](repo: UserRepo) extends Http4sDsl[F] {
         .find(id)
         .fold(
           e =>
-            if (e.code == ErrorCode.nameNotFount) NotFound(s"${e}")
+            if (e.code == ErrorCode.nameNotFount) NotFound(s"${id}")
             else InternalServerError(s"${e.code} ; ${e.msg}"), //NotFound(id),
           r => Ok(Json.obj(id -> Json.fromString(r)))
         )
@@ -35,6 +35,16 @@ class UserApi[F[_]: Sync](repo: UserRepo) extends Http4sDsl[F] {
 
     case req @ PUT -> Root / id / "playcount" =>
       Accepted(Json.obj("status" -> Json.fromString("under construction")))
+
+    case req @ GET -> Root / id / "playcount" =>
+      repo
+        .findPlayCount(id)
+        .fold(
+          e =>
+            if (e.code == ErrorCode.nameNotFount) NotFound(s"${e}")
+            else InternalServerError(s"${e.code} ; ${e.msg}"), //NotFound(id),
+          r => Ok(Json.obj("playcount" -> Json.fromInt(r)))
+        )
   }
 
 }
