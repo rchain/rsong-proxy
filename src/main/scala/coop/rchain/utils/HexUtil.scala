@@ -2,7 +2,8 @@ package coop.rchain.utils
 
 object HexBytesUtil {
 
-  def hex2bytes(hex: String): Array[Byte] = {
+  def hex2bytes(hexString: String): Array[Byte] = {
+    val hex = hexString.filter(_ != '\"')
     if (hex.contains(" ")) {
       hex.split(" ").map(Integer.parseInt(_, 16).toByte)
     } else if (hex.contains("-")) {

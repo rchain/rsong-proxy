@@ -23,11 +23,11 @@ object RSongData {
   )
 
   val rsong = RSong(
-    id = (java.util.UUID.randomUUID.toString),
-    isrc = (java.util.UUID.randomUUID.toString),
-    iswc = (java.util.UUID.randomUUID.toString),
-    cwr = (java.util.UUID.randomUUID.toString),
-    upc = (java.util.UUID.randomUUID.toString),
+    id = "song-1234567890XX",
+    isrc = "song-1234567890XX",
+    iswc = "song-1234567890XX",
+    cwr = "song-1234567890XX",
+    upc = "song-1234567890XX",
     title = "a cool song title",
     name = "a cool song title",
     labelId = (java.util.UUID.randomUUID.toString),

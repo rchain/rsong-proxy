@@ -13,8 +13,9 @@ class RholangProxyITSpec extends Specification {
      create new contract form fle $ok//deployContract
      add user $ok//addUser
      show black mush show changens $ok//showBlocks
-     show data at contract names $ok//getUseong
-     playcount ask $ok//computePlayCount
+     show data at contract names $ok//getUser
+     compute playcount  $ok//computePlayCount
+     retrieve computed ask $ok//findUserPlayCount
 """
 
   val log = Logger[RholangProxyITSpec]

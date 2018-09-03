@@ -11,23 +11,25 @@ class SongRepoITSpec extends Specification {
   def is =
     s2"""
        SongRepository Specifications
-          base16 song conversion $ok//load to speed up
+          base16 song conversion $ok/load to speed up
           upload song to RChain $ok//toRNodeTest
-          fetching song from block $fetchSongTest
+          fetching song thru fetch2 from block $ok//fetch
+          fetching song thru fetch2 from block $fetch2
   """
 //  val proxy = RholangProxy("35.237.70.229", 40401)
+
   val proxy = RholangProxy("localhost", 40401)
+  val repository = SongRepo(proxy)
+  val userRepo = UserRepo(proxy)
   val log = Logger[SongRepoITSpec]
   val songfile = "/home/kayvan/dev/workspaces/workspace-rchain/immersion-rc-proxy/src/test/resources/assets/Prog_Noir_iN3D.izr"
 //  vall songfile = "/home/kayvan/Downloads/labels-long.ps"
-  val songRepo = SongRepo()
 
 
   import coop.rchain.service.moc.RSongData._
   import coop.rchain.repo.SongRepo._
 
   def toRNodeTest = {
-    val repository = SongRepo(proxy)
     val song = loadSongFile(songfile)
     log.info(s"loaded size = ${song.size}")
     val __songData = bytes2hex(song)
@@ -43,25 +45,31 @@ class SongRepoITSpec extends Specification {
     fromRnode.isRight === true
 
 }
-  def fetchSongTest = {
-    val repository = SongRepo(proxy)
-    val userRepo = UserRepo(proxy)
-    val name = "edae0f8b-0f63-451d-8662-d0e020f49e6c-Stereo"
+  def fetch = {
+    val name = "song-1234567890XX-Stereo"
 
-    val songdataName = for {
+    val songdata = for {
       sid <- userRepo.find(name)
       _= log.info(s"SID= ${sid}")
      queryName = s"""("$sid".hexToBytes(),"$sid-out")"""
       _=log.info(s"--- queryName = ${queryName}")
       term = s"""@["Immersion", "retrieveSong"]!${queryName}"""
       m <-proxy.deployAndPropose(term)
-      songasstring= userRepo.find(s"${sid}-out")
-      _=log.info(s"songAsSting.size = ${songasstring}")
+      songasstring <- userRepo.find(s"${sid}-out")
+      _=log.info(s"songAsSting.size = ${songasstring.size}")
     } yield songasstring
 
-
-
-
-     false === false
+    false === false
   }
+
+
+  def fetch2 = {
+
+    val name = "song-1234567890XX-Stereo"
+
+    val song = repository.retrieveSong(name)
+    log.info(s"${song.toOption.get.size}")
+    (song.isLeft == false ) === true
+  }
+
 }

@@ -17,6 +17,7 @@ import coop.rchain.utils.Globals._
 
 object RholangProxy {
 
+  val MAXGRPCZIE = 1024 * 1024 * 100
   lazy val (host, port) =
     (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
 
@@ -24,8 +25,13 @@ object RholangProxy {
     new RholangProxy(channel)
 
   def apply(host: String, port: Int): RholangProxy = {
+
     val channel =
-      ManagedChannelBuilder.forAddress(host, port).usePlaintext(true).build
+      ManagedChannelBuilder
+        .forAddress(host, port)
+        .maxInboundMessageSize(MAXGRPCZIE)
+        .usePlaintext(true)
+        .build
     new RholangProxy(channel)
   }
 
@@ -74,7 +80,6 @@ class RholangProxy(channel: ManagedChannel) {
   }
 
   def deployAndPropose(contract: String) = {
-    log.error(s"${contract}")
     for {
       d <- deploy(contract)
       p <- proposeBlock

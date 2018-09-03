@@ -1,6 +1,7 @@
 package coop.rchain.repo
 
-import java.io.{BufferedInputStream, FileInputStream}
+import java.io._
+import java.nio.file._
 
 import io.circe.generic.auto._
 import io.circe.syntax._
@@ -9,10 +10,18 @@ import coop.rchain.domain.RSongModel.RSongAsset
 import coop.rchain.utils.Globals._
 import coop.rchain.utils.HexBytesUtil._
 import coop.rchain.domain._
+
 import scala.util._
+import coop.rchain.models.Par
+import coop.rchain.rholang.interpreter.PrettyPrinter
+import coop.rchain.utils.HexBytesUtil
+import io.circe._
+import io.circe.generic.auto._
+import io.circe.syntax._
 
 object SongRepo {
 
+  val SONG_OUT = "SONG-OUT"
   val threshold = appCfg.getInt("rsongdata.concat.size")
   def logDepth(s: String): String = {
     if (s.length <= threshold) s""""$s""""
@@ -28,17 +37,17 @@ object SongRepo {
     Stream.continually(bis.read).takeWhile(-1 !=).map(_.toByte).toArray
   }
 
-  private val (host, port) =
+  private lazy val (host, port) =
     (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
 
   def apply(): SongRepo =
     new SongRepo(RholangProxy(host, port))
 
-  def apply(proxy: RholangProxy): SongRepo =
-    new SongRepo(proxy)
+  def apply(grpc: RholangProxy): SongRepo =
+    new SongRepo(grpc)
 }
 
-class SongRepo(proxy: RholangProxy) {
+class SongRepo(grpc: RholangProxy) {
   import SongRepo._
   val log = Logger[SongRepo]
 
@@ -52,7 +61,7 @@ class SongRepo(proxy: RholangProxy) {
   def deployAndPropose(asset: RSongAsset) =
     (asRhoTerm _
       andThen
-        proxy.deployAndPropose _)(asset)
+        grpc.deployAndPropose _)(asset)
 
   def asHexConcatRsong(file: String): Either[Err, String] = {
     Try {
@@ -72,25 +81,31 @@ class SongRepo(proxy: RholangProxy) {
   def songFromBlock(name: String) = {
     val asRhoTerm =
       s"""@["Immersion", "retrieveSong"]!(${name}, "songDataOut")"""
-    log.info(s"retrieveSong name= ${name}")
-    proxy.deployAndPropose(asRhoTerm)
+    log.debug(s"retrieveSong name= ${name}")
+    grpc.deployAndPropose(asRhoTerm)
   }
-  // songfile, metadata
-//
-//  def withRsong(rsong: RSong, file: String, ) = {
-//    for {
-//      f <- asHexConcatRsong(file))
-//      b <- RsongAsse
-//
-//    }
-//  }
 
-//  def  upload ( file: String, rsong: Rsong) = {
-//
-//    for {
-//      c<- asHexConcatRsong(file)
-//      b <-
-//    }
-//
-//  }
+  //songName isrc-Stereo or isrc-3D
+  def retrieveSong(songName: String): Either[Err, Array[Byte]] = {
+    val songAsString = for {
+      sid <- find(songName)
+      queryName = s"""("$sid".hexToBytes(),"${sid}-${SONG_OUT}")"""
+      term = s"""@["Immersion", "retrieveSong"]!${queryName}"""
+      m <- grpc.deployAndPropose(term)
+      p <- Repo.find(grpc)(s"${sid}-${SONG_OUT}")
+    } yield p
+    songAsString match {
+      case Right(s) =>
+        Right(HexBytesUtil.hex2bytes(s))
+      case Left(e) => Left(e)
+    }
+  }
+  def find(rName: String): Either[Err, String] = Repo.find(grpc)(rName)
+
+  def dataAtName(pars: Seq[Par]) = Repo.dataAtName(pars)
+
+  def cacheSong: String => Array[Byte] => Unit =
+    fileName => buf => Files.write(Paths.get(fileName), buf)
+  
+
 }

@@ -9,7 +9,7 @@ import io.circe.generic.auto._
 import io.circe.syntax._
 
 object UserRepo {
-  val COUNT_OUT = "countOut"
+  val COUNT_OUT = "COUNT-OUT"
   val logger = Logger[UserRepo.type]
 
   def newUser(id: String): Json = {
@@ -42,24 +42,10 @@ class UserRepo(grpc: RholangProxy) {
   val newUser: String => Either[Err, DeployAndProposeResponse] = user =>
     (newUserRhoTerm _ andThen grpc.deployAndPropose _)(user)
 
-  def find(rName: String): Either[Err, String] =
-    for {
-      d <- dataAtNameAsPar(s""""${rName}"""")
-      e <- dataAtName(d)
-    } yield e
+  def find(rName: String): Either[Err, String] = Repo.find(grpc)(rName)
 
-  def dataAtNameAsPar(term: String) =
-    for {
-      z <- grpc.dataAtName(term)
-      pars = z.blockResults.flatMap(_.postBlockData)
-    } yield pars
-
-  def dataAtName(pars: Seq[Par]) = {
-    val e = pars.map(p => PrettyPrinter().buildString(p))
-    if (e.isEmpty)
-      Left(Err(ErrorCode.nameNotFount, s"Rholang name not found${}", None))
-    else Right(e.head)
-  }
+  def dataAtNameAsPar(term: String): Either[Err, Seq[Par]] =
+    Repo.dataAtNameAsPar(grpc)(term)
 
   val computePlayCount: String => Either[Err, DeployAndProposeResponse] =
     userId =>
@@ -71,6 +57,6 @@ class UserRepo(grpc: RholangProxy) {
       } yield m
 
   val findPlayCount: String => Either[Err, String] = userId =>
-    find(s"$userId-$COUNT_OUT")
+    Repo.find(grpc)(s"$userId-$COUNT_OUT")
 
 }
