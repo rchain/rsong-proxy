@@ -15,6 +15,7 @@ class SongRepoITSpec extends Specification {
           upload song to RChain $ok//toRNodeTest
           fetching song thru fetch2 from block $ok//fetch
           fetching song thru fetch2 from block $fetch2
+          cache rsong $ok//cacheRsong
   """
 //  val proxy = RholangProxy("35.237.70.229", 40401)
 
@@ -64,12 +65,21 @@ class SongRepoITSpec extends Specification {
 
 
   def fetch2 = {
-
     val name = "song-1234567890XX-Stereo"
-
     val song = repository.retrieveSong(name)
     log.info(s"${song.toOption.get.size}")
+    repository.cacheSong(name, song.toOption.get)
     (song.isLeft == false ) === true
+  }
+
+  def cacheRsong = {
+    val name = "song-1234567890XX-Stereo"
+    val song = repository.retrieveSong(name)
+     for {
+       song <- repository.retrieveSong(name)
+       res = repository.cacheSong(name, song)
+     } yield (song)
+        1 === 0
   }
 
 }

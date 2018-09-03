@@ -6,6 +6,7 @@ import coop.rchain.protocol.Protocol
 import coop.rchain.service.SongService
 import coop.rchain.service.moc.RSongData
 import io.circe.generic.auto._
+import coop.rchain.utils.HexBytesUtil._
 import io.circe.syntax._
 import org.specs2._
 
@@ -15,6 +16,7 @@ class SongRepoSpec extends Specification {
       retrieve a cursor compliant list of available songs $e1
       retrieve a song $e2
       JSON RSong protocol $rSongJson
+      cache the binary filelll $cacheRsong
 """
   val log = Logger[SongRepoSpec]
   val repo = SongRepo()
@@ -39,6 +41,12 @@ class SongRepoSpec extends Specification {
 
     //TODO pending completion
     1 === 1
+  }
+  def cacheRsong = {
+    val buf = hex2bytes("e04fd020ea3a6910a2d808002b30309d")
+    repo.cacheSong("test-bin-file", buf)
+    1 === 1
+
   }
 
 }

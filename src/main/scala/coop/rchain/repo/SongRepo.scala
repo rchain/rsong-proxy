@@ -20,11 +20,13 @@ import io.circe.generic.auto._
 import io.circe.syntax._
 
 object SongRepo {
-
+  val rsongPath = appCfg.getString("api.http.rsong.path")
   val SONG_OUT = "SONG-OUT"
   val threshold = appCfg.getInt("rsongdata.concat.size")
+
   def logDepth(s: String): String = {
-    if (s.length <= threshold) s""""$s""""
+    if (s.length <= threshold)
+      s""""$s""""
     else {
       val mid = s.length / 2
       val l = logDepth(s.substring(0, mid))
@@ -32,6 +34,7 @@ object SongRepo {
       s"""(\n$l\n++\n$r\n)"""
     }
   }
+
   def loadSongFile(fileName: String) = {
     val bis = new BufferedInputStream(new FileInputStream(fileName))
     Stream.continually(bis.read).takeWhile(-1 !=).map(_.toByte).toArray
@@ -48,7 +51,9 @@ object SongRepo {
 }
 
 class SongRepo(grpc: RholangProxy) {
+
   import SongRepo._
+
   val log = Logger[SongRepo]
 
   def asRhoTerm(asset: RSongAsset) = {
@@ -58,6 +63,7 @@ class SongRepo(grpc: RholangProxy) {
 
     s"""@["Immersion", "store"]!(${asset.audioData}, ${asset.rsong.asJson.toString}, "${asset.rsong.isrc}-${asset.audioType}")"""
   }
+
   def deployAndPropose(asset: RSongAsset) =
     (asRhoTerm _
       andThen
@@ -78,6 +84,7 @@ class SongRepo(grpc: RholangProxy) {
               Some(s"fileName= ${file}")))
     }
   }
+
   def songFromBlock(name: String) = {
     val asRhoTerm =
       s"""@["Immersion", "retrieveSong"]!(${name}, "songDataOut")"""
@@ -100,12 +107,21 @@ class SongRepo(grpc: RholangProxy) {
       case Left(e) => Left(e)
     }
   }
+
   def find(rName: String): Either[Err, String] = Repo.find(grpc)(rName)
 
   def dataAtName(pars: Seq[Par]) = Repo.dataAtName(pars)
 
-  def cacheSong: String => Array[Byte] => Unit =
-    fileName => buf => Files.write(Paths.get(fileName), buf)
-  
+  // sotre song by isrc & type: isrc-Sterio or isrc-3D
+  def cacheSong(name: String, buf: Array[Byte]) = {
+    var out = None: Option[FileOutputStream]
+    try {
+      val out = Some(new FileOutputStream(s"${rsongPath}/${name}"))
+      println(s"++++++ storing the binfile to ${rsongPath}/${name}")
+      out.get.write(buf)
+    } finally {
+      if (out.isDefined) out.get.close
+    }
+  }
 
 }
