@@ -141,18 +141,53 @@ object MocSongMetadata {
 
   val songRepo = SongRepo(proxy)
 
-  def loader = {
+  def loader1 = {
 
-    val songFile = ""
+    val songFile =
+      "/home/kayvan/dev/assets/rchain_assets/Songs/Broke_Stereo.izr"
     val brookId = "Broke_Stereo.izr"
-    val typeOfAsset = "3D"
+    val typeOfAsset = "Stereo"
     val jsData = mocSongs("Broke").asJson.toString
     val assetData = songRepo.asHexConcatRsong(songFile)
-    val rsongJsonAsset = RSongJsonAsset(
+    val brookAsset = RSongJsonAsset(
       id = brookId,
       assetData = assetData.toOption.get,
       jsonData = jsData
     )
+    songRepo.deployAndProposeAsset(brookAsset)
 
   }
+
+  def loader2 = {
+
+    val songFile =
+      "/home/kayvan/dev/assets/rchain_assets/Songs/Broke_Immersive.izr"
+    val brookId = "Broke_Immersive.izr"
+    val jsData = mocSongs("Broke").asJson.toString
+    val assetData = songRepo.asHexConcatRsong(songFile)
+    val brookAsset = RSongJsonAsset(
+      id = brookId,
+      assetData = assetData.toOption.get,
+      jsonData = jsData
+    )
+    songRepo.deployAndProposeAsset(brookAsset)
+
+  }
+
+  def loader3 = {
+
+    val songFile =
+      "/home/kayvan/dev/assets/rchain_assets/Songs/Euphoria_Immersive.izr"
+    val brookId = "Euphoria_Immersive.izr"
+    val jsData = mocSongs("Euphoria").asJson.toString
+    val assetData = songRepo.asHexConcatRsong(songFile)
+    val brookAsset = RSongJsonAsset(
+      id = brookId,
+      assetData = assetData.toOption.get,
+      jsonData = jsData
+    )
+    songRepo.deployAndProposeAsset(brookAsset)
+
+  }
+
 }

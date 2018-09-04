@@ -82,6 +82,7 @@ class RholangProxy(channel: ManagedChannel) {
   def deployAndPropose(contract: String) = {
     for {
       d <- deploy(contract)
+      _ = println("Proposing...")
       p <- proposeBlock
     } yield DeployAndProposeResponse(d, p)
   }

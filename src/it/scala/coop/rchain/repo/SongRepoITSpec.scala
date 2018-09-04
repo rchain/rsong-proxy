@@ -1,6 +1,7 @@
 package coop.rchain.repo
 
 import java.time.{ZoneId, ZonedDateTime}
+
 import io.circe.generic.auto._
 import io.circe.syntax._
 import io.circe._
@@ -10,7 +11,7 @@ import io.circe.syntax._
 import com.typesafe.scalalogging.Logger
 import coop.rchain.domain.{Interval, TemporalInterval, TypeOfAsset}
 import coop.rchain.domain.RSongModel._
-import coop.rchain.service.moc.RSongData
+import coop.rchain.service.moc.{MocSongMetadata, RSongData}
 import coop.rchain.service.moc.RSongData.rsong
 import org.specs2._
 import coop.rchain.utils.HexBytesUtil._
@@ -20,12 +21,14 @@ class SongRepoITSpec extends Specification {
   def is =
     s2"""
        SongRepository Specifications
-          base16 song conversion $ok/load to speed up
+          base16 song conversion $ok//loadSong1 to speed up
+          base16 song conversion $ok//loadSong2 to speed up
+          base16 song conversion $loadSong3 to speed up
           upload song to RChain $ok//toRNodeTest
           upload song to RChain $ok//fakeMusicFile
           upload song to RChain $ok//fakeMusic
           fetching song thru fetch2 from block $ok//fetch
-          fetching song thru fetch2 from block $fetch2
+          fetching song thru fetch2 from block $ok//fetch2
           cache rsong $ok//writeSongToCacheTest
           cache and store rsong $ok//cacheRsongTest
   """
@@ -42,6 +45,28 @@ class SongRepoITSpec extends Specification {
 
   import coop.rchain.service.moc.RSongData._
   import coop.rchain.repo.SongRepo._
+
+def loadSong1 = {
+  val  result = MocSongMetadata.loader1
+  log.info(s"******** Brokke 3d upload results = ${result}")
+  result.isRight === true
+
+}
+
+def loadSong2 = {
+  val  result = MocSongMetadata.loader2
+  log.info(s"******** Brokke 3d upload results = ${result}")
+  result.isRight === true
+
+}
+
+
+def loadSong3 = {
+  val  result = MocSongMetadata.loader3
+  log.info(s"******** Brokke 3d upload results = ${result}")
+  result.isRight === true
+
+}
 
 
   def fakeMusicFile = {

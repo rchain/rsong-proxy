@@ -39,6 +39,7 @@ class SongApi[F[_]: Sync]() extends Http4sDsl[F] {
   val userRepo = UserRepo()
   val svc = new SongService(SongRepo()) //TODO remove once we're off moc data
   val log = Logger("SongApi")
+  log.info(s"host= ${host}")
 
   val routes: HttpRoutes[F] =
     HttpRoutes.of[F] {
@@ -46,14 +47,14 @@ class SongApi[F[_]: Sync]() extends Http4sDsl[F] {
         Ok(svc.allSongs(id, Cursor(10, 1)).asJson)
 
       case GET -> Root / "song" / id :? userId(uid) =>
-        val link = songRepo.cacheSong(id)
+        val link = songRepo.retrieveSong(id)
         link.fold(
           l => {
             log.error(s"error in caching song with id: $id.")
             log.error(s"${l}")
             InternalServerError()
           },
-          r => TemporaryRedirect(Location(Uri.fromString(s"$r").toOption.get))
+          r => Ok(r)
         )
 
       case GET -> Root / "artwork" / id ⇒

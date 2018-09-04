@@ -2,7 +2,9 @@ package coop.rchain.repo
 
 import java.io._
 import java.nio.file._
+import java.util
 
+import com.google.protobuf.ByteString
 import io.circe.generic.auto._
 import io.circe.syntax._
 import com.typesafe.scalalogging.Logger
@@ -103,22 +105,34 @@ class SongRepo(grpc: RholangProxy) {
     grpc.deployAndPropose(asRhoTerm)
   }
 
+  private val songMap: scala.collection.mutable.Map[String, Array[Byte]] =
+    scala.collection.mutable.Map.empty[String, Array[Byte]]
+
   //songName isrc-Stereo or isrc-3D
   def retrieveSong(songName: String): Either[Err, Array[Byte]] = {
-    val songAsString = for {
-      sid <- find(songName)
-      _ = log.info(s"--- songAsString ${sid}")
-      queryName = s"""("$sid".hexToBytes(),"${sid}-${SONG_OUT}")"""
-      _ = log.info(s"--- queryName= ${queryName}")
-      term = s"""@["Immersion", "retrieveSong"]!${queryName}"""
-      _ = log.info(s"--- term = ${term}")
-      m <- grpc.deployAndPropose(term)
-      p <- Repo.find(grpc)(s"${sid}-${SONG_OUT}")
-    } yield p
-    songAsString match {
+    log.info(s"---- reteriveSong for songName=$songName")
+    val song = if (!songMap.contains(songName)) {
+      println(
+        s"Song $songName not found in song map cache. Retrieving from blockchain.")
+      for {
+        sid <- find(songName)
+        queryName = s"""("$sid".hexToBytes(),"${sid}-${SONG_OUT}")"""
+        term = s"""@["Immersion", "retrieveSong"]!${queryName}"""
+        _ = println("Before deploy")
+        m <- grpc.deployAndPropose(term)
+        _ = println(s"DeplyAndPropose res: $m")
+        p <- Repo.find(grpc)(s"${sid}-${SONG_OUT}")
+        ba = p.getBytes()
+        _ = songMap.update(songName, ba)
+      } yield ba
+    } else {
+      log.info(s"Song $songName found in the map cache.")
+      Right(songMap(songName))
+    }
+    song match {
       case Right(s) =>
-        log.info(s"-- got song = ${s}")
-        Right(HexBytesUtil.hex2bytes(s))
+        log.info(s"-- got song $songName--")
+        Right(s)
       case Left(e) =>
         log.error(s"-- retreiveSong error: ${e}")
         Left(e)
@@ -148,7 +162,7 @@ class SongRepo(grpc: RholangProxy) {
 
   def writeSongToCache(name: String): Either[Err, String] = {
     for {
-      b <- retrieveSong(name)
+//      b <- retrieveSong(name)
       s <- storeFile(s"${rsongPath}/${name}", b)
     } yield (s)
   }
