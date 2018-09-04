@@ -1,5 +1,13 @@
 package coop.rchain.service.moc
+import coop.rchain.domain.RSongModel.RSongJsonAsset
 import coop.rchain.domain._
+import coop.rchain.repo.{RholangProxy, SongRepo}
+import io.circe.generic.auto._
+import io.circe.syntax._
+import io.circe._
+import io.circe.generic.auto._
+import io.circe.parser._
+import io.circe.syntax._
 
 object MocSongMetadata {
 
@@ -10,7 +18,7 @@ object MocSongMetadata {
                        uri = s"${rsongHostUrl}/${artpath}/art-work/Broke.jpg"),
     "Euphoria" -> Artwork(
       id = "Euphoria",
-      uri = s"${rsongHostUrl}/${artpath}/assets/art-work/Euphoria.jpg"),
+      uri = s"${rsongHostUrl}/${artpath}/art-work/Euphoria.jpg"),
     "Tiny_Human" -> Artwork(
       id = "Tiny_Human",
       uri = s"${rsongHostUrl}/${artpath}/art-work/TinyHuman.jpg")
@@ -35,7 +43,7 @@ object MocSongMetadata {
       title = "Broke",
       duration_ms = 10000,
       artists = List(artists("Broke")),
-      uri = s"${rsongHostUrl}/${artpath}/assets/art-work/Broke.jpg"
+      uri = s"${rsongHostUrl}/${artpath}/art-work/Broke.jpg"
     ),
     "Euphoria" -> Album(
       id = "Euphoria",
@@ -44,7 +52,7 @@ object MocSongMetadata {
       title = "Euphoria",
       duration_ms = 10000,
       artists = List(artists("Euphoria")),
-      uri = s"${rsongHostUrl}/${artpath}/assets/art-work/Euphoria.jpg"
+      uri = s"${rsongHostUrl}/${artpath}/art-work/Euphoria.jpg"
     ),
     "Tiny_Human" -> Album(
       id = "album-id-Tiny_Human",
@@ -68,8 +76,7 @@ object MocSongMetadata {
                 uri = s"${rsongHostUrl}/${songpath}/music/Broke_Immersive.izr",
                 duration_ms = 1000L),
           Audio(effect = TypeOfAsset.t("Stereo"),
-                uri =
-                  s"${rsongHostUrl}/${songpath}/assets/music/Broke_Stereo.izr",
+                uri = s"${rsongHostUrl}/${songpath}/music/Broke_Stereo.izr",
                 duration_ms = 1000L)
         ),
         language = "EN"
@@ -86,8 +93,7 @@ object MocSongMetadata {
                 duration_ms = 1000L),
           Audio(
             effect = TypeOfAsset.t("Stereo"),
-            uri =
-              s"${rsongHostUrl}/${songpath}/assets/music/Tiny_Human_Stereo.izr",
+            uri = s"${rsongHostUrl}/${songpath}/music/Tiny_Human_Stereo.izr",
             duration_ms = 1000L)
         ),
         language = "EN"
@@ -110,26 +116,43 @@ object MocSongMetadata {
       )
   )
 
-  val mocSongs = List(
-    SongMetadata(
-      song("Broke"),
-      artists = List(artists("Broke")),
-      artwork = List(artworks("Broke")),
-      album = Some(albums("Broke"))
-    ),
-    SongMetadata(
-      song("Euphoria"),
-      artists = List(artists("Euphoria")),
-      artwork = List(artworks("Euphoria")),
-      album = Some(albums("Euphoria"))
-    ),
-    SongMetadata(
-      song("Tiny_Human"),
-      artists = List(artists("Tiny_Human")),
-      artwork = List(artworks("Tiny_Human")),
-      album = Some(albums("Tiny_Human"))
-    )
+  val mocSongs = Map(
+    ("Broke" ->
+      SongMetadata(song("Broke"),
+                   artists = List(artists("Broke")),
+                   artwork = List(artworks("Broke")),
+                   album = Some(albums("Broke")))),
+    ("Euphoria" ->
+      SongMetadata(song("Euphoria"),
+                   artists = List(artists("Euphoria")),
+                   artwork = List(artworks("Euphoria")),
+                   album = Some(albums("Euphoria")))),
+    ("Tiny_Human" ->
+      SongMetadata(song("Tiny_Human"),
+                   artists = List(artists("Tiny_Human")),
+                   artwork = List(artworks("Tiny_Human")),
+                   album = Some(albums("Tiny_Human"))))
   )
 
-  val songMetadata: String => List[SongMetadata] = userId => mocSongs
+  def songMetadata(userid: String): List[SongMetadata] = List()
+  lazy val (host, port) =
+    (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
+  val proxy = RholangProxy(host, port)
+
+  val songRepo = SongRepo(proxy)
+
+  def loader = {
+
+    val songFile = ""
+    val brookId = "Broke_Stereo.izr"
+    val typeOfAsset = "3D"
+    val jsData = mocSongs("Broke").asJson.toString
+    val assetData = songRepo.asHexConcatRsong(songFile)
+    val rsongJsonAsset = RSongJsonAsset(
+      id = brookId,
+      assetData = assetData.toOption.get,
+      jsonData = jsData
+    )
+
+  }
 }

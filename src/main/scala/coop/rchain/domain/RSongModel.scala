@@ -66,7 +66,7 @@ object RSongModel {
 
   case class RSongJsonAsset(
       id: String,
-      typsOfAsset: String,
+      assetData: String,
       jsonData: String
   )
 

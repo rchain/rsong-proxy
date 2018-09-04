@@ -10,6 +10,7 @@ import coop.rchain.domain.RSongModel.RSongAsset
 import coop.rchain.utils.Globals._
 import coop.rchain.utils.HexBytesUtil._
 import coop.rchain.domain._
+import coop.rchain.domain.RSongModel._
 
 import scala.util._
 import coop.rchain.models.Par
@@ -56,14 +57,14 @@ class SongRepo(grpc: RholangProxy) {
 
   val log = Logger[SongRepo]
 
-  def asRhoTerm1(asset: RSongJsonAsset) = {
-    log.info(s"-- name to retrieve song: ${asset.id}-${asset.typeOfAsset}")
+  def asRholang(asset: RSongJsonAsset) = {
+    log.info(s"-- name to retrieve song: ${asset.id}")
 
-    s"""@["Immersion", "store"]!(${asset.assetData}, ${asset.jsonData}, "${asset.id}-${asset.typeOfAsset}")"""
+    s"""@["Immersion", "store"]!(${asset.assetData}, ${asset.jsonData}, "${asset.id}")"""
   }
 
-  def deployAndPropose1(asset: RSongJsonAsset) =
-    (asRhoTerm1 _
+  def deployAndProposeAsset(asset: RSongJsonAsset) =
+    (asRholang _
       andThen
         grpc.deployAndPropose _)(asset)
 
