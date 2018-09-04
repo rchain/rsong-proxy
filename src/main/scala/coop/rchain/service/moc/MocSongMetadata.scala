@@ -2,19 +2,18 @@ package coop.rchain.service.moc
 import coop.rchain.domain._
 
 object MocSongMetadata {
+
+  import coop.rchain.utils.Globals._
+
   val artworks = Map(
-    "Broke" -> Artwork(
-      id = "Broke",
-      uri =
-        "https://s3.amazonaws.com/dev-q2io-rchain/v2/assets/art-work/Broke.jpg"),
+    "Broke" -> Artwork(id = "Broke",
+                       uri = s"${rsongHostUrl}/${artpath}/art-work/Broke.jpg"),
     "Euphoria" -> Artwork(
       id = "Euphoria",
-      uri =
-        "https://s3.amazonaws.com/dev-q2io-rchain/v2/assets/art-work/Euphoria.jpg"),
+      uri = s"${rsongHostUrl}/${artpath}/assets/art-work/Euphoria.jpg"),
     "Tiny_Human" -> Artwork(
       id = "Tiny_Human",
-      uri =
-        "https://s3.amazonaws.com/dev-q2io-rchain/v2/assets/art-work/TinyHuman.jpg")
+      uri = s"${rsongHostUrl}/${artpath}/art-work/TinyHuman.jpg")
   )
   val artists = Map(
     "Broke" -> Artist(id = "Mycle-Wastman",
@@ -36,8 +35,7 @@ object MocSongMetadata {
       title = "Broke",
       duration_ms = 10000,
       artists = List(artists("Broke")),
-      uri =
-        "https://s3.amazonaws.com/dev-q2io-rchain/v2/assets/art-work/Broke.jpg"
+      uri = s"${rsongHostUrl}/${artpath}/assets/art-work/Broke.jpg"
     ),
     "Euphoria" -> Album(
       id = "Euphoria",
@@ -46,8 +44,7 @@ object MocSongMetadata {
       title = "Euphoria",
       duration_ms = 10000,
       artists = List(artists("Euphoria")),
-      uri =
-        "https://s3.amazonaws.com/dev-q2io-rchain/v2/assets/art-work/Euphoria.jpg"
+      uri = s"${rsongHostUrl}/${artpath}/assets/art-work/Euphoria.jpg"
     ),
     "Tiny_Human" -> Album(
       id = "album-id-Tiny_Human",
@@ -56,8 +53,7 @@ object MocSongMetadata {
       title = "Tiny Human",
       duration_ms = 10000,
       artists = List(artists("Tiny_Human")),
-      uri =
-        "https://s3.amazonaws.com/dev-q2io-rchain/v2/assets/art-work/TinyHuman.jpg"
+      uri = s"${rsongHostUrl}/${artpath}/art-work/TinyHuman.jpg"
     )
   )
 
@@ -68,16 +64,13 @@ object MocSongMetadata {
         name = "Broke",
         title = "Broke",
         audio = List(
-          Audio(
-            effect = AudioTypes.t("3D"),
-            uri =
-              "https://s3.amazonaws.com/dev-q2io-rchain/v2/assets/music/Broke_Immersive.izr",
-            duration_ms = 1000L),
-          Audio(
-            effect = AudioTypes.t("Stereo"),
-            uri =
-              "https://s3.amazonaws.com/dev-q2io-rchain/v2/assets/music/Broke_Stereo.izr",
-            duration_ms = 1000L)
+          Audio(effect = AudioTypes.t("3D"),
+                uri = s"${rsongHostUrl}/${songpath}/music/Broke_Immersive.izr",
+                duration_ms = 1000L),
+          Audio(effect = AudioTypes.t("Stereo"),
+                uri =
+                  s"${rsongHostUrl}/${songpath}/assets/music/Broke_Stereo.izr",
+                duration_ms = 1000L)
         ),
         language = "EN"
       ),
@@ -87,15 +80,14 @@ object MocSongMetadata {
         name = "Tiny Human",
         title = "Tiny Human",
         audio = List(
-          Audio(
-            effect = AudioTypes.t("3D"),
-            uri =
-              "https://s3.amazonaws.com/dev-q2io-rchain/v2/assets/music/Tiny_Human_Immersive.izr",
-            duration_ms = 1000L),
+          Audio(effect = AudioTypes.t("3D"),
+                uri =
+                  s"${rsongHostUrl}/${songpath}/music/Tiny_Human_Immersive.izr",
+                duration_ms = 1000L),
           Audio(
             effect = AudioTypes.t("Stereo"),
             uri =
-              "https://s3.amazonaws.com/dev-q2io-rchain/v2/assets/music/Tiny_Human_Stereo.izr",
+              s"${rsongHostUrl}/${songpath}/assets/music/Tiny_Human_Stereo.izr",
             duration_ms = 1000L)
         ),
         language = "EN"
@@ -106,16 +98,13 @@ object MocSongMetadata {
         name = "Euphoria",
         title = "Euphoria",
         audio = List(
-          Audio(
-            effect = AudioTypes.t("3D"),
-            uri =
-              "https://s3.amazonaws.com/dev-q2io-rchain/v2/assets/music/Euphoria_Immersive.izr",
-            duration_ms = 1000L),
-          Audio(
-            effect = AudioTypes.t("Stereo"),
-            uri =
-              "https://s3.amazonaws.com/dev-q2io-rchain/v2/assets/music/Euphoria_Stereo.izr",
-            duration_ms = 1000L)
+          Audio(effect = AudioTypes.t("3D"),
+                uri =
+                  s"${rsongHostUrl}/${songpath}/music/Euphoria_Immersive.izr",
+                duration_ms = 1000L),
+          Audio(effect = AudioTypes.t("Stereo"),
+                uri = s"${rsongHostUrl}/${songpath}/music/Euphoria_Stereo.izr",
+                duration_ms = 1000L)
         ),
         language = "EN"
       )
