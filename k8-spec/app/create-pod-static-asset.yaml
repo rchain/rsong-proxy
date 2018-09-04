@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: immersion-rc-proxy
+  labels:
+    purpose: rchain-immersion-proxy
+    env: prd
+spec:
+  containers:
+  - name: immersion-rc-proxy-container
+    image: kayvank/immersion-rc-proxy:1.1-SNAPSHOT-94
+    resources:
+      limits:
+        cpu: "8"
+        memory: "10G"
+      requests:
+        cpu: "4"
+        memory: "5G"
+    env:
+    - name: HTTP_PORT
+      value: "9000"
+    - name: AUTH_NAME
+      value: "immersion"
+    - name: AUTH_PASSWORD
+      value: "immersion-password"
+    - name: API_VERSION
+      value: "v1"
+    - name: GRPC_SERVER
+      value: "10.142.0.2"
+    - name: GRPC_PORT
+      value: "5041"
+    - name: DROPBOX_ACCESS_TOKEN
+      value: "my-token"
+    - name: IMMERSION_RHOLANG_CONTRACT
+      value: "rho/immersion.rho"
+      value: "my-token"
+    - name: IMMERSION_RHOLANG_CONTRACT
+      value: "rho/immersion.rho"
+
