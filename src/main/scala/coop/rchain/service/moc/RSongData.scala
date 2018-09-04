@@ -6,42 +6,49 @@ import coop.rchain.domain.RSongModel._
 import coop.rchain.domain._
 
 object RSongData {
-  val artwork =
-    Artwork(id = (java.util.UUID.randomUUID.toString), uri = "http://uri")
 
-  val artists = List[Artist](
-    Artist(id = "artist-1", name = "somecoolname", title = "a cool title"))
+  import coop.rchain.utils.Globals._
+
+  object Brooke {
+    val artists = List(
+      Artist(id = "Mycle-Wastman",
+             title = "Mycle Wastman",
+             name = "Mycle Wastman"))
+    val artworks =
+      List(Artwork(id = "Broke", uri = s"${rsongHostUrl}/${artpath}/Brook"))
+
+  }
 
   val album = Album(
-    id = java.util.UUID.randomUUID.toString,
-    artworks = List(artwork),
-    title = "album1",
-    name = "album1",
+    id = "Broke",
+    title = "Broke",
+    name = "Broke",
+    artworks = Brooke.artworks,
     duration_ms = 1000000,
-    artists = artists,
-    uri = "http://uri"
+    artists = Brooke.artists,
+    uri = s"${rsongHostUrl}/album"
   )
 
   val rsong = RSong(
-    id = "song-1234567890XX",
-    isrc = "song-1234567890XX",
-    iswc = "song-1234567890XX",
-    cwr = "song-1234567890XX",
-    upc = "song-1234567890XX",
-    title = "a cool song title",
-    name = "a cool song title",
-    labelId = (java.util.UUID.randomUUID.toString),
-    serviceId = (java.util.UUID.randomUUID.toString),
-    featuredArtists = artists,
-    musician = List("musicion-1", "musition-2"),
-    language = "Clingon"
+    id = "Brook",
+    isrc = "Brook",
+    iswc = "Brook",
+    cwr = "Brook",
+    upc = "Brook",
+    title = "Brook",
+    name = "Brook",
+    labelId = "unkown",
+    serviceId = "unknow",
+    featuredArtists = Brooke.artists,
+    musician = List("Broke"),
+    language = "En"
   )
 
   val zonedDateTime = ZonedDateTime.now
   val utcZoneId = ZoneId.of("UTC")
 
   val authorizedTerritory = AuthorizedTerritory(
-    territory = List("US", "CA"),
+    territory = List("*"),
     temporalInterval = TemporalInterval(
       inMillis = Interval[Long](from = System.currentTimeMillis, to = None),
       inUtc = Interval[String](
@@ -50,11 +57,11 @@ object RSongData {
     )
   )
   val label = Label(
-    id = java.util.UUID.randomUUID.toString,
-    name = "label 1",
-    distributorName = "distributor 1",
+    id = "unknown",
+    name = "unknown name",
+    distributorName = "unknown",
     authorizedTerritory = authorizedTerritory,
-    distributorId = (java.util.UUID.randomUUID.toString),
+    distributorId = "unknown",
     masterRecordingCollective = true
   )
 
@@ -69,15 +76,7 @@ object RSongData {
     RSongMetadata(consumptionModel = consumptionModel,
                   label = label,
                   song = rsong,
+                  artWorkId = "Brook-jpg",
                   album = album)
 
-  /**
-    song = Song(
-      id = "songId",
-      title = "song title",
-      name = "song name",
-      audio = List(
-        Audio(effect = "Stereo", uri = "rchain://id123", duration_ms = 10000)))
-  )
-**/
 }

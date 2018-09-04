@@ -8,21 +8,34 @@ import coop.rchain.service._
 import org.specs2.matcher.MatchResult
 
 class RholangProxyITSpec extends Specification {
-  def is = s2"""
-   Rnode Specification
-     create new contract form fle $ok//deployContract
-     add user $ok//addUser
-     show black mush show changens $ok//showBlocks
-     show data at contract names $ok//getUser
-     compute playcount  $ok//computePlayCount
-     fetch playcount $findUserPlayCount
-"""
+//  def is = s2"""
+//   Rnode Specification
+//     create new contract form file $deployContract
+//     add user $addUser
+//     show black mush show changens $ok//showBlocks
+//     show data at contract names $ok//getUser
+//     compute playcount  $ok//computePlayCount
+//     fetch playcount $ok//findUserPlayCount
+//"""
+  lazy val (host, port) =
+    (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
+  val proxy = RholangProxy(host, port)
 
   val log = Logger[RholangProxyITSpec]
-  val host = appCfg.getString("grpc.host")
-  val proxy = RholangProxy("localhost", 40401)
+
   val userService = UserRepo(proxy)
-  val userName="john-smith"
+  val userName="john-smith1"
+
+  def is = s2"""
+                Rnode specification it should work $ok//deploySeq
+    """
+
+//  def is = s2""
+
+  def deploySeq = {
+    deployContract
+    addUser
+  }
 
   def deployContract = {
 

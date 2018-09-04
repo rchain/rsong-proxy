@@ -19,6 +19,8 @@ import io.circe.syntax._
 import monix.eval.Task
 import monix.execution.CancelableFuture
 import coop.rchain.domain._
+import coop.rchain.service.moc.MocSongMetadata.mocSongs
+import coop.rchain.utils.Globals.appCfg
 import org.http4s.dsl.io._
 import org.http4s.headers._
 import org.http4s.Uri
@@ -29,31 +31,42 @@ class SongApi[F[_]: Sync]() extends Http4sDsl[F] {
   object page extends OptionalQueryParamDecoderMatcher[Int]("page")
   object userId extends QueryParamDecoderMatcher[String]("userId")
 
-  //TODO pass these as you instantiate calss
-  val proxy = RholangProxy("localhost", 40401)
+  lazy val (host, port) =
+    (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
+  val proxy = RholangProxy(host, port)
+
   val songRepo = SongRepo(proxy)
 
   val userRepo = UserRepo()
   val svc = new SongService(SongRepo()) //TODO remove once we're off moc data
   val log = Logger("SongApi")
+  log.info(s"host= ${host}")
 
   val routes: HttpRoutes[F] =
     HttpRoutes.of[F] {
       case GET -> Root / "song" :? userId(id) +& perPage(pp) +& page(p) =>
-        Ok(svc.allSongs(id, Cursor(10, 1)).asJson)
+        Ok(mocSongs.values.toList.asJson)
 
       case GET -> Root / "song" / id :? userId(uid) =>
-        val link = songRepo.cacheSong(id)
+        val link = songRepo.findInBlock(id)
         link.fold(
           l => {
-            log.error(s"error in caching song with id: $id.")
+            log.error(s"error in finding asset by id: $id.")
             log.error(s"${l}")
             InternalServerError()
           },
-          r => TemporaryRedirect(Location(Uri.fromString(s"$r").toOption.get))
+          r => Ok(r)
         )
 
-      case GET -> Root / "artwork" / id ⇒
-        Ok(Json.obj("message" -> Json.fromString("under construction")))
+      case GET -> Root / "art" / id ⇒
+        val link = songRepo.findInBlock(id)
+        link.fold(
+          l => {
+            log.error(s"error in finding asset by id: $id.")
+            log.error(s"${l}")
+            InternalServerError()
+          },
+          r => Ok(r)
+        )
     }
 }

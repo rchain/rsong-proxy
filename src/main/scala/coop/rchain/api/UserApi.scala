@@ -4,6 +4,7 @@ import cats.effect._
 import com.typesafe.scalalogging.Logger
 import coop.rchain.domain.{Err, ErrorCode}
 import coop.rchain.repo.{RholangProxy, SongRepo, UserRepo}
+import coop.rchain.utils.Globals.appCfg
 import io.circe.Json
 import org.http4s.HttpRoutes
 import org.http4s.circe._
@@ -11,7 +12,9 @@ import org.http4s.dsl.Http4sDsl
 
 class UserApi[F[_]: Sync]() extends Http4sDsl[F] {
 
-  val proxy = RholangProxy("localhost", 40401)
+  lazy val (host, port) =
+    (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
+  val proxy = RholangProxy(host, port)
   val repo = UserRepo(proxy)
 
   val log = Logger("UserApi")

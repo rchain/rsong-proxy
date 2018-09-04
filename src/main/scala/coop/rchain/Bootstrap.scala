@@ -2,14 +2,16 @@ package coop.rchain
 
 import cats.effect._
 import cats.implicits._
-
 import org.http4s.server.blaze.BlazeBuilder
 import api._
 import utils.Globals._
 import service._
 import repo._
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import api.middleware._
+
+import scala.concurrent.duration.Duration
 
 object Bootstrap extends IOApp {
 
@@ -27,6 +29,7 @@ object ServerStream {
 
   def stream[F[_]: ConcurrentEffect] =
     BlazeBuilder[F]
+      .withIdleTimeout(Duration.Inf)
       .bindHttp(appCfg.getInt("api.http.port"), "0.0.0.0")
       .mountService(MiddleWear(statusApi))
       .mountService(MiddleWear(statusApi), s"/${apiVersion}/public")

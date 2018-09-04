@@ -79,12 +79,20 @@ class RholangProxy(channel: ManagedChannel) {
     }
   }
 
+  def deployNoPropose(contract: String) = {
+    for {
+      d <- deploy(contract)
+      _ = println("Proposing...")
+    } yield DeployAndProposeResponse(d, "")
+  }
   def deployAndPropose(contract: String) = {
     for {
       d <- deploy(contract)
+      _ = println("Proposing...")
       p <- proposeBlock
     } yield DeployAndProposeResponse(d, p)
   }
+
   def dataAtContWithTerm(
       name: String): Either[Err, ListeningNameContinuationResponse] = {
     val par = Interpreter.buildNormalizedTerm(new StringReader(name)).runAttempt
