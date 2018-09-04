@@ -6,12 +6,9 @@ metadata:
     purpose: rchain-immersion-proxy
     env: prd
 spec:
-  volumes:
-  - name: rsong-data
-    emptyDir: {}
   containers:
   - name: immersion-rc-proxy-container
-    image: kayvank/immersion-rc-proxy:1.1-SNAPSHOT-83
+    image: kayvank/immersion-rc-proxy:1.1-SNAPSHOT-94
     resources:
       limits:
         cpu: "8"
@@ -29,10 +26,14 @@ spec:
     - name: API_VERSION
       value: "v1"
     - name: GRPC_SERVER
-      value: "35.237.70.229"
-    - name: GRPC_PORT_INTERNAL
-      value: "40404"
-    - name: GRPC_PORT_EXTERNAL
-      value: "40401"
-    - name: RSONG_PATH
-      value: "/srv/rsong"
+      value: "10.142.0.2"
+    - name: GRPC_PORT
+      value: "5041"
+    - name: DROPBOX_ACCESS_TOKEN
+      value: "my-token"
+    - name: IMMERSION_RHOLANG_CONTRACT
+      value: "rho/immersion.rho"
+      value: "my-token"
+    - name: IMMERSION_RHOLANG_CONTRACT
+      value: "rho/immersion.rho"
+
