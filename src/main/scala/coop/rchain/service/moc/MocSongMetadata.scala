@@ -221,7 +221,7 @@ object MocSongMetadata {
       assetData = assetData.toOption.get,
       jsonData = jsData
     )
-    songRepo.deployNoPropose(brookAsset)
+    songRepo.deployAndProposeAsset(brookAsset)
   }
   def loader7 = {
     val artFile =
@@ -234,7 +234,7 @@ object MocSongMetadata {
       assetData = assetData.toOption.get,
       jsonData = jsData
     )
-    songRepo.deployAndProposeAsset(theAsset)
+    songRepo.deployNoPropose(theAsset)
   }
 
   def loader8 = {
@@ -248,7 +248,7 @@ object MocSongMetadata {
       assetData = assetData.toOption.get,
       jsonData = jsData
     )
-    songRepo.deployNoPropose(theAsset)
+    songRepo.deployAndProposeAsset(theAsset)
   }
 
   def loader9 = {
