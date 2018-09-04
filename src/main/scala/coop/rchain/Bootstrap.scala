@@ -22,8 +22,8 @@ object ServerStream {
 
   def songService = new SongService(SongRepo())
   def statusApi[F[_]: Effect] = new Status[F].routes
-  def userApi[F[_]: Effect] = new UserApi[F](UserRepo()).routes
-  def songApi[F[_]: Effect] = new SongApi[F](songService).routes
+  def userApi[F[_]: Effect] = new UserApi[F]().routes
+  def songApi[F[_]: Effect] = new SongApi[F]().routes
 
   def stream[F[_]: ConcurrentEffect] =
     BlazeBuilder[F]
@@ -31,6 +31,6 @@ object ServerStream {
       .mountService(MiddleWear(statusApi))
       .mountService(MiddleWear(statusApi), s"/${apiVersion}/public")
       .mountService(MiddleWear(userApi), s"/${apiVersion}/user")
-      .mountService(MiddleWear(songApi), "/${apiVersion}")
+      .mountService(MiddleWear(songApi), s"/${apiVersion}")
       .serve
 }

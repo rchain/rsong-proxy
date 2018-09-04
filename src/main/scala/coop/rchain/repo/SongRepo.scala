@@ -96,15 +96,21 @@ class SongRepo(grpc: RholangProxy) {
   def retrieveSong(songName: String): Either[Err, Array[Byte]] = {
     val songAsString = for {
       sid <- find(songName)
+      _ = log.info(s"--- songAsString ${sid}")
       queryName = s"""("$sid".hexToBytes(),"${sid}-${SONG_OUT}")"""
+      _ = log.info(s"--- queryName= ${queryName}")
       term = s"""@["Immersion", "retrieveSong"]!${queryName}"""
+      _ = log.info(s"--- term = ${term}")
       m <- grpc.deployAndPropose(term)
       p <- Repo.find(grpc)(s"${sid}-${SONG_OUT}")
     } yield p
     songAsString match {
       case Right(s) =>
+        log.info(s"-- got song = ${s}")
         Right(HexBytesUtil.hex2bytes(s))
-      case Left(e) => Left(e)
+      case Left(e) =>
+        log.error(s"-- retreiveSong error: ${e}")
+        Left(e)
     }
   }
 
@@ -112,15 +118,40 @@ class SongRepo(grpc: RholangProxy) {
 
   def dataAtName(pars: Seq[Par]) = Repo.dataAtName(pars)
 
+  def storeFile(fileName: String,
+                songData: Array[Byte]): Either[Err, String] = {
+
+    var out: Option[FileOutputStream] = None
+    Try {
+      out = Some(new FileOutputStream(fileName))
+      out.get.write(songData)
+    } match {
+      case Success(_) =>
+        out.get.close
+        Right(fileName)
+      case Failure(e) =>
+        out.get.close
+        Left(Err(ErrorCode.errorInCachingSong, e.getMessage, None))
+    }
+  }
+
+  def writeSongToCache(name: String): Either[Err, String] = {
+    for {
+      b <- retrieveSong(name)
+      s <- storeFile(s"${rsongPath}/${name}", b)
+    } yield (s)
+  }
+
   // sotre song by isrc & type: isrc-Sterio or isrc-3D
-  def cacheSong(name: String, buf: Array[Byte]) = {
-    var out = None: Option[FileOutputStream]
-    try {
-      val out = Some(new FileOutputStream(s"${rsongPath}/${name}"))
-      println(s"++++++ storing the binfile to ${rsongPath}/${name}")
-      out.get.write(buf)
-    } finally {
-      if (out.isDefined) out.get.close
+  def cacheSong(name: String): Either[Err, String] = {
+    val fileName = s"${rsongPath}/${name}"
+    val file = new File(fileName)
+    if (file.exists()) {
+      log.info(s"--- file ${fileName} already exist")
+      Right((s"${rsongPath}/${name}"))
+    } else {
+      log.info(s"file is not in cache. going to fetch file: ${fileName}")
+      writeSongToCache(name)
     }
   }
 

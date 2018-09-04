@@ -13,9 +13,11 @@ class SongRepoITSpec extends Specification {
        SongRepository Specifications
           base16 song conversion $ok/load to speed up
           upload song to RChain $ok//toRNodeTest
+          upload song to RChain $ok//fakeMusic
           fetching song thru fetch2 from block $ok//fetch
-          fetching song thru fetch2 from block $fetch2
-          cache rsong $ok//cacheRsong
+          fetching song thru fetch2 from block $ok//fetch2
+          cache rsong $ok//writeSongToCacheTest
+          cache and store rsong $ok//cacheRsongTest
   """
 //  val proxy = RholangProxy("35.237.70.229", 40401)
 
@@ -29,6 +31,24 @@ class SongRepoITSpec extends Specification {
 
   import coop.rchain.service.moc.RSongData._
   import coop.rchain.repo.SongRepo._
+
+
+  def fakeMusic = {
+    val song = hex2bytes("e04fd020ea3a6910a2d808002b30309d")
+    log.info(s"loaded size = ${song.size}")
+    val __songData = bytes2hex(song)
+    val songData = logDepth(__songData)
+    val rsongAsset = RSongAsset(
+      rsong=RSongData.rsong,
+      audioType = AudioTypes.t("Stereo"),
+      audioData = songData,
+      uri="rho://cool-song101"
+    )
+    val fromRnode = repository.deployAndPropose(rsongAsset)
+    log.info(s" responve from jamming songs to rnode: ${fromRnode}")
+    fromRnode.isRight === true
+
+  }
 
   def toRNodeTest = {
     val song = loadSongFile(songfile)
@@ -66,20 +86,23 @@ class SongRepoITSpec extends Specification {
 
   def fetch2 = {
     val name = "song-1234567890XX-Stereo"
-    val song = repository.retrieveSong(name)
+    val song = repository.cacheSong(name)
     log.info(s"${song.toOption.get.size}")
-    repository.cacheSong(name, song.toOption.get)
     (song.isLeft == false ) === true
   }
 
-  def cacheRsong = {
+  def writeSongToCacheTest = {
     val name = "song-1234567890XX-Stereo"
-    val song = repository.retrieveSong(name)
-     for {
-       song <- repository.retrieveSong(name)
-       res = repository.cacheSong(name, song)
-     } yield (song)
-        1 === 0
+       val res = repository.writeSongToCache(name)
+    log.info(s"songsize = ${res.toOption.get.size}")
+    (res.isRight) === true
+  }
+
+  def cacheRsongTest = {
+    val name = "song-1234567890XX-Stereo"
+       val res = repository.cacheSong(name)
+    log.info(s"songsize = ${res.toOption.get.size}")
+    (res.isRight) === true
   }
 
 }
