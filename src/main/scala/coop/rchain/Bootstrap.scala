@@ -22,7 +22,7 @@ object ServerStream {
 
   def songService = new SongService(SongRepo())
   def statusApi[F[_]: Effect] = new Status[F].routes
-  def userApi[F[_]: Effect] = new UserApi[F](UserRepo()).routes
+  def userApi[F[_]: Effect] = new UserApi[F]().routes
   def songApi[F[_]: Effect] = new SongApi[F]().routes
 
   def stream[F[_]: ConcurrentEffect] =

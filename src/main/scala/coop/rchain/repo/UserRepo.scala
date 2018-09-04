@@ -29,11 +29,6 @@ object UserRepo {
   def newUserRhoTerm(name: String): String =
     s"""@["Immersion", "newUserId"]!("${name}")"""
 
-  def apply(): UserRepo =
-    new UserRepo(RholangProxy(host, port))
-  def apply(grpc: RholangProxy): UserRepo =
-    new UserRepo(grpc)
-
   def asInt(s: String): Either[Err, Int] = {
     Try(s.toInt) match {
       case Success(i) => Right(i)
@@ -41,12 +36,20 @@ object UserRepo {
         Left(Err(ErrorCode.playCountConversion, e.getMessage, None))
     }
   }
+
+  def apply(): UserRepo =
+    new UserRepo(RholangProxy(host, port))
+
+  def apply(grpc: RholangProxy): UserRepo =
+    new UserRepo(grpc)
 }
 
 class UserRepo(grpc: RholangProxy) {
 
   import UserRepo._
   val log = Logger[UserRepo]
+
+  val songRepo = SongRepo(grpc)
 
   val newUser: String => Either[Err, DeployAndProposeResponse] = user =>
     (newUserRhoTerm _ andThen grpc.deployAndPropose _)(user)
@@ -67,7 +70,7 @@ class UserRepo(grpc: RholangProxy) {
 
   def findPlayCount(userId: String): Either[Err, Int] =
     for {
-      c <- computePlayCount(s"$userId")
+      c <- computePlayCount(userId)
       c <- Repo.find(grpc)(s"$userId-$COUNT_OUT")
       i <- asInt(c)
     } yield (i)

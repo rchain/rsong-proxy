@@ -3,13 +3,16 @@ package coop.rchain.api
 import cats.effect._
 import com.typesafe.scalalogging.Logger
 import coop.rchain.domain.{Err, ErrorCode}
-import coop.rchain.repo.UserRepo
+import coop.rchain.repo.{RholangProxy, SongRepo, UserRepo}
 import io.circe.Json
 import org.http4s.HttpRoutes
 import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
 
-class UserApi[F[_]: Sync](repo: UserRepo) extends Http4sDsl[F] {
+class UserApi[F[_]: Sync]() extends Http4sDsl[F] {
+
+  val proxy = RholangProxy("localhost", 40401)
+  val repo = UserRepo(proxy)
 
   val log = Logger("UserApi")
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {

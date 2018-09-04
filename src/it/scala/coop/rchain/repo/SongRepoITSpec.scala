@@ -17,7 +17,7 @@ class SongRepoITSpec extends Specification {
           fetching song thru fetch2 from block $ok//fetch
           fetching song thru fetch2 from block $ok//fetch2
           cache rsong $ok//writeSongToCacheTest
-          cache and store rsong $cacheRsongTest
+          cache and store rsong $ok//cacheRsongTest
   """
 //  val proxy = RholangProxy("35.237.70.229", 40401)
 

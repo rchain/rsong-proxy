@@ -42,8 +42,7 @@ class SongApi[F[_]: Sync]() extends Http4sDsl[F] {
       case GET -> Root / "song" :? userId(id) +& perPage(pp) +& page(p) =>
         Ok(svc.allSongs(id, Cursor(10, 1)).asJson)
 
-      case GET -> Root / "song1" / id :? userId(uid) =>
-        println(s"-------- songid= ${id}")
+      case GET -> Root / "song" / id :? userId(uid) =>
         val link = songRepo.cacheSong(id)
         link.fold(
           l => {
