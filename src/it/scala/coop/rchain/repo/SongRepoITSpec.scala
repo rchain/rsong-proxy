@@ -12,7 +12,7 @@ class SongRepoITSpec extends Specification {
     s2"""
        SongRepository Specifications
           base16 song conversion $ok/load to speed up
-          upload song to RChain $ok//toRNodeTest
+          upload song to RChain $toRNodeTest
           upload song to RChain $ok//fakeMusic
           fetching song thru fetch2 from block $ok//fetch
           fetching song thru fetch2 from block $ok//fetch2

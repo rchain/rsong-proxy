@@ -57,7 +57,6 @@ class SongRepo(grpc: RholangProxy) {
   val log = Logger[SongRepo]
 
   def asRhoTerm(asset: RSongAsset) = {
-    s"""@["Immersion", "store"]!(${asset.audioData}, ${asset.rsong.asJson.toString}, "${asset.rsong.isrc}-${asset.audioType}")"""
     log.info(
       s"-- name to retrieve song: ${asset.rsong.isrc}-${asset.audioType}")
 
