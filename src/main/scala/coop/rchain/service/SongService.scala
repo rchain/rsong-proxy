@@ -17,7 +17,7 @@ import coop.rchain.service.moc.MocSongMetadata._
 class SongService(repo: SongRepo) {
 
   def allSongs(userId: String, cursor: Cursor): List[SongMetadata] = {
-    songMetadata(userId)
+    mocSongs.values.toList
   }
 
   def aSong(request: SongRequest) = {

@@ -8,6 +8,7 @@ import com.google.protobuf.ByteString
 import io.circe.generic.auto._
 import io.circe.syntax._
 import com.typesafe.scalalogging.Logger
+import coop.rchain.crypto.codec.Base16
 import coop.rchain.domain.RSongModel.RSongAsset
 import coop.rchain.utils.Globals._
 import coop.rchain.utils.HexBytesUtil._
@@ -65,6 +66,11 @@ class SongRepo(grpc: RholangProxy) {
     s"""@["Immersion", "store"]!(${asset.assetData}, ${asset.jsonData}, "${asset.id}")"""
   }
 
+  def deployNoPropose(asset: RSongJsonAsset) =
+    (asRholang _
+      andThen
+        grpc.deployNoPropose _)(asset)
+
   def deployAndProposeAsset(asset: RSongJsonAsset) =
     (asRholang _
       andThen
@@ -109,32 +115,32 @@ class SongRepo(grpc: RholangProxy) {
     scala.collection.mutable.Map.empty[String, Array[Byte]]
 
   //songName isrc-Stereo or isrc-3D
-  def retrieveSong(songName: String): Either[Err, Array[Byte]] = {
-    log.info(s"---- reteriveSong for songName=$songName")
-    val song = if (!songMap.contains(songName)) {
-      println(
-        s"Song $songName not found in song map cache. Retrieving from blockchain.")
+  def findInBlock(assetName: String): Either[Err, Array[Byte]] = {
+
+    val song = if (!songMap.contains(assetName)) {
+
       for {
-        sid <- find(songName)
-        queryName = s"""("$sid".hexToBytes(),"${sid}-${SONG_OUT}")"""
+        sid <- find(assetName)
+        randSuffix = scala.util.Random.alphanumeric.take(20).toString()
+        _ = println(s"sid: $sid")
+        songChannel = "${sid}-${SONG_OUT}-$randSuffix"
+        queryName = s"""("$sid".hexToBytes(),$songChannel)"""
         term = s"""@["Immersion", "retrieveSong"]!${queryName}"""
-        _ = println("Before deploy")
         m <- grpc.deployAndPropose(term)
-        _ = println(s"DeplyAndPropose res: $m")
-        p <- Repo.find(grpc)(s"${sid}-${SONG_OUT}")
-        ba = p.getBytes()
-        _ = songMap.update(songName, ba)
+        p <- Repo.find(grpc)(songChannel)
+        ba = Base16.decode(p)
+        _ = songMap.update(assetName, ba)
       } yield ba
     } else {
-      log.info(s"Song $songName found in the map cache.")
-      Right(songMap(songName))
+      log.info(s"Asset $assetName found in the map cache.")
+      Right(songMap(assetName))
     }
     song match {
       case Right(s) =>
-        log.info(s"-- got song $songName--")
+        log.info(s"-- got asset $assetName--")
         Right(s)
       case Left(e) =>
-        log.error(s"-- retreiveSong error: ${e}")
+        log.error(s"-- asset retrieval error: ${e}")
         Left(e)
     }
   }
@@ -142,42 +148,5 @@ class SongRepo(grpc: RholangProxy) {
   def find(rName: String): Either[Err, String] = Repo.find(grpc)(rName)
 
   def dataAtName(pars: Seq[Par]) = Repo.dataAtName(pars)
-
-  def storeFile(fileName: String,
-                songData: Array[Byte]): Either[Err, String] = {
-
-    var out: Option[FileOutputStream] = None
-    Try {
-      out = Some(new FileOutputStream(fileName))
-      out.get.write(songData)
-    } match {
-      case Success(_) =>
-        out.get.close
-        Right(fileName)
-      case Failure(e) =>
-        out.get.close
-        Left(Err(ErrorCode.errorInCachingSong, e.getMessage, None))
-    }
-  }
-
-  def writeSongToCache(name: String): Either[Err, String] = {
-    for {
-//      b <- retrieveSong(name)
-      s <- storeFile(s"${rsongPath}/${name}", b)
-    } yield (s)
-  }
-
-  // sotre song by isrc & type: isrc-Sterio or isrc-3D
-  def cacheSong(name: String): Either[Err, String] = {
-    val fileName = s"${rsongPath}/${name}"
-    val file = new File(fileName)
-    if (file.exists()) {
-      log.info(s"--- file ${fileName} already exist")
-      Right((s"${rsongPath}/${name}"))
-    } else {
-      log.info(s"file is not in cache. going to fetch file: ${fileName}")
-      writeSongToCache(name)
-    }
-  }
 
 }

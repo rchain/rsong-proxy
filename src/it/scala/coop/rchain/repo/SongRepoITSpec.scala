@@ -15,23 +15,38 @@ import coop.rchain.service.moc.{MocSongMetadata, RSongData}
 import coop.rchain.service.moc.RSongData.rsong
 import org.specs2._
 import coop.rchain.utils.HexBytesUtil._
+import org.specs2.matcher.MatchResult
 
 
 class SongRepoITSpec extends Specification {
+//  def is =
+//    s2"""
+//       SongRepository Specifications
+//          base16 song conversion $loadSong1 to speed up
+//          base16 song conversion $loadSong2 to speed up
+//          base16 song conversion $loadSong3 to speed up
+//          base16 song conversion $loadSong4 to speed up
+//          base16 song conversion $loadSong5 to speed up
+//          base16 song conversion $loadSong6 to speed up
+//          base16 song conversion $loadSong7 to speed up
+//          base16 song conversion $loadSong8 to speed up
+//          base16 song conversion $loadSong9 to speed up
+//          upload song to RChain //toRNodeTest
+//          upload song to RChain $ok//fakeMusicFile
+//          upload song to RChain $ok//fakeMusic
+//          fetching song thru fetch2 from block $ok//fetch
+//          fetching song thru fetch2 from block $ok//fetch2
+//          cache rsong $ok//writeSongToCacheTest
+//          cache and store rsong $ok//cacheRsongTest
+//  """
+
+
   def is =
     s2"""
-       SongRepository Specifications
-          base16 song conversion $ok//loadSong1 to speed up
-          base16 song conversion $ok//loadSong2 to speed up
-          base16 song conversion $loadSong3 to speed up
-          upload song to RChain $ok//toRNodeTest
-          upload song to RChain $ok//fakeMusicFile
-          upload song to RChain $ok//fakeMusic
-          fetching song thru fetch2 from block $ok//fetch
-          fetching song thru fetch2 from block $ok//fetch2
-          cache rsong $ok//writeSongToCacheTest
-          cache and store rsong $ok//cacheRsongTest
-  """
+      |SongRepository
+      | song upload $songSerialUpload should work
+    """.stripMargin
+
 
   //  val proxy = RholangProxy("35.237.70.229", 40401)
 
@@ -46,6 +61,17 @@ class SongRepoITSpec extends Specification {
   import coop.rchain.service.moc.RSongData._
   import coop.rchain.repo.SongRepo._
 
+  def songSerialUpload: MatchResult[Boolean] = {
+    loadSong1
+    loadSong2
+//    loadSong3
+//    loadSong4
+//    loadSong5
+//    loadSong6
+//    loadSong7
+//    loadSong8
+    loadSong9
+  }
 def loadSong1 = {
   val  result = MocSongMetadata.loader1
   log.info(s"******** Brokke 3d upload results = ${result}")
@@ -65,7 +91,44 @@ def loadSong3 = {
   val  result = MocSongMetadata.loader3
   log.info(s"******** Brokke 3d upload results = ${result}")
   result.isRight === true
+}
 
+
+def loadSong4 = {
+  val  result = MocSongMetadata.loader4
+  log.info(s"******** Brokke 4d upload results = ${result}")
+  result.isRight === true
+}
+
+
+def loadSong5 = {
+  val  result = MocSongMetadata.loader5
+  log.info(s"******** Brokke 5d upload results = ${result}")
+  result.isRight === true
+}
+
+def loadSong6 = {
+  val  result = MocSongMetadata.loader6
+  log.info(s"******** Brokke 6d upload results = ${result}")
+  result.isRight === true
+}
+
+def loadSong7 = {
+  val  result = MocSongMetadata.loader7
+  log.info(s"******** Brokke 7d upload results = ${result}")
+  result.isRight === true
+}
+
+def loadSong8 = {
+  val  result = MocSongMetadata.loader8
+  log.info(s"******** Brokke 8d upload results = ${result}")
+  result.isRight === true
+}
+
+def loadSong9 = {
+  val  result = MocSongMetadata.loader9
+  log.info(s"******** Brokke 9d upload results = ${result}")
+  result.isRight === true
 }
 
 
@@ -143,28 +206,6 @@ def loadSong3 = {
     } yield songasstring
 
     false === false
-  }
-
-
-  def fetch2 = {
-    val name = "0123-x0xx-jpg"
-    val song = songRepo.cacheSong(name)
-    log.info(s"${song.toOption.get.size}")
-    (song.isLeft == false) === true
-  }
-
-  def writeSongToCacheTest = {
-    val name = "song-1234567890XX-Stereo"
-    val res = songRepo.writeSongToCache(name)
-    log.info(s"songsize = ${res.toOption.get.size}")
-    (res.isRight) === true
-  }
-
-  def cacheRsongTest = {
-    val name = "song-1234567890XX-Stereo"
-    val res = songRepo.cacheSong(name)
-    log.info(s"songsize = ${res.toOption.get.size}")
-    (res.isRight) === true
   }
 
 }

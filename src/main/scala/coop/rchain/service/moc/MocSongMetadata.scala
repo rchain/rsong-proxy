@@ -15,13 +15,11 @@ object MocSongMetadata {
 
   val artworks = Map(
     "Broke" -> Artwork(id = "Broke",
-                       uri = s"${rsongHostUrl}/${artpath}/art-work/Broke.jpg"),
-    "Euphoria" -> Artwork(
-      id = "Euphoria",
-      uri = s"${rsongHostUrl}/${artpath}/art-work/Euphoria.jpg"),
-    "Tiny_Human" -> Artwork(
-      id = "Tiny_Human",
-      uri = s"${rsongHostUrl}/${artpath}/art-work/TinyHuman.jpg")
+                       uri = s"${rsongHostUrl}/${artpath}/Broke.jpg"),
+    "Euphoria" -> Artwork(id = "Euphoria",
+                          uri = s"${rsongHostUrl}/${artpath}/Euphoria.jpg"),
+    "Tiny_Human" -> Artwork(id = "Tiny_Human",
+                            uri = s"${rsongHostUrl}/${artpath}/TinyHuman.jpg")
   )
   val artists = Map(
     "Broke" -> Artist(id = "Mycle-Wastman",
@@ -43,7 +41,7 @@ object MocSongMetadata {
       title = "Broke",
       duration_ms = 10000,
       artists = List(artists("Broke")),
-      uri = s"${rsongHostUrl}/${artpath}/art-work/Broke.jpg"
+      uri = s"${rsongHostUrl}/${artpath}/Broke.jpg"
     ),
     "Euphoria" -> Album(
       id = "Euphoria",
@@ -52,7 +50,7 @@ object MocSongMetadata {
       title = "Euphoria",
       duration_ms = 10000,
       artists = List(artists("Euphoria")),
-      uri = s"${rsongHostUrl}/${artpath}/art-work/Euphoria.jpg"
+      uri = s"${rsongHostUrl}/${artpath}/Euphoria.jpg"
     ),
     "Tiny_Human" -> Album(
       id = "album-id-Tiny_Human",
@@ -61,7 +59,7 @@ object MocSongMetadata {
       title = "Tiny Human",
       duration_ms = 10000,
       artists = List(artists("Tiny_Human")),
-      uri = s"${rsongHostUrl}/${artpath}/art-work/TinyHuman.jpg"
+      uri = s"${rsongHostUrl}/${artpath}/TinyHuman.jpg"
     )
   )
 
@@ -73,10 +71,10 @@ object MocSongMetadata {
         title = "Broke",
         audio = List(
           Audio(effect = TypeOfAsset.t("3D"),
-                uri = s"${rsongHostUrl}/${songpath}/music/Broke_Immersive.izr",
+                uri = s"${rsongHostUrl}/${songpath}/Broke_Immersive.izr",
                 duration_ms = 1000L),
           Audio(effect = TypeOfAsset.t("Stereo"),
-                uri = s"${rsongHostUrl}/${songpath}/music/Broke_Stereo.izr",
+                uri = s"${rsongHostUrl}/${songpath}/Broke_Stereo.izr",
                 duration_ms = 1000L)
         ),
         language = "EN"
@@ -88,8 +86,7 @@ object MocSongMetadata {
         title = "Tiny Human",
         audio = List(
           Audio(effect = TypeOfAsset.t("3D"),
-                uri =
-                  s"${rsongHostUrl}/${songpath}/music/Tiny_Human_Immersive.izr",
+                uri = s"${rsongHostUrl}/${songpath}/Tiny_Human_Immersive.izr",
                 duration_ms = 1000L),
           Audio(
             effect = TypeOfAsset.t("Stereo"),
@@ -105,11 +102,10 @@ object MocSongMetadata {
         title = "Euphoria",
         audio = List(
           Audio(effect = TypeOfAsset.t("3D"),
-                uri =
-                  s"${rsongHostUrl}/${songpath}/music/Euphoria_Immersive.izr",
+                uri = s"${rsongHostUrl}/${songpath}/Euphoria_Immersive.izr",
                 duration_ms = 1000L),
           Audio(effect = TypeOfAsset.t("Stereo"),
-                uri = s"${rsongHostUrl}/${songpath}/music/Euphoria_Stereo.izr",
+                uri = s"${rsongHostUrl}/${songpath}/Euphoria_Stereo.izr",
                 duration_ms = 1000L)
         ),
         language = "EN"
@@ -154,7 +150,7 @@ object MocSongMetadata {
       assetData = assetData.toOption.get,
       jsonData = jsData
     )
-    songRepo.deployAndProposeAsset(brookAsset)
+    songRepo.deployNoPropose(brookAsset)
 
   }
 
@@ -170,12 +166,10 @@ object MocSongMetadata {
       assetData = assetData.toOption.get,
       jsonData = jsData
     )
-    songRepo.deployAndProposeAsset(brookAsset)
-
+    songRepo.deployNoPropose(brookAsset)
   }
 
   def loader3 = {
-
     val songFile =
       "/home/kayvan/dev/assets/rchain_assets/Songs/Euphoria_Immersive.izr"
     val brookId = "Euphoria_Immersive.izr"
@@ -186,8 +180,89 @@ object MocSongMetadata {
       assetData = assetData.toOption.get,
       jsonData = jsData
     )
-    songRepo.deployAndProposeAsset(brookAsset)
+    songRepo.deployNoPropose(brookAsset)
+  }
 
+  def loader4 = {
+    val songFile =
+      "/home/kayvan/dev/assets/rchain_assets/Songs/Euphoria_Stereo.izr"
+    val brookId = "Euphoria_Stereo.izr"
+    val jsData = mocSongs("Euphoria").asJson.toString
+    val assetData = songRepo.asHexConcatRsong(songFile)
+    val brookAsset = RSongJsonAsset(
+      id = brookId,
+      assetData = assetData.toOption.get,
+      jsonData = jsData
+    )
+    songRepo.deployAndProposeAsset(brookAsset)
+  }
+
+  def loader5 = {
+    val songFile =
+      "/home/kayvan/dev/assets/rchain_assets/Songs/Tiny_Human_Stereo.izr"
+    val brookId = "Tiny_Human_Stereo.izr"
+    val jsData = mocSongs("Tiny_Human").asJson.toString
+    val assetData = songRepo.asHexConcatRsong(songFile)
+    val brookAsset = RSongJsonAsset(
+      id = brookId,
+      assetData = assetData.toOption.get,
+      jsonData = jsData
+    )
+    songRepo.deployNoPropose(brookAsset)
+  }
+  def loader6 = {
+    val songFile =
+      "/home/kayvan/dev/assets/rchain_assets/Songs/Tiny_Human_Immersive.izr"
+    val brookId = "Tiny_Human_Immersive.izr"
+    val jsData = mocSongs("Tiny_Human").asJson.toString
+    val assetData = songRepo.asHexConcatRsong(songFile)
+    val brookAsset = RSongJsonAsset(
+      id = brookId,
+      assetData = assetData.toOption.get,
+      jsonData = jsData
+    )
+    songRepo.deployNoPropose(brookAsset)
+  }
+  def loader7 = {
+    val artFile =
+      "/home/kayvan/dev/assets/rchain_assets/Labels/TinyHman.jpg"
+    val assetId = "TinyHuman.jpg"
+    val jsData = artworks("Tiny_Human").asJson.toString
+    val assetData = songRepo.asHexConcatRsong(artFile)
+    val theAsset = RSongJsonAsset(
+      id = assetId,
+      assetData = assetData.toOption.get,
+      jsonData = jsData
+    )
+    songRepo.deployAndProposeAsset(theAsset)
+  }
+
+  def loader8 = {
+    val artFile =
+      "/home/kayvan/dev/assets/rchain_assets/Labels/Euphoria.jpg"
+    val assetId = "Euphoria.jpg"
+    val jsData = artworks("Euphoria").asJson.toString
+    val assetData = songRepo.asHexConcatRsong(artFile)
+    val theAsset = RSongJsonAsset(
+      id = assetId,
+      assetData = assetData.toOption.get,
+      jsonData = jsData
+    )
+    songRepo.deployNoPropose(theAsset)
+  }
+
+  def loader9 = {
+    val artFile =
+      "/home/kayvan/dev/assets/rchain_assets/Labels/Broke.jpg"
+    val assetId = "Broke.jpg"
+    val jsData = artworks("Broke").asJson.toString
+    val assetData = songRepo.asHexConcatRsong(artFile)
+    val theAsset = RSongJsonAsset(
+      id = assetId,
+      assetData = assetData.toOption.get,
+      jsonData = jsData
+    )
+    songRepo.deployAndProposeAsset(theAsset)
   }
 
 }

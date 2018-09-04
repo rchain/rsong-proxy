@@ -19,6 +19,7 @@ import io.circe.syntax._
 import monix.eval.Task
 import monix.execution.CancelableFuture
 import coop.rchain.domain._
+import coop.rchain.service.moc.MocSongMetadata.mocSongs
 import coop.rchain.utils.Globals.appCfg
 import org.http4s.dsl.io._
 import org.http4s.headers._
@@ -44,20 +45,28 @@ class SongApi[F[_]: Sync]() extends Http4sDsl[F] {
   val routes: HttpRoutes[F] =
     HttpRoutes.of[F] {
       case GET -> Root / "song" :? userId(id) +& perPage(pp) +& page(p) =>
-        Ok(svc.allSongs(id, Cursor(10, 1)).asJson)
+        Ok(mocSongs.values.toList.asJson)
 
       case GET -> Root / "song" / id :? userId(uid) =>
-        val link = songRepo.retrieveSong(id)
+        val link = songRepo.findInBlock(id)
         link.fold(
           l => {
-            log.error(s"error in caching song with id: $id.")
+            log.error(s"error in finding asset by id: $id.")
             log.error(s"${l}")
             InternalServerError()
           },
           r => Ok(r)
         )
 
-      case GET -> Root / "artwork" / id ⇒
-        Ok(Json.obj("message" -> Json.fromString("under construction")))
+      case GET -> Root / "art" / id ⇒
+        val link = songRepo.findInBlock(id)
+        link.fold(
+          l => {
+            log.error(s"error in finding asset by id: $id.")
+            log.error(s"${l}")
+            InternalServerError()
+          },
+          r => Ok(r)
+        )
     }
 }

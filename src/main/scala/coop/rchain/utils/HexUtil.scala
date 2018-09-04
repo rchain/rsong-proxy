@@ -1,17 +1,11 @@
 package coop.rchain.utils
 
+import coop.rchain.crypto.codec.Base16
+
 object HexBytesUtil {
 
-  def hex2bytes(hexString: String): Array[Byte] = {
-    val hex = hexString.filter(_ != '\"')
-    if (hex.contains(" ")) {
-      hex.split(" ").map(Integer.parseInt(_, 16).toByte)
-    } else if (hex.contains("-")) {
-      hex.split("-").map(Integer.parseInt(_, 16).toByte)
-    } else {
-      hex.sliding(2, 2).toArray.map(Integer.parseInt(_, 16).toByte)
-    }
-  }
+  def hex2bytes(hexString: String): Array[Byte] =
+    Base16.decode(hexString)
 
   def bytes2hex(bytes: Array[Byte], sep: Option[String]): String = {
     sep match {
