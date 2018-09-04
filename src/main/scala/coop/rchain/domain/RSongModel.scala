@@ -23,7 +23,8 @@ object RSongModel {
       musician: List[String],
       language: String
   ) extends RSongModel
-//      song: Song
+
+  //      song: Song
 
   case class AuthorizedTerritory(
       territory: List[String],
@@ -51,14 +52,22 @@ object RSongModel {
       consumptionModel: ConsumptionModel,
       label: Label,
       song: RSong,
+      artWorkId: String,
       album: Album
   ) extends RSongModel
 
   case class RSongAsset(
       rsong: RSong,
-      audioType: String,
-      audioData: String,
+      typeOfAsset: String, //JPG, Stereo, 3D
+      assetData: String,
+      metadata: RSongMetadata,
       uri: String
+  )
+
+  case class RSongJsonAsset(
+      id: String,
+      typsOfAsset: String,
+      jsonData: String
   )
 
 }

@@ -6,6 +6,7 @@ import coop.rchain.domain.RSongModel._
 import coop.rchain.domain._
 
 object RSongData {
+
   import coop.rchain.utils.Globals._
 
   object Brooke {
@@ -75,6 +76,7 @@ object RSongData {
     RSongMetadata(consumptionModel = consumptionModel,
                   label = label,
                   song = rsong,
+                  artWorkId = "Brook-jpg",
                   album = album)
 
 }

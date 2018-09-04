@@ -56,11 +56,22 @@ class SongRepo(grpc: RholangProxy) {
 
   val log = Logger[SongRepo]
 
+  def asRhoTerm1(asset: RSongJsonAsset) = {
+    log.info(s"-- name to retrieve song: ${asset.id}-${asset.typeOfAsset}")
+
+    s"""@["Immersion", "store"]!(${asset.assetData}, ${asset.jsonData}, "${asset.id}-${asset.typeOfAsset}")"""
+  }
+
+  def deployAndPropose1(asset: RSongJsonAsset) =
+    (asRhoTerm1 _
+      andThen
+        grpc.deployAndPropose _)(asset)
+
   def asRhoTerm(asset: RSongAsset) = {
     log.info(
-      s"-- name to retrieve song: ${asset.rsong.isrc}-${asset.audioType}")
+      s"-- name to retrieve song: ${asset.rsong.isrc}-${asset.typeOfAsset}")
 
-    s"""@["Immersion", "store"]!(${asset.audioData}, ${asset.rsong.asJson.toString}, "${asset.rsong.isrc}-${asset.audioType}")"""
+    s"""@["Immersion", "store"]!(${asset.assetData}, ${asset.rsong.asJson.toString}, "${asset.rsong.isrc}-${asset.typeOfAsset}")"""
   }
 
   def deployAndPropose(asset: RSongAsset) =

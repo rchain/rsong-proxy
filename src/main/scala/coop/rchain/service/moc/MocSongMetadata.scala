@@ -64,10 +64,10 @@ object MocSongMetadata {
         name = "Broke",
         title = "Broke",
         audio = List(
-          Audio(effect = AudioTypes.t("3D"),
+          Audio(effect = TypeOfAsset.t("3D"),
                 uri = s"${rsongHostUrl}/${songpath}/music/Broke_Immersive.izr",
                 duration_ms = 1000L),
-          Audio(effect = AudioTypes.t("Stereo"),
+          Audio(effect = TypeOfAsset.t("Stereo"),
                 uri =
                   s"${rsongHostUrl}/${songpath}/assets/music/Broke_Stereo.izr",
                 duration_ms = 1000L)
@@ -80,12 +80,12 @@ object MocSongMetadata {
         name = "Tiny Human",
         title = "Tiny Human",
         audio = List(
-          Audio(effect = AudioTypes.t("3D"),
+          Audio(effect = TypeOfAsset.t("3D"),
                 uri =
                   s"${rsongHostUrl}/${songpath}/music/Tiny_Human_Immersive.izr",
                 duration_ms = 1000L),
           Audio(
-            effect = AudioTypes.t("Stereo"),
+            effect = TypeOfAsset.t("Stereo"),
             uri =
               s"${rsongHostUrl}/${songpath}/assets/music/Tiny_Human_Stereo.izr",
             duration_ms = 1000L)
@@ -98,11 +98,11 @@ object MocSongMetadata {
         name = "Euphoria",
         title = "Euphoria",
         audio = List(
-          Audio(effect = AudioTypes.t("3D"),
+          Audio(effect = TypeOfAsset.t("3D"),
                 uri =
                   s"${rsongHostUrl}/${songpath}/music/Euphoria_Immersive.izr",
                 duration_ms = 1000L),
-          Audio(effect = AudioTypes.t("Stereo"),
+          Audio(effect = TypeOfAsset.t("Stereo"),
                 uri = s"${rsongHostUrl}/${songpath}/music/Euphoria_Stereo.izr",
                 duration_ms = 1000L)
         ),

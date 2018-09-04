@@ -6,8 +6,9 @@ case class Entity(id: String, data: String) extends Domain
 
 case class PlayList(entity: Entity) extends Domain
 
-object AudioTypes {
-  val t: Map[String, String] = Map("Stereo" -> "Stereo", "3D" -> "3D")
+object TypeOfAsset {
+  val t: Map[String, String] =
+    Map("Stereo" -> "Stereo", "3D" -> "3D", "jpg" -> "jpg")
 }
 
 case class Interval[T](from: T, to: Option[T])

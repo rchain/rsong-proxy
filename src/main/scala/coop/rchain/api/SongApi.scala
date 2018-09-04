@@ -19,6 +19,7 @@ import io.circe.syntax._
 import monix.eval.Task
 import monix.execution.CancelableFuture
 import coop.rchain.domain._
+import coop.rchain.utils.Globals.appCfg
 import org.http4s.dsl.io._
 import org.http4s.headers._
 import org.http4s.Uri
@@ -29,8 +30,10 @@ class SongApi[F[_]: Sync]() extends Http4sDsl[F] {
   object page extends OptionalQueryParamDecoderMatcher[Int]("page")
   object userId extends QueryParamDecoderMatcher[String]("userId")
 
-  //TODO pass these as you instantiate calss
-  val proxy = RholangProxy("localhost", 40401)
+  lazy val (host, port) =
+    (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
+  val proxy = RholangProxy(host, port)
+
   val songRepo = SongRepo(proxy)
 
   val userRepo = UserRepo()
