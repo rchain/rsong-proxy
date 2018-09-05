@@ -17,5 +17,6 @@ spec:
       containers:
       - name: immersion-rc-proxy
         image: kayvank/immersion-rc-proxy:1.0-SNAPSHOT-moc2-patch-1
+
         ports:
         - containerPort: 9000

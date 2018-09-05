@@ -15,7 +15,7 @@ import io.circe._
 import io.circe.generic.auto._
 import io.circe.parser._
 import io.circe.syntax._
-import scala.concurrent.g
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -35,8 +35,17 @@ class UserApi[F[_]: Sync]() extends Http4sDsl[F] {
         .find(id)
         .fold(
           e =>
-            if (e.code == ErrorCode.nameNotFount) NotFound(s"${id}")
-            else InternalServerError(s"${e.code} ; ${e.msg}"), //NotFound(id),
+            if (e.code == ErrorCode.nameNotFount) {
+              val _ = Future { repo.newUser(id) }
+              Ok(
+                User(id = id,
+                     name = None,
+                     active = true,
+                     lastLogin = System.currentTimeMillis,
+                     playCount = 100,
+                     metadata = Map("immersionUser" -> "ImmersionUser")).asJson)
+            } else
+              InternalServerError(s"${e.code} ; ${e.msg}"), //NotFound(id),
           r =>
             Ok(
               User(id = id,
@@ -48,7 +57,7 @@ class UserApi[F[_]: Sync]() extends Http4sDsl[F] {
         )
 
     case req @ POST -> Root / id =>
-      val _ = Future{ repo.newUser(id) }
+      val _ = Future { repo.newUser(id) }
       Accepted(
         User(id = id,
              name = None,
