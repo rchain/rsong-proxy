@@ -122,7 +122,7 @@ class SongRepo(grpc: RholangProxy) {
       for {
         sid <- find(assetName)
         randSuffix = scala.util.Random.alphanumeric.take(20).toString()
-        _ = println(s"sid: $sid")
+        _ = log.info(s"sid: $sid")
         queryName = s"""("$sid".hexToBytes(),"${sid}-${SONG_OUT}")"""
         term = s"""@["Immersion", "retrieveSong"]!$queryName"""
         m <- grpc.deployAndPropose(term)
@@ -136,10 +136,10 @@ class SongRepo(grpc: RholangProxy) {
     }
     song match {
       case Right(s) =>
-        log.info(s"-- got asset $assetName--")
+        log.info(s"got asset $assetName--")
         Right(s)
       case Left(e) =>
-        log.error(s"-- asset retrieval error: ${e}")
+        log.error(s"asset retrieval error: ${e}")
         Left(e)
     }
   }

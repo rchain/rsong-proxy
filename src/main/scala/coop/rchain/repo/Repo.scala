@@ -10,15 +10,24 @@ import coop.rchain.domain._
 
 object Repo {
 
+  implicit class ParsToString(pars: Seq[Par]) {
+    def stringify() = {
+      val e = pars.map(p => PrettyPrinter().buildString(p))
+      if (e.isEmpty)
+        Left(Err(ErrorCode.nameNotFound, s"Rholang name not found${}", None))
+      else Right(e.head)
+    }
+  }
+
   def find: RholangProxy => String => Either[Err, String] =
     grpc =>
       rName =>
         for {
-          d <- dataAtNameAsPar(grpc)(s""""${rName}"""")
+          d <- getDataAtName(grpc)(s""""${rName}"""")
           e <- dataAtName(d)
         } yield e
 
-  def dataAtNameAsPar: RholangProxy => String => Either[Err, Seq[Par]] =
+  def getDataAtName: RholangProxy => String => Either[Err, Seq[Par]] =
     grpc =>
       term =>
         for {
@@ -30,7 +39,7 @@ object Repo {
     pars => {
       val e = pars.map(p => PrettyPrinter().buildString(p))
       if (e.isEmpty)
-        Left(Err(ErrorCode.nameNotFount, s"Rholang name not found${}", None))
+        Left(Err(ErrorCode.nameNotFound, s"Rholang name not found${}", None))
       else Right(e.head)
     }
 }

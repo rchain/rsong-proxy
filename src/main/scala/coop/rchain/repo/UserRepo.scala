@@ -57,7 +57,7 @@ class UserRepo(grpc: RholangProxy) {
   def find(rName: String): Either[Err, String] = Repo.find(grpc)(rName)
 
   def dataAtNameAsPar(term: String): Either[Err, Seq[Par]] =
-    Repo.dataAtNameAsPar(grpc)(term)
+    Repo.getDataAtName(grpc)(term)
 
   val computePlayCount: String => Either[Err, DeployAndProposeResponse] =
     userId =>

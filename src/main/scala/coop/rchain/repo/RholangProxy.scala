@@ -17,7 +17,7 @@ import coop.rchain.utils.Globals._
 
 object RholangProxy {
 
-  val MAXGRPCZIE = 1024 * 1024 * 100
+  val MAXGRPCZIE = 1024 * 1024 * 50000
   lazy val (host, port) =
     (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
 
@@ -113,7 +113,7 @@ class RholangProxy(channel: ManagedChannel) {
     res.status match {
       case "Success" => Right(res)
       case _ =>
-        Left(Err(ErrorCode.nameNotFount, s"no data for par: ${par}", None))
+        Left(Err(ErrorCode.nameNotFound, s"no data for par: ${par}", None))
     }
   }
   def dataAtCont(par: Par) = {

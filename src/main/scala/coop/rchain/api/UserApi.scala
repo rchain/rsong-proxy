@@ -30,12 +30,13 @@ class UserApi[F[_]: Sync]() extends Http4sDsl[F] {
 
   val log = Logger("UserApi")
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
+
     case GET -> Root / id =>
       repo
         .find(id)
         .fold(
           e =>
-            if (e.code == ErrorCode.nameNotFount) {
+            if (e.code == ErrorCode.nameNotFound) {
               val _ = Future { repo.newUser(id) }
               Ok(
                 User(id = id,
@@ -82,7 +83,7 @@ class UserApi[F[_]: Sync]() extends Http4sDsl[F] {
         .findPlayCount(id)
         .fold(
           e =>
-            if (e.code == ErrorCode.nameNotFount) NotFound(s"${e}")
+            if (e.code == ErrorCode.nameNotFound) NotFound(s"${e}")
             else InternalServerError(s"${e.code} ; ${e.msg}"), //NotFound(id),
           r => Ok(r.asJson)
         )
