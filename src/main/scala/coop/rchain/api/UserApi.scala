@@ -2,7 +2,7 @@ package coop.rchain.api
 
 import cats.effect._
 import com.typesafe.scalalogging.Logger
-import coop.rchain.domain.{Err, ErrorCode}
+import coop.rchain.domain.{Err, ErrorCode, User}
 import coop.rchain.repo.{RholangProxy, SongRepo, UserRepo}
 import coop.rchain.utils.Globals.appCfg
 import io.circe.Json
@@ -15,6 +15,10 @@ import io.circe._
 import io.circe.generic.auto._
 import io.circe.parser._
 import io.circe.syntax._
+import scala.concurrent.g
+
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class UserApi[F[_]: Sync]() extends Http4sDsl[F] {
 
@@ -33,21 +37,36 @@ class UserApi[F[_]: Sync]() extends Http4sDsl[F] {
           e =>
             if (e.code == ErrorCode.nameNotFount) NotFound(s"${id}")
             else InternalServerError(s"${e.code} ; ${e.msg}"), //NotFound(id),
-          r => Ok(Json.obj(id -> Json.fromString(r)))
+          r =>
+            Ok(
+              User(id = id,
+                   name = None,
+                   active = true,
+                   lastLogin = System.currentTimeMillis,
+                   playCount = 100,
+                   metadata = Map("immersionUser" -> "ImmersionUser")).asJson)
         )
 
     case req @ POST -> Root / id =>
-      repo
-        .newUser(id)
-        .fold(
-          e =>
-            if (e.code == ErrorCode.nameNotFount) NotFound(s"${e}")
-            else InternalServerError(s"${e.code} ; ${e.msg}"), //NotFound(id),
-          r => Ok(Json.obj(id -> Json.fromString("is created")))
-        )
+      val _ = Future{ repo.newUser(id) }
+      Accepted(
+        User(id = id,
+             name = None,
+             active = true,
+             lastLogin = System.currentTimeMillis,
+             playCount = 100,
+             metadata = Map("immersionUser" -> "ImmersionUser")).asJson)
+//      repo
+//        .newUser(id)
+//        .fold(
+//          e =>
+//            if (e.code == ErrorCode.nameNotFount) NotFound(s"${e}")
+//            else InternalServerError(s"${e.code} ; ${e.msg}"), //NotFound(id),
+//          r => Ok(Json.obj(id -> Json.fromString("is created")))
+//        )
 
     case req @ PUT -> Root / id / "playcount" =>
-      Accepted(Json.obj("status" -> Json.fromString("under construction")))
+      Accepted()
 
     case req @ GET -> Root / id / "playcount" =>
       repo
