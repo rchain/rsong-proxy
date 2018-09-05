@@ -62,10 +62,10 @@ class SongRepoITSpec extends Specification {
   import coop.rchain.repo.SongRepo._
 
   def songSerialUpload: MatchResult[Boolean] = {
-//  done  loadSong1
-//  done   loadSong2
-// **    loadSong3
-// **   loadSong4
+// loadSong1
+// loadSong2
+//     loadSong3
+//    loadSong4
 //    loadSong5
 //    loadSong6
     loadSong7
