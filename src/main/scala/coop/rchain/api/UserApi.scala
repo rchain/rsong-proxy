@@ -9,11 +9,18 @@ import io.circe.Json
 import org.http4s.HttpRoutes
 import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
+import io.circe.generic.auto._
+import io.circe.syntax._
+import io.circe._
+import io.circe.generic.auto._
+import io.circe.parser._
+import io.circe.syntax._
 
 class UserApi[F[_]: Sync]() extends Http4sDsl[F] {
 
   lazy val (host, port) =
     (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
+  println(s"userAPI using host rnode : ${host}")
   val proxy = RholangProxy(host, port)
   val repo = UserRepo(proxy)
 
@@ -49,7 +56,7 @@ class UserApi[F[_]: Sync]() extends Http4sDsl[F] {
           e =>
             if (e.code == ErrorCode.nameNotFount) NotFound(s"${e}")
             else InternalServerError(s"${e.code} ; ${e.msg}"), //NotFound(id),
-          r => Ok(Json.obj("playcount" -> Json.fromInt(r)))
+          r => Ok(r.asJson)
         )
   }
 

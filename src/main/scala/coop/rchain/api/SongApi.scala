@@ -2,29 +2,19 @@ package coop.rchain.api
 
 import cats.effect._
 import com.typesafe.scalalogging.Logger
-import coop.rchain.domain.Cursor
-import io.circe.Json
 import org.http4s.circe._
 import coop.rchain.service._
 import coop.rchain.protocol.Protocol._
 import coop.rchain.repo._
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
+
 import io.circe.generic.auto._
 import io.circe.syntax._
-import io.circe._
-import io.circe.generic.auto._
-import io.circe.parser._
-import io.circe.syntax._
-import monix.eval.Task
-import monix.execution.CancelableFuture
 import coop.rchain.domain._
 import coop.rchain.service.moc.MocSongMetadata
 import coop.rchain.service.moc.MocSongMetadata.mocSongs
 import coop.rchain.utils.Globals.appCfg
-import org.http4s.dsl.io._
-import org.http4s.headers._
-import org.http4s.Uri
 
 class SongApi[F[_]: Sync]() extends Http4sDsl[F] {
 
@@ -34,6 +24,7 @@ class SongApi[F[_]: Sync]() extends Http4sDsl[F] {
 
   lazy val (host, port) =
     (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
+  println(s"userAPI using host: ${host}")
   val proxy = RholangProxy(host, port)
 
   val songRepo = SongRepo(proxy)
@@ -50,12 +41,17 @@ class SongApi[F[_]: Sync]() extends Http4sDsl[F] {
 
       case GET -> Root / "song" / id :? userId(uid) =>
         MocSongMetadata.mocSongs.get(id) match {
-          case Some(m) => Ok(SongResponse(m, PlayCount(100)).asJson)
-          case None    => NotFound(id)
+          case Some(m) =>
+            Ok(
+              SongResponse(
+                m,
+                userRepo.findPlayCount(id).getOrElse(PlayCount(50))).asJson)
+          case None => NotFound(id)
         }
 
-      case GET -> Root / "song" / music / id :? userId(uid) =>
+      case GET -> Root / "song" / "music" / id :? userId(uid) =>
         val link = songRepo.findInBlock(id)
+        val _ = userRepo.computePlayCount
         link.fold(
           l => {
             log.error(s"error in finding asset by id: $id.")
