@@ -16,6 +16,7 @@ import coop.rchain.service.moc.RSongData.rsong
 import org.specs2._
 import coop.rchain.utils.HexBytesUtil._
 import org.specs2.matcher.MatchResult
+import coop.rchain.utils.Globals._
 
 
 class SongRepoITSpec extends Specification {
@@ -47,10 +48,11 @@ class SongRepoITSpec extends Specification {
       | song upload $songSerialUpload should work
     """.stripMargin
 
+  lazy val (host, port) =
+    (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
+println(s"++++++++++++++++++ host = ${host}")
 
-  //  val proxy = RholangProxy("35.237.70.229", 40401)
-
-  val proxy = RholangProxy("localhost", 40401)
+  val proxy = RholangProxy("34.222.16.129", port)
   val songRepo = SongRepo(proxy)
   val userRepo = UserRepo(proxy)
   val log = Logger[SongRepoITSpec]
@@ -67,10 +69,11 @@ class SongRepoITSpec extends Specification {
 //     loadSong3
 //    loadSong4
 //    loadSong5
-//    loadSong6
+    loadSong6
     loadSong7
     loadSong8
-// **** done   loadSong9
+    loadSong9
+    true === true
   }
 def loadSong1 = {
   val  result = MocSongMetadata.loader1

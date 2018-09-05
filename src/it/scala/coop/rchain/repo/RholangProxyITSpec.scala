@@ -19,7 +19,7 @@ class RholangProxyITSpec extends Specification {
 //"""
   lazy val (host, port) =
     (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
-  val proxy = RholangProxy(host, port)
+  val proxy = RholangProxy("34.222.16.129", port)
 
   val log = Logger[RholangProxyITSpec]
 
@@ -27,7 +27,7 @@ class RholangProxyITSpec extends Specification {
   val userName="john-smith1"
 
   def is = s2"""
-                Rnode specification it should work $ok//deploySeq
+                Rnode specification it should work $ok ///deploySeq
     """
 
 //  def is = s2""
