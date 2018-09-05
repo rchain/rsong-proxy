@@ -123,11 +123,10 @@ class SongRepo(grpc: RholangProxy) {
         sid <- find(assetName)
         randSuffix = scala.util.Random.alphanumeric.take(20).toString()
         _ = println(s"sid: $sid")
-        songChannel = s"${sid}-${SONG_OUT}-$randSuffix"
-        queryName = s"""("$sid".hexToBytes(),$songChannel)"""
+        queryName = s"""("$sid".hexToBytes(),"${sid}-${SONG_OUT}")"""
         term = s"""@["Immersion", "retrieveSong"]!$queryName"""
         m <- grpc.deployAndPropose(term)
-        p <- Repo.find(grpc)(songChannel)
+        p <- Repo.find(grpc)(s"${sid}-${SONG_OUT}")
         ba = Base16.decode(p)
         _ = songMap.update(assetName, ba)
       } yield ba
