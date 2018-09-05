@@ -24,6 +24,7 @@ class SongApi[F[_]: Sync]() extends Http4sDsl[F] {
 
   lazy val (host, port) =
     (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
+  println(s"userAPI using host: ${host}")
   val proxy = RholangProxy(host, port)
 
   val songRepo = SongRepo(proxy)
