@@ -60,7 +60,7 @@ class RholangProxyITSpec extends Specification {
 
   def getUser:MatchResult[Boolean] = {
     log.info(s"attempting the listenAtName: ${userName}")
-    val results = userService.find(userName)
+    val results = Repo.findByName(proxy, userName)
     log.info(s"grpcResults of name-retrivals = ${results}")
     (results.isRight && !results.toOption.get.isEmpty) === true
   }

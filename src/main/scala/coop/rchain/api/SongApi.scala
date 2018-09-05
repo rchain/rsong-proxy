@@ -8,31 +8,23 @@ import coop.rchain.protocol.Protocol._
 import coop.rchain.repo._
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
-
 import io.circe.generic.auto._
 import io.circe.syntax._
 import coop.rchain.domain._
 import coop.rchain.service.moc.MocSongMetadata
 import coop.rchain.service.moc.MocSongMetadata.mocSongs
-import coop.rchain.utils.Globals.appCfg
 
-class SongApi[F[_]: Sync]() extends Http4sDsl[F] {
+class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
 
   object perPage extends OptionalQueryParamDecoderMatcher[Int]("per_page")
+
   object page extends OptionalQueryParamDecoderMatcher[Int]("page")
+
   object userId extends QueryParamDecoderMatcher[String]("userId")
 
-  lazy val (host, port) =
-    (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
-  println(s"userAPI using host: ${host}")
-  val proxy = RholangProxy(host, port)
-
   val songRepo = SongRepo(proxy)
-
-  val userRepo = UserRepo()
-  val svc = new SongService(SongRepo()) //TODO remove once we're off moc data
+  val userRepo = UserRepo(proxy)
   val log = Logger("SongApi")
-  log.info(s"host= ${host}")
 
   val routes: HttpRoutes[F] =
     HttpRoutes.of[F] {
