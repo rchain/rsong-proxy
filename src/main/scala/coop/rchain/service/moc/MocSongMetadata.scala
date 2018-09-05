@@ -88,10 +88,9 @@ object MocSongMetadata {
           Audio(effect = TypeOfAsset.t("3D"),
                 uri = s"${rsongHostUrl}/${songpath}/Tiny_Human_Immersive.izr",
                 duration_ms = 1000L),
-          Audio(
-            effect = TypeOfAsset.t("Stereo"),
-            uri = s"${rsongHostUrl}/${songpath}/music/Tiny_Human_Stereo.izr",
-            duration_ms = 1000L)
+          Audio(effect = TypeOfAsset.t("Stereo"),
+                uri = s"${rsongHostUrl}/${songpath}/Tiny_Human_Stereo.izr",
+                duration_ms = 1000L)
         ),
         language = "EN"
       ),
