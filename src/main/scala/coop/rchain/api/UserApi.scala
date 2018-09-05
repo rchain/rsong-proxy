@@ -35,8 +35,17 @@ class UserApi[F[_]: Sync]() extends Http4sDsl[F] {
         .find(id)
         .fold(
           e =>
-            if (e.code == ErrorCode.nameNotFount) NotFound(s"${id}")
-            else InternalServerError(s"${e.code} ; ${e.msg}"), //NotFound(id),
+            if (e.code == ErrorCode.nameNotFount) {
+              val _ = Future { repo.newUser(id) }
+              Ok(
+                User(id = id,
+                     name = None,
+                     active = true,
+                     lastLogin = System.currentTimeMillis,
+                     playCount = 100,
+                     metadata = Map("immersionUser" -> "ImmersionUser")).asJson)
+            } else
+              InternalServerError(s"${e.code} ; ${e.msg}"), //NotFound(id),
           r =>
             Ok(
               User(id = id,
