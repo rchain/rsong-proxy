@@ -7,7 +7,7 @@ object Globals {
   val appCfg = cfg.getConfig("coop.rchain.immersion")
 
   val artpath = "v1/art"
-  val songpath = "v1/song"
+  val songpath = "v1/song/music"
   val rsongHostUrl: String = "http://dev-rchain.com"
 
 }

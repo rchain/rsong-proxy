@@ -19,6 +19,7 @@ import io.circe.syntax._
 import monix.eval.Task
 import monix.execution.CancelableFuture
 import coop.rchain.domain._
+import coop.rchain.service.moc.MocSongMetadata
 import coop.rchain.service.moc.MocSongMetadata.mocSongs
 import coop.rchain.utils.Globals.appCfg
 import org.http4s.dsl.io._
@@ -48,6 +49,12 @@ class SongApi[F[_]: Sync]() extends Http4sDsl[F] {
         Ok(mocSongs.values.toList.asJson)
 
       case GET -> Root / "song" / id :? userId(uid) =>
+        MocSongMetadata.mocSongs.get(id) match {
+          case Some(m) => Ok(SongResponse(m, PlayCount(100)).asJson)
+          case None    => NotFound(id)
+        }
+
+      case GET -> Root / "song" / music / id :? userId(uid) =>
         val link = songRepo.findInBlock(id)
         link.fold(
           l => {
