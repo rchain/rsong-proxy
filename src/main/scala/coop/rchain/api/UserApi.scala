@@ -15,7 +15,7 @@ import io.circe._
 import io.circe.generic.auto._
 import io.circe.parser._
 import io.circe.syntax._
-import scala.concurrent.g
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -48,7 +48,7 @@ class UserApi[F[_]: Sync]() extends Http4sDsl[F] {
         )
 
     case req @ POST -> Root / id =>
-      val _ = Future{ repo.newUser(id) }
+      val _ = Future { repo.newUser(id) }
       Accepted(
         User(id = id,
              name = None,
