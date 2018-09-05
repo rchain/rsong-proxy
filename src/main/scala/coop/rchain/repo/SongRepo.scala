@@ -148,4 +148,6 @@ class SongRepo(grpc: RholangProxy) {
 
   def dataAtName(pars: Seq[Par]) = Repo.dataAtName(pars)
 
+  def getMetadata(id: String) = {}
+
 }
