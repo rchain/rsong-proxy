@@ -5,13 +5,10 @@ import cats.implicits._
 import org.http4s.server.blaze.BlazeBuilder
 import api._
 import utils.Globals._
-import service._
 import repo._
-
-import scala.concurrent.ExecutionContext.Implicits.global
 import api.middleware._
-
 import scala.concurrent.duration.Duration
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object Bootstrap extends IOApp {
 
@@ -21,11 +18,14 @@ object Bootstrap extends IOApp {
 }
 object ServerStream {
   val apiVersion = appCfg.getString("api.version")
+  lazy val (host, port) =
+    (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
+  println(s"userAPI using host: ${host}:${port}")
+  val proxy = RholangProxy(host, port)
 
-  def songService = new SongService(SongRepo())
   def statusApi[F[_]: Effect] = new Status[F].routes
-  def userApi[F[_]: Effect] = new UserApi[F]().routes
-  def songApi[F[_]: Effect] = new SongApi[F]().routes
+  def userApi[F[_]: Effect] = new UserApi[F](proxy).routes
+  def songApi[F[_]: Effect] = new SongApi[F](proxy).routes
 
   def stream[F[_]: ConcurrentEffect] =
     BlazeBuilder[F]

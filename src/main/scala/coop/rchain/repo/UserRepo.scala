@@ -3,11 +3,11 @@ package coop.rchain.repo
 import com.typesafe.scalalogging.Logger
 import coop.rchain.domain._
 import coop.rchain.models.Par
-import coop.rchain.rholang.interpreter.PrettyPrinter
 import io.circe._
 import io.circe.generic.auto._
 import scala.util._
 import io.circe.syntax._
+import coop.rchain.utils.Globals._
 
 object UserRepo {
   val COUNT_OUT = "COUNT-OUT"
@@ -22,10 +22,6 @@ object UserRepo {
          Map("key-1" -> "value-1", "key-2" -> "value-2")).asJson
   }
 
-  import coop.rchain.utils.Globals._
-  private val (host, port) =
-    (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
-
   def newUserRhoTerm(name: String): String =
     s"""@["Immersion", "newUserId"]!("${name}")"""
 
@@ -37,16 +33,14 @@ object UserRepo {
     }
   }
 
-  def apply(): UserRepo =
-    new UserRepo(RholangProxy(host, port))
-
   def apply(grpc: RholangProxy): UserRepo =
     new UserRepo(grpc)
 }
 
 class UserRepo(grpc: RholangProxy) {
-
+  import Repo._
   import UserRepo._
+
   val log = Logger[UserRepo]
 
   val songRepo = SongRepo(grpc)
@@ -54,15 +48,13 @@ class UserRepo(grpc: RholangProxy) {
   val newUser: String => Either[Err, DeployAndProposeResponse] = user =>
     (newUserRhoTerm _ andThen grpc.deployAndPropose _)(user)
 
-  def find(rName: String): Either[Err, String] = Repo.find(grpc)(rName)
-
   def dataAtNameAsPar(term: String): Either[Err, Seq[Par]] =
-    Repo.dataAtNameAsPar(grpc)(term)
+    Repo.getDataAtName(grpc, term)
 
   val computePlayCount: String => Either[Err, DeployAndProposeResponse] =
     userId =>
       for {
-        rhoName <- find(userId)
+        rhoName <- findByName(grpc, userId)
         queryName = s"""("$rhoName".hexToBytes(),"${userId}-${COUNT_OUT}")"""
         term = s"""@["Immersion", "playCount"]!${queryName}"""
         m <- grpc.deployAndPropose(term)
@@ -71,7 +63,7 @@ class UserRepo(grpc: RholangProxy) {
   def findPlayCount(userId: String): Either[Err, PlayCount] =
     for {
       c <- computePlayCount(userId)
-      c <- Repo.find(grpc)(s"$userId-$COUNT_OUT")
+      c <- findByName(grpc, s"$userId-$COUNT_OUT")
       i <- asInt(c)
     } yield (PlayCount(i))
 

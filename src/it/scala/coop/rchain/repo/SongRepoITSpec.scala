@@ -20,39 +20,20 @@ import coop.rchain.utils.Globals._
 
 
 class SongRepoITSpec extends Specification {
-//  def is =
-//    s2"""
-//       SongRepository Specifications
-//          base16 song conversion $loadSong1 to speed up
-//          base16 song conversion $loadSong2 to speed up
-//          base16 song conversion $loadSong3 to speed up
-//          base16 song conversion $loadSong4 to speed up
-//          base16 song conversion $loadSong5 to speed up
-//          base16 song conversion $loadSong6 to speed up
-//          base16 song conversion $loadSong7 to speed up
-//          base16 song conversion $loadSong8 to speed up
-//          base16 song conversion $loadSong9 to speed up
-//          upload song to RChain //toRNodeTest
-//          upload song to RChain $ok//fakeMusicFile
-//          upload song to RChain $ok//fakeMusic
-//          fetching song thru fetch2 from block $ok//fetch
-//          fetching song thru fetch2 from block $ok//fetch2
-//          cache rsong $ok//writeSongToCacheTest
-//          cache and store rsong $ok//cacheRsongTest
-//  """
 
 
   def is =
     s2"""
       |SongRepository
       | song upload $songSerialUpload should work
+      | fetch from rnode $fetch
     """.stripMargin
 
   lazy val (host, port) =
     (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
 println(s"++++++++++++++++++ host = ${host}")
 
-  val proxy = RholangProxy("34.222.16.129", port)
+  lazy val proxy = RholangProxy("34.222.16.129", port)
   val songRepo = SongRepo(proxy)
   val userRepo = UserRepo(proxy)
   val log = Logger[SongRepoITSpec]
@@ -69,10 +50,10 @@ println(s"++++++++++++++++++ host = ${host}")
 //     loadSong3
 //    loadSong4
 //    loadSong5
-    loadSong6
-    loadSong7
-    loadSong8
-    loadSong9
+//    loadSong6
+//    loadSong7
+//    loadSong8
+//    loadSong9
     true === true
   }
 def loadSong1 = {
@@ -196,19 +177,9 @@ def loadSong9 = {
 
   def fetch = {
     val name = "song-1234567890XX-Stereo"
-
-    val songdata = for {
-      sid <- userRepo.find(name)
-      _ = log.info(s"SID= ${sid}")
-      queryName = s"""("$sid".hexToBytes(),"$sid-out")"""
-      _ = log.info(s"--- queryName = ${queryName}")
-      term = s"""@["Immersion", "retrieveSong"]!${queryName}"""
-      m <- proxy.deployAndPropose(term)
-      songasstring <- userRepo.find(s"${sid}-out")
-      _ = log.info(s"songAsSting.size = ${songasstring.size}")
-    } yield songasstring
-
-    false === false
+    val song = songRepo.findInBlock(name)
+    log.info(s"test.fetch returned song=${song}")
+    song.isRight === true
   }
 
 }

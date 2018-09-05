@@ -17,12 +17,7 @@ import coop.rchain.utils.Globals._
 
 object RholangProxy {
 
-  val MAXGRPCZIE = 1024 * 1024 * 100
-  lazy val (host, port) =
-    (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
-
-  def apply(channel: ManagedChannel): RholangProxy =
-    new RholangProxy(channel)
+  val MAXGRPCZIE = 1024 * 1024 * 5000
 
   def apply(host: String, port: Int): RholangProxy = {
 
@@ -38,7 +33,6 @@ object RholangProxy {
 }
 
 class RholangProxy(channel: ManagedChannel) {
-  import RholangProxy._
 
   private lazy val grpc = DeployServiceGrpc.blockingStub(channel)
   private lazy val log = Logger[RholangProxy]
@@ -88,7 +82,7 @@ class RholangProxy(channel: ManagedChannel) {
   def deployAndPropose(contract: String) = {
     for {
       d <- deploy(contract)
-      _ = println("Proposing...")
+      _ = println("Proposing contract = $contract...")
       p <- proposeBlock
     } yield DeployAndProposeResponse(d, p)
   }
@@ -104,16 +98,20 @@ class RholangProxy(channel: ManagedChannel) {
 
   import coop.rchain.protocol.ParOps._
   def dataAtName(name: String): Either[Err, ListeningNameDataResponse] = {
+    log.info(s"dataAtName recived name= $name")
     name.asPar.flatMap(p => dataAtName(p))
   }
 
   import coop.rchain.protocol.ParOps._
   def dataAtName(par: Par): Either[Err, ListeningNameDataResponse] = {
+    log.info(s"dataAtName recived par=${par}")
     val res = grpc.listenForDataAtName(par.asChannel)
+    log.info(s"------ listenForDataAtName returned: $res")
     res.status match {
       case "Success" => Right(res)
       case _ =>
-        Left(Err(ErrorCode.nameNotFount, s"no data for par: ${par}", None))
+        println(s"----${res}")
+        Left(Err(ErrorCode.nameNotFound, s"${res}", None))
     }
   }
   def dataAtCont(par: Par) = {

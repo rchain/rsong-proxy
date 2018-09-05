@@ -1,12 +1,6 @@
 package coop.rchain.repo
 
 import java.io._
-import java.nio.file._
-import java.util
-
-import com.google.protobuf.ByteString
-import io.circe.generic.auto._
-import io.circe.syntax._
 import com.typesafe.scalalogging.Logger
 import coop.rchain.crypto.codec.Base16
 import coop.rchain.domain.RSongModel.RSongAsset
@@ -14,12 +8,8 @@ import coop.rchain.utils.Globals._
 import coop.rchain.utils.HexBytesUtil._
 import coop.rchain.domain._
 import coop.rchain.domain.RSongModel._
-
 import scala.util._
 import coop.rchain.models.Par
-import coop.rchain.rholang.interpreter.PrettyPrinter
-import coop.rchain.utils.HexBytesUtil
-import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
 
@@ -44,19 +34,14 @@ object SongRepo {
     Stream.continually(bis.read).takeWhile(-1 !=).map(_.toByte).toArray
   }
 
-  private lazy val (host, port) =
-    (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
-
-  def apply(): SongRepo =
-    new SongRepo(RholangProxy(host, port))
-
-  def apply(grpc: RholangProxy): SongRepo =
-    new SongRepo(grpc)
+  def apply(proxy: RholangProxy): SongRepo =
+    new SongRepo(proxy)
 }
 
-class SongRepo(grpc: RholangProxy) {
+class SongRepo(proxy: RholangProxy) {
 
   import SongRepo._
+  import Repo._
 
   val log = Logger[SongRepo]
 
@@ -69,12 +54,12 @@ class SongRepo(grpc: RholangProxy) {
   def deployNoPropose(asset: RSongJsonAsset) =
     (asRholang _
       andThen
-        grpc.deployNoPropose _)(asset)
+        proxy.deployNoPropose _)(asset)
 
   def deployAndProposeAsset(asset: RSongJsonAsset) =
     (asRholang _
       andThen
-        grpc.deployAndPropose _)(asset)
+        proxy.deployAndPropose _)(asset)
 
   def asRhoTerm(asset: RSongAsset) = {
     log.info(
@@ -86,7 +71,7 @@ class SongRepo(grpc: RholangProxy) {
   def deployAndPropose(asset: RSongAsset) =
     (asRhoTerm _
       andThen
-        grpc.deployAndPropose _)(asset)
+        proxy.deployAndPropose _)(asset)
 
   def asHexConcatRsong(file: String): Either[Err, String] = {
     Try {
@@ -104,29 +89,21 @@ class SongRepo(grpc: RholangProxy) {
     }
   }
 
-  def songFromBlock(name: String) = {
-    val asRhoTerm =
-      s"""@["Immersion", "retrieveSong"]!(${name}, "songDataOut")"""
-    log.debug(s"retrieveSong name= ${name}")
-    grpc.deployAndPropose(asRhoTerm)
-  }
-
   private val songMap: scala.collection.mutable.Map[String, Array[Byte]] =
     scala.collection.mutable.Map.empty[String, Array[Byte]]
 
-  //songName isrc-Stereo or isrc-3D
   def findInBlock(assetName: String): Either[Err, Array[Byte]] = {
-
+    log.info(s"in findInBlock. assetName = $assetName")
     val song = if (!songMap.contains(assetName)) {
 
       for {
-        sid <- find(assetName)
+        sid <- findByName(proxy, assetName)
         randSuffix = scala.util.Random.alphanumeric.take(20).toString()
-        _ = println(s"sid: $sid")
+        _ = log.info(s"sid: $sid")
         queryName = s"""("$sid".hexToBytes(),"${sid}-${SONG_OUT}")"""
         term = s"""@["Immersion", "retrieveSong"]!$queryName"""
-        m <- grpc.deployAndPropose(term)
-        p <- Repo.find(grpc)(s"${sid}-${SONG_OUT}")
+        m <- proxy.deployAndPropose(term)
+        p <- findByName(proxy, s"${sid}-${SONG_OUT}")
         ba = Base16.decode(p)
         _ = songMap.update(assetName, ba)
       } yield ba
@@ -136,18 +113,12 @@ class SongRepo(grpc: RholangProxy) {
     }
     song match {
       case Right(s) =>
-        log.info(s"-- got asset $assetName--")
+        log.info(s"got asset $assetName--")
         Right(s)
       case Left(e) =>
-        log.error(s"-- asset retrieval error: ${e}")
+        log.error(s"asset retrieval error: ${e}")
         Left(e)
     }
   }
-
-  def find(rName: String): Either[Err, String] = Repo.find(grpc)(rName)
-
-  def dataAtName(pars: Seq[Par]) = Repo.dataAtName(pars)
-
-  def getMetadata(id: String) = {}
 
 }
