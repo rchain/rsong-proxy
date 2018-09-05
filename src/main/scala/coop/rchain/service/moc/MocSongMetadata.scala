@@ -132,7 +132,7 @@ object MocSongMetadata {
   def songMetadata(userid: String): List[SongMetadata] = List()
   lazy val (host, port) =
     (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
-  val proxy = RholangProxy(host, port)
+  val proxy = RholangProxy("34.222.16.129", port)
 
   val songRepo = SongRepo(proxy)
 
@@ -165,7 +165,7 @@ object MocSongMetadata {
       assetData = assetData.toOption.get,
       jsonData = jsData
     )
-    songRepo.deployAndProposeAsset(brookAsset)
+    songRepo.deployNoPropose(brookAsset)
   }
 
   def loader3 = {
@@ -193,7 +193,7 @@ object MocSongMetadata {
       assetData = assetData.toOption.get,
       jsonData = jsData
     )
-    songRepo.deployAndProposeAsset(brookAsset)
+    songRepo.deployNoPropose(brookAsset)
   }
 
   def loader5 = {
@@ -207,7 +207,7 @@ object MocSongMetadata {
       assetData = assetData.toOption.get,
       jsonData = jsData
     )
-    songRepo.deployNoPropose(brookAsset)
+    songRepo.deployAndProposeAsset(brookAsset)
   }
   def loader6 = {
     val songFile =
@@ -233,7 +233,7 @@ object MocSongMetadata {
       assetData = assetData.toOption.get,
       jsonData = jsData
     )
-    songRepo.deployAndProposeAsset(theAsset)
+    songRepo.deployNoPropose(theAsset)
   }
 
   def loader8 = {
