@@ -6,13 +6,14 @@ import org.http4s.circe._
 import coop.rchain.service._
 import coop.rchain.protocol.Protocol._
 import coop.rchain.repo._
-import org.http4s.HttpRoutes
+import org.http4s.{Header, Headers, HttpRoutes, headers}
 import org.http4s.dsl.Http4sDsl
 import io.circe.generic.auto._
 import io.circe.syntax._
 import coop.rchain.domain._
 import coop.rchain.service.moc.MocSongMetadata
 import coop.rchain.service.moc.MocSongMetadata.mocSongs
+import org.http4s.headers.{Accept, `Accept-Ranges`, `Content-Type`}
 
 class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
 
@@ -50,7 +51,11 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
             log.error(s"${l}")
             InternalServerError()
           },
-          r => Ok(r)
+          r =>
+            Ok(r,
+               Header("Accept-Ranges", "bytes"),
+               Header("Content-Type", "binary/octet-stream"),
+               Header("Server", "RSong"))
         )
 
       case GET -> Root / "art" / id ⇒
@@ -61,7 +66,11 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
             log.error(s"${l}")
             InternalServerError()
           },
-          r => Ok(r)
+          r =>
+            Ok(r,
+               Header("Accept-Ranges", "bytes"),
+               Header("Content-Type", "binary/octet-stream"),
+               Header("Server", "RSong"))
         )
     }
 }

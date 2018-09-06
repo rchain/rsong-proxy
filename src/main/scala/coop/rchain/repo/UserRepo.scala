@@ -15,7 +15,7 @@ object UserRepo {
 
   def newUser(id: String): Json = {
     User(id = id,
-         name = None,
+         name = Some("Immersion-user"),
          active = true,
          lastLogin = System.currentTimeMillis,
          playCount = 100,
@@ -38,6 +38,7 @@ object UserRepo {
 }
 
 class UserRepo(grpc: RholangProxy) {
+
   import Repo._
   import UserRepo._
 
