@@ -1,7 +1,7 @@
 package coop.rchain.service.moc
 import coop.rchain.domain.RSongModel.RSongJsonAsset
 import coop.rchain.domain._
-import coop.rchain.repo.{RholangProxy, SongRepo}
+import coop.rchain.repo.SongRepo
 import io.circe.generic.auto._
 import io.circe.syntax._
 import io.circe._
@@ -130,9 +130,6 @@ object MocSongMetadata {
   )
 
   def songMetadata(userid: String): List[SongMetadata] = List()
-  lazy val (host, port) =
-    (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
-  val proxy = RholangProxy("34.222.16.129", port)
 
   val songRepo = SongRepo(proxy)
 

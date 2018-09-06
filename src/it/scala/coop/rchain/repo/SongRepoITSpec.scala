@@ -33,7 +33,7 @@ class SongRepoITSpec extends Specification {
     (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
 println(s"++++++++++++++++++ host = ${host}")
 
-  lazy val proxy = RholangProxy("34.222.16.129", port)
+  lazy val proxy =
   val songRepo = SongRepo(proxy)
   val userRepo = UserRepo(proxy)
   val log = Logger[SongRepoITSpec]

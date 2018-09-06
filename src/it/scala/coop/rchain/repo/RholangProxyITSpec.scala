@@ -17,10 +17,7 @@ class RholangProxyITSpec extends Specification {
 //     compute playcount  $ok//computePlayCount
 //     fetch playcount $ok//findUserPlayCount
 //"""
-  lazy val (host, port) =
-    (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
-  val proxy = RholangProxy("34.222.16.129", port)
-
+  
   val log = Logger[RholangProxyITSpec]
 
   val userService = UserRepo(proxy)

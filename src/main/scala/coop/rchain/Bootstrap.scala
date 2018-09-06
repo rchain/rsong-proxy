@@ -18,11 +18,6 @@ object Bootstrap extends IOApp {
 }
 object ServerStream {
   val apiVersion = appCfg.getString("api.version")
-  lazy val (host, port) =
-    (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
-  println(s"userAPI using host: ${host}:${port}")
-  val proxy = RholangProxy(host, port)
-
   def statusApi[F[_]: Effect] = new Status[F].routes
   def userApi[F[_]: Effect] = new UserApi[F](proxy).routes
   def songApi[F[_]: Effect] = new SongApi[F](proxy).routes

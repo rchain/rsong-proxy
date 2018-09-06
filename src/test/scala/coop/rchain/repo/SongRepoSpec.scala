@@ -5,7 +5,7 @@ import coop.rchain.domain._
 import coop.rchain.protocol.Protocol
 import coop.rchain.service.SongService
 import coop.rchain.service.moc.RSongData
-import coop.rchain.utils.Globals.appCfg
+import coop.rchain.utils.Globals.{appCfg, proxy}
 import io.circe.generic.auto._
 import coop.rchain.utils.HexBytesUtil._
 import io.circe.syntax._
@@ -19,10 +19,6 @@ class SongRepoSpec extends Specification {
       JSON RSong protocol $rSongJson
 """
   val log = Logger[SongRepoSpec]
-  lazy val (host, port) =
-    (appCfg.getString("grpc.host"), appCfg.getInt("grpc.ports.external"))
-  log.info(s"userAPI using host: ${host}:${port}")
-  val proxy = RholangProxy(host, port)
 
   val repo = SongRepo(proxy)
 

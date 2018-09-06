@@ -17,14 +17,14 @@ import coop.rchain.utils.Globals._
 
 object RholangProxy {
 
-  val MAXGRPCZIE = 1024 * 1024 * 5000
+  val MAXGRPCSIZE = 1024 * 1024 * 5000
 
   def apply(host: String, port: Int): RholangProxy = {
 
     val channel =
       ManagedChannelBuilder
         .forAddress(host, port)
-        .maxInboundMessageSize(MAXGRPCZIE)
+        .maxInboundMessageSize(MAXGRPCSIZE)
         .usePlaintext(true)
         .build
     new RholangProxy(channel)
@@ -57,7 +57,7 @@ class RholangProxy(channel: ManagedChannel) {
 
   val deployFromFile: String => Either[Err, String] = path =>
     for {
-      c <- immersionConstract(path)
+      c <- immersionContract(path)
       d <- deploy(c)
     } yield d
 
@@ -119,7 +119,7 @@ class RholangProxy(channel: ManagedChannel) {
     grpc.listenForContinuationAtName(Channels(Seq(ch)))
   }
 
-  val immersionConstract: String => Either[Err, String] = fileName => {
+  val immersionContract: String => Either[Err, String] = fileName => {
     val stream = getClass.getResourceAsStream(fileName)
     Try(
       scala.io.Source.fromInputStream(stream).getLines.reduce(_ + _ + "\n")
