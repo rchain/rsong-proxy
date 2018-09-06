@@ -37,13 +37,13 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
             Ok(
               SongResponse(
                 m,
-                userRepo.findPlayCount(id).getOrElse(PlayCount(50))).asJson)
+                userRepo.fetchPlayCount(id).getOrElse(PlayCount(50))).asJson)
           case None => NotFound(id)
         }
 
+      // TODO: Call @["Immersion", "play"]!(...)
       case GET -> Root / "song" / "music" / id :? userId(uid) =>
-        val link = songRepo.findInBlock(id)
-        val _ = userRepo.computePlayCount
+        val link = songRepo.fetchSong(id)
         link.fold(
           l => {
             log.error(s"error in finding asset by id: $id.")
@@ -54,7 +54,7 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
         )
 
       case GET -> Root / "art" / id ⇒
-        val link = songRepo.findInBlock(id)
+        val link = songRepo.fetchSong(id)
         link.fold(
           l => {
             log.error(s"error in finding asset by id: $id.")

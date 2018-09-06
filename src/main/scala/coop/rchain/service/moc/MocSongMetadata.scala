@@ -132,11 +132,11 @@ object MocSongMetadata {
   def songMetadata(userid: String): List[SongMetadata] = List()
 
   val songRepo = SongRepo(proxy)
+  val songDirectory = "/Users/kent/Desktop/rchain_assets"
 
   def loader1 = {
-
     val songFile =
-      "/home/kayvan/dev/assets/rchain_assets/Songs/Broke_Stereo.izr"
+      s"${songDirectory}/Songs/Broke_Stereo.izr"
     val brookId = "Broke_Stereo.izr"
     val typeOfAsset = "Stereo"
     val jsData = mocSongs("Broke").asJson.toString
@@ -153,7 +153,7 @@ object MocSongMetadata {
   def loader2 = {
 
     val songFile =
-      "/home/kayvan/dev/assets/rchain_assets/Songs/Broke_Immersive.izr"
+      s"${songDirectory}/Songs/Broke_Immersive.izr"
     val brookId = "Broke_Immersive.izr"
     val jsData = mocSongs("Broke").asJson.toString
     val assetData = songRepo.asHexConcatRsong(songFile)
@@ -167,7 +167,7 @@ object MocSongMetadata {
 
   def loader3 = {
     val songFile =
-      "/home/kayvan/dev/assets/rchain_assets/Songs/Euphoria_Immersive.izr"
+      s"${songDirectory}/Songs/Euphoria_Immersive.izr"
     val brookId = "Euphoria_Immersive.izr"
     val jsData = mocSongs("Euphoria").asJson.toString
     val assetData = songRepo.asHexConcatRsong(songFile)
@@ -181,7 +181,7 @@ object MocSongMetadata {
 
   def loader4 = {
     val songFile =
-      "/home/kayvan/dev/assets/rchain_assets/Songs/Euphoria_Stereo.izr"
+      s"${songDirectory}/Songs/Euphoria_Stereo.izr"
     val brookId = "Euphoria_Stereo.izr"
     val jsData = mocSongs("Euphoria").asJson.toString
     val assetData = songRepo.asHexConcatRsong(songFile)
@@ -195,7 +195,7 @@ object MocSongMetadata {
 
   def loader5 = {
     val songFile =
-      "/home/kayvan/dev/assets/rchain_assets/Songs/Tiny_Human_Stereo.izr"
+      s"${songDirectory}/Songs/Tiny_Human_Stereo.izr"
     val brookId = "Tiny_Human_Stereo.izr"
     val jsData = mocSongs("Tiny_Human").asJson.toString
     val assetData = songRepo.asHexConcatRsong(songFile)
@@ -208,7 +208,7 @@ object MocSongMetadata {
   }
   def loader6 = {
     val songFile =
-      "/home/kayvan/dev/assets/rchain_assets/Songs/Tiny_Human_Immersive.izr"
+      s"${songDirectory}/Songs/Tiny_Human_Immersive.izr"
     val brookId = "Tiny_Human_Immersive.izr"
     val jsData = mocSongs("Tiny_Human").asJson.toString
     val assetData = songRepo.asHexConcatRsong(songFile)
@@ -221,7 +221,7 @@ object MocSongMetadata {
   }
   def loader7 = {
     val artFile =
-      "/home/kayvan/dev/assets/rchain_assets/Labels/TinyHman.jpg"
+      s"${songDirectory}/Labels/Tiny Human.jpg"
     val assetId = "TinyHuman.jpg"
     val jsData = artworks("Tiny_Human").asJson.toString
     val assetData = songRepo.asHexConcatRsong(artFile)
@@ -235,7 +235,7 @@ object MocSongMetadata {
 
   def loader8 = {
     val artFile =
-      "/home/kayvan/dev/assets/rchain_assets/Labels/Euphoria.jpg"
+      s"${songDirectory}/Labels/Euphoria.jpg"
     val assetId = "Euphoria.jpg"
     val jsData = artworks("Euphoria").asJson.toString
     val assetData = songRepo.asHexConcatRsong(artFile)
@@ -249,7 +249,7 @@ object MocSongMetadata {
 
   def loader9 = {
     val artFile =
-      "/home/kayvan/dev/assets/rchain_assets/Labels/Broke.jpg"
+      s"${songDirectory}/Labels/Broke.jpg"
     val assetId = "Broke.jpg"
     val jsData = artworks("Broke").asJson.toString
     val assetData = songRepo.asHexConcatRsong(artFile)

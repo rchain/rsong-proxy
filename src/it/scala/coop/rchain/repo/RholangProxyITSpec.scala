@@ -21,59 +21,41 @@ class RholangProxyITSpec extends Specification {
   val log = Logger[RholangProxyITSpec]
 
   val userService = UserRepo(proxy)
-  val userName="john-smith1"
+  val userName = "john-smith1"
 
   def is = s2"""
-                Rnode specification it should work $ok ///deploySeq
+                Rnode specification it should work $deploySeq
     """
-
-//  def is = s2""
 
   def deploySeq = {
     deployContract
     addUser
   }
 
-  def deployContract = {
-
+  def deployContract: MatchResult[Boolean] = {
    val result = proxy.deployFromFile("/rho/immersion.rho")
     log.info(s"contract creation completed with result: ${result}")
     result.isRight === true
   }
 
-  def showBlocks = {
-    val blocks = proxy.showBlocks.map(_.toByteString.toStringUtf8)
-    log.info(s"blocks size: ${blocks.size}")
-    blocks.isEmpty ===  false
+  def addUser: MatchResult[Boolean] = {
+    log.info(s"adding user: $userName")
+    val result = userService.newUser(userName)
+    log.info(s"useradd completed with result: ${result}")
+    result.isRight === true
   }
 
-  def addUser ={
-    log.info(s"adding user: ${userName}")
-    val results = userService.newUser(userName)
-    log.info(s"useradd completed with result: ${results}")
-    results.isLeft === false
-  }
-
-
-  def getUser:MatchResult[Boolean] = {
+  private def getUser:MatchResult[Boolean] = {
     log.info(s"attempting the listenAtName: ${userName}")
     val results = Repo.findByName(proxy, userName)
     log.info(s"grpcResults of name-retrivals = ${results}")
     (results.isRight && !results.toOption.get.isEmpty) === true
   }
 
-  def computePlayCount = {
-    log.info(s"asking for playcount for userId : ${userName}")
-    val results = userService.computePlayCount(userName)
-    log.info(s"rsult ret from playCOuntAsk: ${results}")
-    results.isRight === true
-  }
-
-  def findUserPlayCount = {
+  private def findUserPlayCount = {
     log.info(s"fetch user playcount for userId : ${userName}")
-    val results = userService.findPlayCount(userName)
+    val results = userService.fetchPlayCount(userName)
     log.info(s"FETCH playcount rsult ret from playCOuntAsk: ${results}")
-
     results.isRight === true
   }
 }

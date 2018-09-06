@@ -34,21 +34,21 @@ class UserApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
                      name = None,
                      active = true,
                      lastLogin = System.currentTimeMillis,
-                     playCount = 100,
+                     playCount = 50,
                      metadata = Map("immersionUser" -> "ImmersionUser")).asJson)
             } else
-              InternalServerError(s"${e.code} ; ${e.msg}"), //NotFound(id),
-          r =>
+              InternalServerError(s"${e.code} ; ${e.msg}"),
+          _ =>
             Ok(
               User(id = id,
                    name = None,
                    active = true,
                    lastLogin = System.currentTimeMillis,
-                   playCount = 100,
+                   playCount = 50,
                    metadata = Map("immersionUser" -> "ImmersionUser")).asJson)
         )
 
-    case req @ POST -> Root / id =>
+    case POST -> Root / id =>
       val _ = Future {
         repo.newUser(id)
       }
@@ -57,19 +57,18 @@ class UserApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
              name = None,
              active = true,
              lastLogin = System.currentTimeMillis,
-             playCount = 100,
+             playCount = 50,
              metadata = Map("immersionUser" -> "ImmersionUser")).asJson)
 
-    case req @ PUT -> Root / id / "playcount" =>
-      Accepted()
+    case PUT -> Root / id / "playcount" => Accepted()
 
-    case req @ GET -> Root / id / "playcount" =>
+    case GET -> Root / id / "playcount" =>
       repo
-        .findPlayCount(id)
+        .fetchPlayCount(id)
         .fold(
           e =>
             if (e.code == ErrorCode.nameNotFound) NotFound(s"${e}")
-            else InternalServerError(s"${e.code} ; ${e.msg}"), //NotFound(id),
+            else InternalServerError(s"${e.code} ; ${e.msg}"),
           r => Ok(r.asJson)
         )
   }

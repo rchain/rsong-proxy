@@ -7,7 +7,7 @@ import coop.rchain.service.SongService
 import coop.rchain.service.moc.RSongData
 import coop.rchain.utils.Globals.{appCfg, proxy}
 import io.circe.generic.auto._
-import coop.rchain.utils.HexBytesUtil._
+import coop.rchain.utils.HexUtil._
 import io.circe.syntax._
 import org.specs2._
 

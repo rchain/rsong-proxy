@@ -48,23 +48,23 @@ class UserRepo(grpc: RholangProxy) {
   val newUser: String => Either[Err, DeployAndProposeResponse] = user =>
     (newUserRhoTerm _ andThen grpc.deployAndPropose _)(user)
 
-  def dataAtNameAsPar(term: String): Either[Err, Seq[Par]] =
-    Repo.getDataAtName(grpc, term)
-
-  val computePlayCount: String => Either[Err, DeployAndProposeResponse] =
-    userId =>
-      for {
-        rhoName <- findByName(grpc, userId)
-        queryName = s"""("$rhoName".hexToBytes(),"${userId}-${COUNT_OUT}")"""
-        term = s"""@["Immersion", "playCount"]!${queryName}"""
-        m <- grpc.deployAndPropose(term)
-      } yield m
-
-  def findPlayCount(userId: String): Either[Err, PlayCount] =
+  def putPlayCountAtName(
+      userId: String,
+      playCountOut: String): Either[Err, DeployAndProposeResponse] =
     for {
-      c <- computePlayCount(userId)
-      c <- findByName(grpc, s"$userId-$COUNT_OUT")
-      i <- asInt(c)
-    } yield (PlayCount(i))
+      rhoName <- findByName(grpc, userId)
+      playCountArgs = s"""("$rhoName".hexToBytes(), $playCountOut)"""
+      term = s"""@["Immersion", "playCount"]!${playCountArgs}"""
+      m <- grpc.deployAndPropose(term)
+    } yield m
 
+  def fetchPlayCount(userId: String): Either[Err, PlayCount] = {
+    val now = System.currentTimeMillis()
+    val playCountOut = s"$userId-$COUNT_OUT-$now"
+    for {
+      _ <- putPlayCountAtName(userId, playCountOut)
+      count <- findByName(grpc, playCountOut)
+      countAsInt <- asInt(count)
+    } yield PlayCount(countAsInt)
+  }
 }

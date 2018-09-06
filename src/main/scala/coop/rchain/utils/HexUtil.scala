@@ -2,7 +2,7 @@ package coop.rchain.utils
 
 import coop.rchain.crypto.codec.Base16
 
-object HexBytesUtil {
+object HexUtil {
 
   def hex2bytes(hexString: String): Array[Byte] =
     Base16.decode(hexString)

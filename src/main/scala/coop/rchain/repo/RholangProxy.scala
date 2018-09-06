@@ -39,7 +39,7 @@ class RholangProxy(channel: ManagedChannel) {
 
   def shutdown = channel.shutdownNow()
 
-  def deploy(contract: String) = {
+  def deploy(contract: String): Either[Err, String] = {
     val resp = grpc.doDeploy(
       DeployData()
         .withTerm(contract)
@@ -61,33 +61,36 @@ class RholangProxy(channel: ManagedChannel) {
       d <- deploy(c)
     } yield d
 
-  def showBlocks =
-    grpc.showBlocks(Empty()).toList
+  private def showBlocks: List[BlockInfo] = grpc.showBlocks(Empty()).toList
 
-  def proposeBlock = {
-    val response: DeployServiceResponse = grpc.createBlock(Empty())
-    response.success match {
-      case true =>
-        Right(response.message)
-      case false => Left(Err(ErrorCode.grpcPropose, response.message, None))
-    }
-  }
-
-  def deployNoPropose(contract: String) = {
+  def deployNoPropose(
+      contract: String): Either[Err, DeployAndProposeResponse] = {
+    log.info("Deploying...")
     for {
       d <- deploy(contract)
-      _ = println("Proposing...")
     } yield DeployAndProposeResponse(d, "")
   }
-  def deployAndPropose(contract: String) = {
+
+  def deployAndPropose(
+      contract: String): Either[Err, DeployAndProposeResponse] = {
+    log.info("Deploying...")
     for {
       d <- deploy(contract)
-      _ = println("Proposing contract = $contract...")
+      _ = log.info(s"Proposing contract $contract")
       p <- proposeBlock
     } yield DeployAndProposeResponse(d, p)
   }
 
-  def dataAtContWithTerm(
+  private def proposeBlock: Either[Err, String] = {
+    val response: DeployServiceResponse = grpc.createBlock(Empty())
+    if (response.success) {
+      Right(response.message)
+    } else {
+      Left(Err(ErrorCode.grpcPropose, response.message, None))
+    }
+  }
+
+  private def dataAtContWithTerm(
       name: String): Either[Err, ListeningNameContinuationResponse] = {
     val par = Interpreter.buildNormalizedTerm(new StringReader(name)).runAttempt
     par.map(p => dataAtCont(p)) match {
@@ -96,27 +99,29 @@ class RholangProxy(channel: ManagedChannel) {
     }
   }
 
-  import coop.rchain.protocol.ParOps._
-  def dataAtName(name: String): Either[Err, ListeningNameDataResponse] = {
-    log.info(s"dataAtName recived name= $name")
-    name.asPar.flatMap(p => dataAtName(p))
+  private def dataAtCont(par: Par) = {
+    val ch: Channel = Channel(Quote(par))
+    grpc.listenForContinuationAtName(Channels(Seq(ch)))
   }
 
   import coop.rchain.protocol.ParOps._
-  def dataAtName(par: Par): Either[Err, ListeningNameDataResponse] = {
-    log.info(s"dataAtName recived par=${par}")
+  def dataAtName(
+      rholangName: String): Either[Err, ListeningNameDataResponse] = {
+    log.info(s"dataAtName received name $rholangName")
+    rholangName.asPar.flatMap(p => dataAtName(p))
+  }
+
+  import coop.rchain.protocol.ParOps._
+  private def dataAtName(par: Par): Either[Err, ListeningNameDataResponse] = {
+    log.info(s"dataAtName received par ${PrettyPrinter().buildString(par)}")
     val res = grpc.listenForDataAtName(par.asChannel)
-    log.info(s"------ listenForDataAtName returned: $res")
+    log.info(s"listenForDataAtName returned: $res")
     res.status match {
       case "Success" => Right(res)
       case _ =>
-        println(s"----${res}")
+        log.info(s"${res}")
         Left(Err(ErrorCode.nameNotFound, s"${res}", None))
     }
-  }
-  def dataAtCont(par: Par) = {
-    val ch: Channel = Channel(Quote(par))
-    grpc.listenForContinuationAtName(Channels(Seq(ch)))
   }
 
   val immersionContract: String => Either[Err, String] = fileName => {
@@ -132,8 +137,4 @@ class RholangProxy(channel: ManagedChannel) {
         Left(Err(ErrorCode.contractFile, fileName, None))
     }
   }
-
-  val propose: String => Either[Err, DeployAndProposeResponse] = deployResp =>
-    proposeBlock map (x =>
-      DeployAndProposeResponse(fromDeploy = deployResp, fromPropose = x))
 }
