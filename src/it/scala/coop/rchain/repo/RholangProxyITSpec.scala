@@ -24,7 +24,7 @@ class RholangProxyITSpec extends Specification {
   val userName = "john-smith1"
 
   def is = s2"""
-                Rnode specification it should work $deploySeq
+                Rnode specification it should work $ok//deploySeq
     """
 
   def deploySeq = {

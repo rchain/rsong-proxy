@@ -38,8 +38,8 @@ class SongRepoITSpec extends Specification {
   }
 
   def songSerialUpload: MatchResult[Boolean] = {
-//    loadSong1
-//    loadSong2
+    loadSong1
+    loadSong2
 //    loadSong3
 //    loadSong4
 //    loadSong5

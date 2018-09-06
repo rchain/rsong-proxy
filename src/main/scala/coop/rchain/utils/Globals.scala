@@ -11,6 +11,7 @@ object Globals {
   val songpath = "v1/song/music"
   val rsongHostUrl: String = "http://dev-rchain.com"
 
-  val proxy = RholangProxy("localhost", appCfg.getInt("grpc.ports.external"))
-  //RholangProxy("34.222.16.129", appCfg.getInt("grpc.ports.external"))
+  val proxy = RholangProxy(
+    appCfg.getString("grpc.host"),
+    appCfg.getInt("grpc.ports.external"))
 }

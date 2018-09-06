@@ -9,9 +9,6 @@ import coop.rchain.utils.HexUtil._
 import coop.rchain.domain._
 import coop.rchain.domain.RSongModel._
 import scala.util._
-import coop.rchain.models.Par
-import io.circe.generic.auto._
-import io.circe.syntax._
 
 object SongRepo {
   val rsongPath = appCfg.getString("api.http.rsong.path")
@@ -82,7 +79,7 @@ class SongRepo(proxy: RholangProxy) {
     scala.collection.mutable.Map.empty[String, Array[Byte]]
 
   def fetchSong(assetName: String): Either[Err, Array[Byte]] = {
-    log.info(s"in findInBlock. assetName = $assetName")
+    log.debug(s"in findInBlock. assetName = $assetName")
     val song = if (songMap.contains(assetName)) {
       fetchCachedSong(assetName)
     } else {
@@ -90,7 +87,6 @@ class SongRepo(proxy: RholangProxy) {
     }
     song match {
       case Right(s) =>
-        log.info(s"got asset $assetName--")
         Right(s)
       case Left(e) =>
         log.error(s"asset retrieval error: ${e}")

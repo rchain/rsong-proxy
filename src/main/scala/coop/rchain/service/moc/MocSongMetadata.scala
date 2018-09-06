@@ -132,7 +132,7 @@ object MocSongMetadata {
   def songMetadata(userid: String): List[SongMetadata] = List()
 
   val songRepo = SongRepo(proxy)
-  val songDirectory = "/Users/kent/Desktop/rchain_assets"
+  val songDirectory = "/home/kayvan/dev/assets/rchain_assets"
 
   def loader1 = {
     val songFile =
