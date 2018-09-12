@@ -1,14 +1,5 @@
 import CompilerSettings._
 
-lazy val rchainUri = uri("https://github.com/rchain/rchain.git#dev")
-
-lazy val rchainModels = ProjectRef(rchainUri, "models")
-lazy val rchainCrypto = ProjectRef(rchainUri, "crypto")
-lazy val rchainShared = ProjectRef(rchainUri, "shared")
-lazy val rchainRspace = ProjectRef(rchainUri, "rspace")
-lazy val rchainRholang = ProjectRef(rchainUri, "rholang")
-lazy val rchainComm =ProjectRef(rchainUri, "comm")
-
 lazy val projectSettings = Seq(
   organization := "coop.rchain",
   scalaVersion := "2.12.6",
@@ -23,18 +14,7 @@ lazy val compilerSettings = CompilerSettings.options ++ Seq(
 
 lazy val commonSettings = projectSettings // ++ compilerSettings
 
-lazy val rspace = (project).dependsOn(rchainModels,
-             rchainCrypto,
-             rchainShared,
-             rchainModels).settings(commonSettings: _*)
-
-
-lazy val rholang = (project).dependsOn(rspace,rchainCrypto).settings(commonSettings: _*)
-
-// lazy val casper = (project).dependsOn(rchainModels, rchainCrypto, rchainShared, rchainModels).settings(commonSettings: _*)
-
 lazy val root = (project in file("."))
-  // .dependsOn(rchainRholang, rholang, rspace, rchainCrypto, rchainModels)
   .settings(commonSettings: _*)
   .settings(
     organization := "coop.rchain",

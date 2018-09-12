@@ -1,13 +1,6 @@
 package coop.rchain.service.moc
-import coop.rchain.domain.RSongModel.RSongJsonAsset
 import coop.rchain.domain._
 import coop.rchain.repo.SongRepo
-import io.circe.generic.auto._
-import io.circe.syntax._
-import io.circe._
-import io.circe.generic.auto._
-import io.circe.parser._
-import io.circe.syntax._
 
 object MocSongMetadata {
 
@@ -19,7 +12,7 @@ object MocSongMetadata {
     "Euphoria" -> Artwork(id = "Euphoria",
                           uri = s"${rsongHostUrl}/${artpath}/Euphoria.jpg"),
     "Tiny_Human" -> Artwork(id = "Tiny_Human",
-                            uri = s"${rsongHostUrl}/${artpath}/TinyHuman.jpg")
+                            uri = s"${rsongHostUrl}/${artpath}/Tiny Human.jpg")
   )
   val artists = Map(
     "Broke" -> Artist(id = "Mycle-Wastman",
@@ -133,132 +126,5 @@ object MocSongMetadata {
 
   val songRepo = SongRepo(proxy)
   val songDirectory = "/home/kayvan/dev/assets/rchain_assets"
-
-  def loader1 = {
-    val songFile =
-      s"${songDirectory}/Songs/Broke_Stereo.izr"
-    val brookId = "Broke_Stereo.izr"
-    val typeOfAsset = "Stereo"
-    val jsData = mocSongs("Broke").asJson.toString
-    val assetData = songRepo.asHexConcatRsong(songFile)
-    val brookAsset = RSongJsonAsset(
-      id = brookId,
-      assetData = assetData.toOption.get,
-      jsonData = jsData
-    )
-    songRepo.deployNoPropose(brookAsset)
-
-  }
-
-  def loader2 = {
-
-    val songFile =
-      s"${songDirectory}/Songs/Broke_Immersive.izr"
-    val brookId = "Broke_Immersive.izr"
-    val jsData = mocSongs("Broke").asJson.toString
-    val assetData = songRepo.asHexConcatRsong(songFile)
-    val brookAsset = RSongJsonAsset(
-      id = brookId,
-      assetData = assetData.toOption.get,
-      jsonData = jsData
-    )
-    songRepo.deployNoPropose(brookAsset)
-  }
-
-  def loader3 = {
-    val songFile =
-      s"${songDirectory}/Songs/Euphoria_Immersive.izr"
-    val brookId = "Euphoria_Immersive.izr"
-    val jsData = mocSongs("Euphoria").asJson.toString
-    val assetData = songRepo.asHexConcatRsong(songFile)
-    val brookAsset = RSongJsonAsset(
-      id = brookId,
-      assetData = assetData.toOption.get,
-      jsonData = jsData
-    )
-    songRepo.deployNoPropose(brookAsset)
-  }
-
-  def loader4 = {
-    val songFile =
-      s"${songDirectory}/Songs/Euphoria_Stereo.izr"
-    val brookId = "Euphoria_Stereo.izr"
-    val jsData = mocSongs("Euphoria").asJson.toString
-    val assetData = songRepo.asHexConcatRsong(songFile)
-    val brookAsset = RSongJsonAsset(
-      id = brookId,
-      assetData = assetData.toOption.get,
-      jsonData = jsData
-    )
-    songRepo.deployNoPropose(brookAsset)
-  }
-
-  def loader5 = {
-    val songFile =
-      s"${songDirectory}/Songs/Tiny_Human_Stereo.izr"
-    val brookId = "Tiny_Human_Stereo.izr"
-    val jsData = mocSongs("Tiny_Human").asJson.toString
-    val assetData = songRepo.asHexConcatRsong(songFile)
-    val brookAsset = RSongJsonAsset(
-      id = brookId,
-      assetData = assetData.toOption.get,
-      jsonData = jsData
-    )
-    songRepo.deployAndProposeAsset(brookAsset)
-  }
-  def loader6 = {
-    val songFile =
-      s"${songDirectory}/Songs/Tiny_Human_Immersive.izr"
-    val brookId = "Tiny_Human_Immersive.izr"
-    val jsData = mocSongs("Tiny_Human").asJson.toString
-    val assetData = songRepo.asHexConcatRsong(songFile)
-    val brookAsset = RSongJsonAsset(
-      id = brookId,
-      assetData = assetData.toOption.get,
-      jsonData = jsData
-    )
-    songRepo.deployNoPropose(brookAsset)
-  }
-  def loader7 = {
-    val artFile =
-      s"${songDirectory}/Labels/Tiny Human.jpg"
-    val assetId = "TinyHuman.jpg"
-    val jsData = artworks("Tiny_Human").asJson.toString
-    val assetData = songRepo.asHexConcatRsong(artFile)
-    val theAsset = RSongJsonAsset(
-      id = assetId,
-      assetData = assetData.toOption.get,
-      jsonData = jsData
-    )
-    songRepo.deployNoPropose(theAsset)
-  }
-
-  def loader8 = {
-    val artFile =
-      s"${songDirectory}/Labels/Euphoria.jpg"
-    val assetId = "Euphoria.jpg"
-    val jsData = artworks("Euphoria").asJson.toString
-    val assetData = songRepo.asHexConcatRsong(artFile)
-    val theAsset = RSongJsonAsset(
-      id = assetId,
-      assetData = assetData.toOption.get,
-      jsonData = jsData
-    )
-    songRepo.deployNoPropose(theAsset)
-  }
-
-  def loader9 = {
-    val artFile =
-      s"${songDirectory}/Labels/Broke.jpg"
-    val assetId = "Broke.jpg"
-    val jsData = artworks("Broke").asJson.toString
-    val assetData = songRepo.asHexConcatRsong(artFile)
-    val theAsset = RSongJsonAsset(
-      id = assetId,
-      assetData = assetData.toOption.get,
-      jsonData = jsData
-    )
-    songRepo.deployAndProposeAsset(theAsset)
-  }
 
 }

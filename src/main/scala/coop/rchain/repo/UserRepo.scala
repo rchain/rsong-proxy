@@ -2,12 +2,10 @@ package coop.rchain.repo
 
 import com.typesafe.scalalogging.Logger
 import coop.rchain.domain._
-import coop.rchain.models.Par
 import io.circe._
 import io.circe.generic.auto._
 import scala.util._
 import io.circe.syntax._
-import coop.rchain.utils.Globals._
 
 object UserRepo {
   val COUNT_OUT = "COUNT-OUT"

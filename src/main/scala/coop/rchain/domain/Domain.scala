@@ -81,6 +81,12 @@ case class WorldView(
 
 case class DeployAndProposeResponse(fromDeploy: String, fromPropose: String)
 
+case class RSongJsonAsset(
+    id: String,
+    assetData: String,
+    jsonData: String
+)
+
 object NameKey extends Enumeration {
   type NameKey = Value
   val newUserId, store, playCount, retrieveSong, retrieveMetadata, remunerate,
