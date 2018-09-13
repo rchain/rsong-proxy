@@ -5,9 +5,9 @@ import cats.implicits._
 import org.http4s.server.blaze.BlazeBuilder
 import api._
 import utils.Globals._
-import repo._
 import api.middleware._
 import scala.concurrent.duration.Duration
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object Bootstrap extends IOApp {
@@ -17,6 +17,7 @@ object Bootstrap extends IOApp {
 
 }
 object ServerStream {
+  import coop.rchain.api.middleware.MiddleWear._
   val apiVersion = appCfg.getString("api.version")
   def statusApi[F[_]: Effect] = new Status[F].routes
   def userApi[F[_]: Effect] = new UserApi[F](proxy).routes
@@ -26,9 +27,9 @@ object ServerStream {
     BlazeBuilder[F]
       .withIdleTimeout(Duration.Inf)
       .bindHttp(appCfg.getInt("api.http.port"), "0.0.0.0")
-      .mountService(MiddleWear(statusApi))
-      .mountService(MiddleWear(statusApi), s"/${apiVersion}/public")
-      .mountService(MiddleWear(userApi), s"/${apiVersion}/user")
-      .mountService(MiddleWear(songApi), s"/${apiVersion}")
+      .mountService(corsHeader(statusApi))
+      .mountService(corsHeader(statusApi), s"/${apiVersion}/public")
+      .mountService(corsHeader(userApi), s"/${apiVersion}/user")
+      .mountService(binHeader(songApi), s"/${apiVersion}")
       .serve
 }

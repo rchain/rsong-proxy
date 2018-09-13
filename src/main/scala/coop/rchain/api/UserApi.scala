@@ -60,8 +60,6 @@ class UserApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
              playCount = 50,
              metadata = Map("immersionUser" -> "ImmersionUser")).asJson)
 
-    case PUT -> Root / id / "playcount" => Accepted()
-
     case GET -> Root / id / "playcount" =>
       repo
         .fetchPlayCount(id)

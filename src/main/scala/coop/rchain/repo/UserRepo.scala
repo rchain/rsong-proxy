@@ -66,4 +66,10 @@ class UserRepo(grpc: RholangProxy) {
       countAsInt <- asInt(count)
     } yield PlayCount(countAsInt)
   }
+
+  // TODO: Call @["Immersion", "play"]!(...)
+  def incPlayCount(userId: String): Unit {
+
+  //TODO under development
+  }
 }
