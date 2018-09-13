@@ -68,8 +68,8 @@ class UserRepo(grpc: RholangProxy) {
   }
 
   // TODO: Call @["Immersion", "play"]!(...)
-  def incPlayCount(userId: String): Unit {
+  def incPlayCount(userId: String): Unit = {
 
-  //TODO under development
+    //TODO under development
   }
 }

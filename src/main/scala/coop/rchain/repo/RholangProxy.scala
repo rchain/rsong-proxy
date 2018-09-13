@@ -52,7 +52,6 @@ class RholangProxy(channel: ManagedChannel) {
 
   def deployNoPropose(
       contract: String): Either[Err, DeployAndProposeResponse] = {
-    log.info("Deploying...")
     for {
       d <- deploy(contract)
     } yield DeployAndProposeResponse(d, "")
@@ -60,10 +59,9 @@ class RholangProxy(channel: ManagedChannel) {
 
   def deployAndPropose(
       contract: String): Either[Err, DeployAndProposeResponse] = {
-    log.info("Deploying...")
     for {
       d <- deploy(contract)
-      _ = log.info(s"Proposing contract $contract")
+      _ = log.debug(s"Proposing contract $contract")
       p <- proposeBlock
     } yield DeployAndProposeResponse(d, p)
   }
@@ -80,19 +78,18 @@ class RholangProxy(channel: ManagedChannel) {
   import coop.rchain.protocol.ParOps._
   def dataAtName(
       rholangName: String): Either[Err, ListeningNameDataResponse] = {
-    log.info(s"dataAtName received name $rholangName")
+    log.debug(s"dataAtName received name $rholangName")
     rholangName.asPar.flatMap(p => dataAtName(p))
   }
 
   import coop.rchain.protocol.ParOps._
   private def dataAtName(par: Par): Either[Err, ListeningNameDataResponse] = {
-    log.info(s"dataAtName received par ${PrettyPrinter().buildString(par)}")
+    log.debug(s"dataAtName received par ${PrettyPrinter().buildString(par)}")
     val res = grpc.listenForDataAtName(par.asChannel)
-    log.info(s"listenForDataAtName returned: $res")
     res.status match {
       case "Success" => Right(res)
       case _ =>
-        log.info(s"${res}")
+        log.debug(s"${res}")
         Left(Err(ErrorCode.nameNotFound, s"${res}", None))
     }
   }

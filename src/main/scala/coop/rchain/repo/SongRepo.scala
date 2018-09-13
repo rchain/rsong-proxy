@@ -7,9 +7,7 @@ import coop.rchain.domain._
 import scala.util._
 
 object SongRepo {
-  val rsongPath = appCfg.getString("api.http.rsong.path")
   val SONG_OUT = "SONG-OUT"
-  val threshold = appCfg.getInt("rsongdata.concat.size")
 
   def apply(proxy: RholangProxy): SongRepo =
     new SongRepo(proxy)
@@ -23,7 +21,7 @@ class SongRepo(proxy: RholangProxy) {
   val log = Logger[SongRepo]
 
   def asRholang(asset: RSongJsonAsset) = {
-    log.info(s"name to retrieve song: ${asset.id}")
+    log.debug(s"name to retrieve song: ${asset.id}")
     s"""@["Immersion", "store"]!(${asset.assetData}, ${asset.jsonData}, "${asset.id}")"""
   }
 
@@ -59,7 +57,7 @@ class SongRepo(proxy: RholangProxy) {
   }
 
   private def fetchCachedSong(assetName: String): Either[Err, Array[Byte]] = {
-    log.info(s"Asset $assetName found in the map cache.")
+    log.debug(s"Asset $assetName found in the map cache.")
     Right(songMap(assetName))
   }
 
@@ -67,7 +65,7 @@ class SongRepo(proxy: RholangProxy) {
       assetName: String): Either[Err, Array[Byte]] = {
     for {
       songId <- findByName(proxy, assetName)
-      _ = log.info(s"sid: $songId")
+      _ = log.debug(s"sid: $songId")
       songIdOut = s"${songId}-${SONG_OUT}"
       retrieveSongArgs = s"""("$songId".hexToBytes(), "$songIdOut")"""
       termToRetrieveSong = s"""@["Immersion", "retrieveSong"]!$retrieveSongArgs"""

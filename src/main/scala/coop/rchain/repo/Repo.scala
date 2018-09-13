@@ -21,14 +21,14 @@ object Repo {
   def findByName(proxy: RholangProxy, name: String): Either[Err, String] = {
     for {
       data <- getDataAtName(proxy, s""""$name"""")
-      _ = log.info(s"getDataAtName returned: $data")
+      _ = log.debug(s"getDataAtName returned: $data")
       dataAsString <- stringify(data)
     } yield dataAsString
   }
 
   def getDataAtName(proxy: RholangProxy,
                     rholangName: String): Either[Err, Seq[Par]] = {
-    log.info(s"In getDataAtName. rholangName is $rholangName")
+    log.debug(s"In getDataAtName. rholangName is $rholangName")
     for {
       blockInfoWithData <- proxy.dataAtName(rholangName)
       pars = blockInfoWithData.blockResults.flatMap(_.postBlockData)
