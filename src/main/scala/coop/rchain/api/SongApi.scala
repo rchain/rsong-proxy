@@ -31,6 +31,7 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
   val routes: HttpRoutes[F] =
     HttpRoutes.of[F] {
       case GET -> Root / "song" :? userId(id) +& perPage(pp) +& page(p) =>
+        log.debug(s"GET / song request from user: $id")
         Ok(mocSongs.values.toList.asJson)
 
       case GET -> Root / "song" / id :? userId(uid) =>
@@ -44,22 +45,36 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
         }
 
       case GET -> Root / "song" / "music" / id :? userId(uid) =>
+        log.debug(
+          s"GET / song /music /id request from user: $uid for asset: $id")
         val link = songRepo.fetchSong(id)
-        link.fold(l => {
-          log.error(s"error in finding asset by id: $id.")
-          log.error(s"${l}")
-          InternalServerError()
-        }, r => {
-          Future { userRepo.incPlayCount(uid) }
-          Ok(r)
-        })
+        link.fold(
+          l => {
+            log.error(s"error in finding asset by id: $id.")
+            log.error(s"${l}")
+            InternalServerError()
+          },
+          r => {
+            Future { userRepo.incPlayCount(uid) }
+            Ok(r,
+               Header("Content-Type", "binary/octet-stream"),
+               Header("Accept-Ranges", "bytes"))
+          }
+        )
 
       case GET -> Root / "art" / id ⇒
+        log.debug(s"GET / art /id request for asset: $id")
         val link = songRepo.fetchSong(id)
-        link.fold(l => {
-          log.error(s"error in finding asset by id: $id.")
-          log.error(s"${l}")
-          InternalServerError()
-        }, r => Ok(r))
+        link.fold(
+          l => {
+            log.error(s"error in finding asset by id: $id.")
+            log.error(s"${l}")
+            InternalServerError()
+          },
+          r =>
+            Ok(r,
+               Header("Content-Type", "binary/octet-stream"),
+               Header("Accept-Ranges", "bytes"))
+        )
     }
 }

@@ -43,7 +43,7 @@ object MiddleWear {
 
   def corsHeader[F[_]: Effect](service: HttpService[F]) = {
     val s = CORS(service, methodConfig)
-    s.map(addHeader(_, Header("XX-header", "XX-value")))
+    s.map(addHeader(_, Header("Server", "RSong")))
   }
 
   def binHeader[F[_]: Effect](service: HttpService[F]) = {

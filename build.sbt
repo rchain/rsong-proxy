@@ -30,7 +30,7 @@ lazy val root = (project in file("."))
         val scalapb= "0.7.4"
         val dropbox="3.0.8"
         val circie="0.9.3"
-        val catsEffect="1.0.0-RC3",
+        val catsEffect="1.0.0-RC3"
       }
       Seq(
        "io.monix" %% "monix" % "3.0.0-RC1" ,

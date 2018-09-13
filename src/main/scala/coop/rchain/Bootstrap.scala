@@ -5,7 +5,6 @@ import cats.implicits._
 import org.http4s.server.blaze.BlazeBuilder
 import api._
 import utils.Globals._
-import api.middleware._
 import scala.concurrent.duration.Duration
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -30,6 +29,6 @@ object ServerStream {
       .mountService(corsHeader(statusApi))
       .mountService(corsHeader(statusApi), s"/${apiVersion}/public")
       .mountService(corsHeader(userApi), s"/${apiVersion}/user")
-      .mountService(binHeader(songApi), s"/${apiVersion}")
+      .mountService(corsHeader(songApi), s"/${apiVersion}")
       .serve
 }
