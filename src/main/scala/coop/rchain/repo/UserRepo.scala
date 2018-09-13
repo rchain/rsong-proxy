@@ -2,12 +2,10 @@ package coop.rchain.repo
 
 import com.typesafe.scalalogging.Logger
 import coop.rchain.domain._
-import coop.rchain.models.Par
 import io.circe._
 import io.circe.generic.auto._
 import scala.util._
 import io.circe.syntax._
-import coop.rchain.utils.Globals._
 
 object UserRepo {
   val COUNT_OUT = "COUNT-OUT"
@@ -67,5 +65,11 @@ class UserRepo(grpc: RholangProxy) {
       count <- findByName(grpc, playCountOut)
       countAsInt <- asInt(count)
     } yield PlayCount(countAsInt)
+  }
+
+  // TODO: Call @["Immersion", "play"]!(...)
+  def incPlayCount(userId: String): Unit = {
+
+    //TODO under development
   }
 }

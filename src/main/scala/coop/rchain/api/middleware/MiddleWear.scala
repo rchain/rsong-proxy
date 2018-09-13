@@ -1,32 +1,29 @@
 package coop.rchain.api.middleware
 
-import cats.data.{Kleisli, OptionT}
-import cats.effect.{Effect, IO}
+import cats.data.Kleisli
+import cats.effect._
 import cats.implicits._
-import coop.rchain.domain.Domain
 import org.http4s._
-import org.http4s.implicits._
-import org.http4s.dsl.io._
-import org.http4s.server.middleware._
-
 import scala.concurrent.duration._
-import org.http4s.headers.Authorization
-import org.http4s.util._
+import org.http4s.server.middleware.{CORS, CORSConfig}
+import org.http4s.util.CaseInsensitiveString
 
 object MiddleWear {
-  def myMiddle(service: HttpService[IO], header: Header): HttpService[IO] =
-    cats.data.Kleisli { req: Request[IO] =>
-      service(req).map {
-        case Status.Successful(resp) =>
-          resp.putHeaders(header)
-        case resp => resp
-      }
-    }
 
   def addHeader[F[_]: Effect](resp: Response[F], header: Header) =
     resp match {
       case Status.Successful(resp) => resp.putHeaders(header)
       case resp                    => resp
+    }
+  def addBinHeader[F[_]: Effect](resp: Response[F], header: Header) =
+    resp match {
+      case Status.Successful(resp) =>
+        resp.putHeaders(
+          header,
+          Header("Content-Type", "binary/octet-stream"),
+          Header("Accept-Ranges", "bytes")
+        )
+      case resp => resp
     }
 
   val methodConfig = CORSConfig(
@@ -44,10 +41,14 @@ object MiddleWear {
     maxAge = 1.day.toSeconds
   )
 
-  def apply[F[_]: Effect](service: HttpService[F]) = {
+  def corsHeader[F[_]: Effect](service: HttpService[F]) = {
     val s = CORS(service, methodConfig)
     s.map(addHeader(_, Header("XX-header", "XX-value")))
+  }
 
+  def binHeader[F[_]: Effect](service: HttpService[F]) = {
+    val s = CORS(service, methodConfig)
+    s.map(addBinHeader(_, Header("Server", "RSong")))
   }
 
   def bearierToken[F[_]: Effect](req: Request[F]): Option[String] =
