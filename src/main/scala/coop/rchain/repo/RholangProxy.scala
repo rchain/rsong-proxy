@@ -12,7 +12,7 @@ import scala.util._
 
 object RholangProxy {
 
-  val MAXGRPCSIZE = 1024 * 1024 * 50000
+  val MAXGRPCSIZE = 1024 * 1024 * 1024 * 50000 * 6
 
   def apply(host: String, port: Int): RholangProxy = {
 

@@ -37,6 +37,7 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
       case GET -> Root / "song" / id :? userId(uid) =>
         MocSongMetadata.mocSongs.get(id) match {
           case Some(m) =>
+            Future { userRepo.incPlayCount(uid) }
             Ok(
               SongResponse(
                 m,
@@ -44,18 +45,18 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
           case None => NotFound(id)
         }
 
-      case GET -> Root / "song" / "music" / id :? userId(uid) =>
+      case GET -> Root / "song" / "music" / id  =>
         log.debug(
-          s"GET / song /music /id request from user: $uid for asset: $id")
+          s"GET / song /music /id request from user: for asset: $id")
         val link = songRepo.fetchSong(id)
         link.fold(
           l => {
             log.error(s"error in finding asset by id: $id.")
             log.error(s"${l}")
             InternalServerError()
+            InternalServerError()
           },
           r => {
-            Future { userRepo.incPlayCount(uid) }
             Ok(r,
                Header("Content-Type", "binary/octet-stream"),
                Header("Accept-Ranges", "bytes"))
