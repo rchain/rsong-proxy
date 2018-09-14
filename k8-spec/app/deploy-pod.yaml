@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: immersion-rc-proxy
-        image: kayvank/rsong-proxy:1.2.3-SNAPSHOT-berlin-demo
+        image: kayvank/rsong-proxy:1.0.2-SNAPSHOT-berlin-demo
 
         ports:
         - containerPort: 9000
