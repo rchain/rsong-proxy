@@ -3,7 +3,7 @@ package coop.rchain.repo
 import coop.rchain.casper.protocol._
 import coop.rchain.domain.{Err, ErrorCode}
 import com.google.protobuf.empty._
-import coop.rchain.models.{Channel, Par}
+import coop.rchain.models.Par
 import io.grpc.{ManagedChannel, ManagedChannelBuilder}
 import coop.rchain.domain._
 import coop.rchain.rholang.interpreter._

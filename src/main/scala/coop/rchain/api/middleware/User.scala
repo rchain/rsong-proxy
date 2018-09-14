@@ -6,11 +6,7 @@ import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.server.AuthMiddleware
 import org.http4s.server.middleware.authentication.BasicAuth
-import org.http4s.headers.Authorization
-import org.http4s.util.string._
-import coop.rchain.utils.Globals._
-import coop.rchain.domain._
-import cats.effect.{Effect, IO}
+
 
 class AuthUser[F[_]](implicit F: Sync[F],
                      R: AuthRepository[F, BasicCredentials])

@@ -2,19 +2,21 @@ import sbt._
 
 object CompilerSettings {
   val options = Seq(
-    "-deprecation",
-    "-unchecked",
+//    "-deprecation",
+//    "-unchecked",
     "-explaintypes",
     "-encoding", "UTF-8",
-    "-feature",
+//    "-feature",
     "-Xlog-reflective-calls",
     "-Ywarn-unused",
     "-Ywarn-value-discard",
-    "-Xlint",
+//    "-Xlint",
     "-Ywarn-nullary-override",
     "-Ywarn-nullary-unit",
     "-Xfuture",
     "-language:postfixOps",
-    "-language:implicitConversions"
+//    "-language:implicitConversions",
+//    "-language:existentials",
+    "-language:higherKinds"
    )
 }

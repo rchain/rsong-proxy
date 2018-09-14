@@ -1,6 +1,5 @@
 package coop.rchain.api.middleware
 
-import cats.data.Kleisli
 import cats.effect._
 import cats.implicits._
 import org.http4s._
