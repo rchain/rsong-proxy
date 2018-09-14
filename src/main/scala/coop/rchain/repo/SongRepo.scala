@@ -40,7 +40,6 @@ class SongRepo(proxy: RholangProxy) {
     scala.collection.mutable.Map.empty[String, Array[Byte]]
 
   def fetchSong(assetName: String): Either[Err, Array[Byte]] = {
-    log.debug(s"in findInBlock. assetName = $assetName")
     val song = if (songMap.contains(assetName)) {
       fetchCachedSong(assetName)
     } else {
@@ -56,7 +55,6 @@ class SongRepo(proxy: RholangProxy) {
   }
 
   private def fetchCachedSong(assetName: String): Either[Err, Array[Byte]] = {
-    log.debug(s"Asset $assetName found in the map cache.")
     Right(songMap(assetName))
   }
 
@@ -64,7 +62,6 @@ class SongRepo(proxy: RholangProxy) {
       assetName: String): Either[Err, Array[Byte]] = {
     for {
       songId <- findByName(proxy, assetName)
-      _ = log.debug(s"sid: $songId")
       songIdOut = s"${songId}-${SONG_OUT}"
       retrieveSongArgs = s"""("$songId".hexToBytes(), "$songIdOut")"""
       termToRetrieveSong = s"""@["Immersion", "retrieveSong"]!$retrieveSongArgs"""

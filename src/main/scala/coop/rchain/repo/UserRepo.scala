@@ -40,8 +40,6 @@ class UserRepo(grpc: RholangProxy) {
   import Repo._
   import UserRepo._
 
-  val log = Logger[UserRepo]
-
   val songRepo = SongRepo(grpc)
 
   val newUser: String => Either[Err, DeployAndProposeResponse] = user =>
