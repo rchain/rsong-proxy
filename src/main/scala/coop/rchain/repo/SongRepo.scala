@@ -2,7 +2,6 @@ package coop.rchain.repo
 
 import com.typesafe.scalalogging.Logger
 import coop.rchain.crypto.codec.Base16
-import coop.rchain.utils.Globals._
 import coop.rchain.domain._
 import scala.util._
 

@@ -22,6 +22,7 @@ class UserApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
     case GET -> Root / id =>
+      log.debug(s"GET / id request form user: $id")
       findByName(proxy, id)
         .fold(
           e =>
@@ -49,6 +50,7 @@ class UserApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
         )
 
     case POST -> Root / id =>
+      log.debug(s"POST / id request form user: $id")
       val _ = Future {
         repo.newUser(id)
       }
@@ -61,6 +63,7 @@ class UserApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
              metadata = Map("immersionUser" -> "ImmersionUser")).asJson)
 
     case GET -> Root / id / "playcount" =>
+      log.debug(s"GET / id /playcount request form user: $id")
       repo
         .fetchPlayCount(id)
         .fold(

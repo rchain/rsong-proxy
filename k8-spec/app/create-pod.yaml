@@ -8,13 +8,13 @@ metadata:
 spec:
   containers:
   - name: immersion-rc-proxy-container
-    image: kayvank/immersion-rc-proxy:1.1-SNAPSHOT-94
+    image: kayvank/immersion-rc-proxy:1.2-SNAPSHOT-berlin-demo
     resources:
       limits:
-        cpu: "8"
+        cpu: "8000m"
         memory: "10G"
       requests:
-        cpu: "4"
+        cpu: "4000m"
         memory: "5G"
     env:
     - name: HTTP_PORT
@@ -26,14 +26,7 @@ spec:
     - name: API_VERSION
       value: "v1"
     - name: GRPC_SERVER
-      value: "10.142.0.2"
+      value: "34.222.16.129"
     - name: GRPC_PORT
-      value: "5041"
-    - name: DROPBOX_ACCESS_TOKEN
-      value: "my-token"
-    - name: IMMERSION_RHOLANG_CONTRACT
-      value: "rho/immersion.rho"
-      value: "my-token"
-    - name: IMMERSION_RHOLANG_CONTRACT
-      value: "rho/immersion.rho"
+      value: "40401"
 
