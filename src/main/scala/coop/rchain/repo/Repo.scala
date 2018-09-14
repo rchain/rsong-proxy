@@ -21,7 +21,6 @@ object Repo {
   def findByName(proxy: RholangProxy, name: String): Either[Err, String] = {
     for {
       data <- getDataAtName(proxy, s""""$name"""")
-      _ = log.debug(s"getDataAtName returned: $data")
       dataAsString <- stringify(data)
     } yield dataAsString
   }
