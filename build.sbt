@@ -7,7 +7,7 @@ import CompilerSettings._
 lazy val root = (project in file("."))
   .settings(
     organization := "coop.rchain",
-    name := "immersion-rc-proxy",
+    name := "rsong-proxy",
     scalaVersion := "2.12.6",
     libraryDependencies ++= {
       object V {

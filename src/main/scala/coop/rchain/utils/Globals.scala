@@ -5,11 +5,10 @@ import coop.rchain.repo.RholangProxy
 
 object Globals {
   val cfg: Config = ConfigFactory.load
-  val appCfg: Config = cfg.getConfig("coop.rchain.immersion")
+  val appCfg: Config = cfg.getConfig("coop.rchain.rsong")
 
   val artpath = "v1/art"
   val songpath = "v1/song/music"
-//  val rsongHostUrl: String = "http://35.236.43.99"
   val rsongHostUrl: String = s"http://${java.net.InetAddress.getLocalHost.getHostName}"
 
   val proxy = RholangProxy(appCfg.getString("grpc.host"),
