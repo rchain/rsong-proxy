@@ -54,6 +54,7 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
             log.error(s"error in finding asset by id: $id.")
             log.error(s"${l}")
             InternalServerError()
+            InternalServerError()
           },
           r => {
             Ok(r,
