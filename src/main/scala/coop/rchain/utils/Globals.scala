@@ -6,9 +6,9 @@ import coop.rchain.repo.RholangProxy
 object Globals {
   val cfg: Config = ConfigFactory.load
   val appCfg: Config = cfg.getConfig("coop.rchain.rsong")
-
-  val artpath = "v1/art"
-  val songpath = "v1/song/music"
+  val apiVersion = appCfg.getString("api.version")
+  val artpath = s"$apiVersion/art"
+  val songpath = s"$apiVersion/song/music"
   val rsongHostUrl: String = appCfg.getString("my.host.url")
 
   val (host, port) = (appCfg.getString("grpc.host"),

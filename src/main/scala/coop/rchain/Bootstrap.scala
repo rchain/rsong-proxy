@@ -17,7 +17,7 @@ object Bootstrap extends IOApp {
 }
 object ServerStream {
   import coop.rchain.api.middleware.MiddleWear._
-  val apiVersion = appCfg.getString("api.version")
+
   def statusApi[F[_]: Effect] = new Status[F].routes
   def userApi[F[_]: Effect] = new UserApi[F](proxy).routes
   def songApi[F[_]: Effect] = new SongApi[F](proxy).routes

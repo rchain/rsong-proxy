@@ -1,8 +1,8 @@
-![GitHub Logo](docs/design/immersion-rc-proxy.jpeg)
+![GitHub Logo](docs/design/rsong-proxy.jpeg)
 
-# Immersion to Rchain Contract Proxy
+# RSong Proxy
 
-A REST layer to proxy Immersion mobile device requests to RChain contracts
+A REST layer to proxy RSong mobile device requests RSongs Rholang contracts
 
 ## Getting Started
 
@@ -19,8 +19,8 @@ These instructions will get you a copy of the project up and running on your loc
 #### clone and build the project
 
 ```
-git clone git@github.com:kayvank/immersion-rc-proxy.git
-cd immersion-rc-proxy
+git clone git@github.com:rchain/rsong-proxy.git
+cd rsong-proxy
 sbt compile
 ```
 
@@ -36,16 +36,15 @@ Alternatively you may build and run the project from source code.
 
 To run the project locally, configure your environment variables:
 
-
 ```
 export HTTP_PORT=9000
 export AUTH_NAME=secrete-user-name
 export AUTH_PASSWORD=serete-password
 export API_VERSION=v1
 export GRPC_SERVER=localhost
-export GRPC_PORT=5041
-export DROPBOX_ACCESS_TOKEN='secrete-dropbox-token'
+export HOST_URL=http://localhost:9000
 ```
+You may consider using [direnv](https://direnv.net/) to manage projects environment variables
 
 ### Run the docker image
 The build process pushes the docker image to docker hub. To run the image:
@@ -60,7 +59,7 @@ The build process pushes the docker image to docker hub. To run the image:
 sbt clean compile run
 ## to create a local dokcer image
 sbt clean compile docker:stage docker:publishLocal
-docker images | grep 'immersion-rc-proxy'
+docker images | grep 'rsong-proxy'
 ```
 
 ### Running tests:
@@ -71,13 +70,6 @@ tests are:
 #### Unit tests
 ```
 sbt clean test
-```
-
-#### Integration tests
-Integration tests assumes a local rnode instance build ftom the `latest` [rchain dev branch](https://github.com/rchain/rchain)
-
-```
-sbt clean it:test
 ```
 
 ## url Inventory
@@ -98,13 +90,28 @@ curl -v  GET $host/v1/song/song1?userId=123 | jq
 
 ##  retrive user's songs
 curl -v  GET $host/v1/song\?userId=user123\&perPage=10\&page=1 | jq
-
 ```
+## for asset urls, see output from:
+```aidl
+curl GET $host/v1/song/song1?userId=123 | jq
+```
+
+
 ## Built With
 [circle-ci](https://circleci.com/gh/kayvank)
 
-## Deploymnet
-Google Cloud Platform
+## Runtime env
+- rnode
+- rsong-proxy
+
+### rnode
+rnode is build from the latest [rchain dev branch](https://github.com/rchain/rchain/tree/dev/node) deployed to [GCP]((https://cloud.google.com/)).
+This is a single instance at this time.  
+
+### rsong-proxy
+rsong-proxy runs on [kubernetes-cluster](https://kubernetes.io/) on  [GCP]((https://cloud.google.com/))
+See [deployment-prd-spec](./k8-spec/app/deploy-pod.yaml) for more detail
+
 
 ## References
 
@@ -112,6 +119,9 @@ Google Cloud Platform
 - [Rholang](https://developer.rchain.coop/assets/rholang-spec-0.2.pdf)
 - [RChain Cooperative](https://www.rchain.coop/)
 - [http4s](https://github.com/http4s/http4s)
+- [kubernetes](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+- [direnv](https://direnv.net/)
+- [Google Cloud Platform, GCP](https://cloud.google.com/)
 
 
 
