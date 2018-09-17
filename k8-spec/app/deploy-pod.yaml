@@ -1,22 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: immersion-rc-proxy
+  name: rsong-proxy
   labels:
-    app: immersion-rc-proxy
+    app: rsong-proxy
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: immersion-rc-proxy
+      app: rsong-proxy
   template:
     metadata:
       labels:
-        app: immersion-rc-proxy
+        app: rsong-proxy
     spec:
       containers:
-      - name: immersion-rc-proxy
-        image: kayvank/rsong-proxy:1.0.4-SNAPSHOT-berlin-demo
+      - name: rsong-proxy
+        image: kayvank/rsong-proxy:1.0.7-SNAPSHOT-berlin-demo
 
         ports:
         - containerPort: 9000
+

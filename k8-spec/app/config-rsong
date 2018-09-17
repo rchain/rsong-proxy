@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Config
+preferences: {}
+
+clusters:
+- cluster:
+  name: deve
+- cluster:
+  name: prd
+
+contexts:
+- context:
+  name: dev
+- context:
+  name: prd
