@@ -110,7 +110,7 @@ This is a single instance at this time.
 
 ### rsong-proxy
 rsong-proxy runs on [kubernetes-cluster](https://kubernetes.io/) on  [GCP]((https://cloud.google.com/))
-See [deployment-prd-spec](./k8-spec/app/deploy-pod.yaml) for more detail
+See [deployment-prd-spec](k8-spec/app/proxy-deploy-pod.yaml) for more detail
 
 
 ## References

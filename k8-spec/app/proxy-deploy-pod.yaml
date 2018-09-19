@@ -9,14 +9,24 @@ spec:
   selector:
     matchLabels:
       app: rsong-proxy
+      tier: proxy
   template:
     metadata:
       labels:
         app: rsong-proxy
+        tier: proxy
     spec:
       containers:
       - name: rsong-proxy
         image: kayvank/rsong-proxy:1.0.7-SNAPSHOT-berlin-demo
-
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        env:
+          - name: GET_HOSTS_FROM
+            value: dns
+            # Using `GET_HOSTS_FROM=dns` requires your cluster to
+            # provide a dns service
         ports:
         - containerPort: 9000
