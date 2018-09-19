@@ -87,7 +87,9 @@ class RholangProxy(channel: ManagedChannel) {
     log.debug(s"dataAtName received par ${PrettyPrinter().buildString(par)}")
     val res = grpc.listenForDataAtName(par.asChannel)
     res.status match {
-      case "Success" => Right(res)
+      case "Success" =>
+        log.debug(s"dataAtName returned payload size: ${res.length}")
+        Right(res)
       case _ =>
         log.debug(s"${res}")
         Left(Err(ErrorCode.nameNotFound, s"${res}", None))

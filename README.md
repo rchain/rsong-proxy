@@ -115,7 +115,7 @@ See [deployment-prd-spec](./k8-spec/app/deploy-pod.yaml) for more detail
 
 ## References
 
-- [docker-image](https://hub.docker.com/r/kayvank/immersion-rc-proxy/tags/)
+- [docker-image](https://hub.docker.com/r/kayvank/rosng-proxy/tags/)
 - [Rholang](https://developer.rchain.coop/assets/rholang-spec-0.2.pdf)
 - [RChain Cooperative](https://www.rchain.coop/)
 - [http4s](https://github.com/http4s/http4s)

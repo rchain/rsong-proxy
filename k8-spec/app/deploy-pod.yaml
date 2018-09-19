@@ -20,4 +20,3 @@ spec:
 
         ports:
         - containerPort: 9000
-
