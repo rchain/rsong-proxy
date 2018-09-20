@@ -72,6 +72,29 @@ tests are:
 sbt clean test
 ```
 
+#### Integration tests
+- configure  .envrc for both rsong-proxy and rsong-acquisition are configured for the same node instance
+- execute [rsong-acquisition](../rsong-acquisition) to migrate the song data to node
+- build rsong-proxy and run integration tests
+
+##### Execute rsong-acquisition
+
+```
+cd ../rsong-acquisition
+## make sure rsong-acquisition & rsong-proxy are using the same node
+sbt clean compile universal:packageBin
+cd target/universal && unzip ./rsong-acquisition-1.2-SNAPSHOT && cd rsong-acquisition-1.2-SNAPSHOT
+./bin/rsong-acquisition
+```
+
+##### Execute rsong-proxy integration tests
+```
+sbt clean compile run
+## from a different terminal:
+./scripts/rsong-int-tests.py
+```
+
+
 ## url Inventory
 ```
 host='localhost:9000'

@@ -17,7 +17,10 @@ spec:
       containers:
       - name: rsong-proxy
         image: kayvank/rsong-proxy:1.0.7-SNAPSHOT-berlin-demo
-
+        resources:
+          requests:
+            cpu: 100m
+            memory: 20000m
         ports:
         - containerPort: 9000
 
