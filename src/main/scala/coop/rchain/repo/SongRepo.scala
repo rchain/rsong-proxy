@@ -6,21 +6,14 @@ import coop.rchain.domain._
 import scala.util._
 
 object SongRepo {
-  val SONG_OUT = "SONG-OUT"
+  private val SONG_OUT = "SONG-OUT"
 
-  def apply(proxy: RholangProxy): SongRepo =
-    new SongRepo(proxy)
-}
-
-class SongRepo(proxy: RholangProxy) {
-
-  import SongRepo._
   import Repo._
 
-  val log = Logger[SongRepo]
-  
-  def getBinaryData(
-      assetName: String): Either[Err, Array[Byte]] =
+  val log = Logger[SongRepo.type ]
+
+  def getRSongAsset(
+      assetName: String)(proxy: RholangProxy): Either[Err, Array[Byte]] =
     for {
       songId <- findByName(proxy, assetName)
       songIdOut = s"${songId}-${SONG_OUT}"

@@ -122,9 +122,4 @@ object MocSongMetadata {
                    album = Some(albums("Tiny Human"))))
   )
 
-  def songMetadata(userid: String): List[SongMetadata] = List()
-
-  val songRepo = SongRepo(proxy)
-  val songDirectory = "/home/kayvan/dev/assets/rchain_assets"
-
 }

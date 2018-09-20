@@ -11,15 +11,6 @@ object UserRepo {
   val COUNT_OUT = "COUNT-OUT"
   val logger = Logger[UserRepo.type]
 
-  def newUser(id: String): Json = {
-    User(id = id,
-         name = Some("Immersion-user"),
-         active = true,
-         lastLogin = System.currentTimeMillis,
-         playCount = 100,
-         Map("key-1" -> "value-1", "key-2" -> "value-2")).asJson
-  }
-
   def newUserRhoTerm(name: String): String =
     s"""@["Immersion", "newUserId"]!("${name}")"""
 
@@ -40,8 +31,6 @@ class UserRepo(grpc: RholangProxy) {
   import Repo._
   import UserRepo._
 
-  val songRepo = SongRepo(grpc)
-
   val newUser: String => Either[Err, DeployAndProposeResponse] = user =>
     (newUserRhoTerm _ andThen grpc.deployAndPropose _)(user)
 
@@ -58,15 +47,17 @@ class UserRepo(grpc: RholangProxy) {
   def fetchPlayCount(userId: String): Either[Err, PlayCount] = {
     val now = System.currentTimeMillis()
     val playCountOut = s"$userId-$COUNT_OUT-$now"
-    for {
+    val pc = for {
       _ <- putPlayCountAtName(userId, playCountOut)
       count <- findByName(grpc, playCountOut)
       countAsInt <- asInt(count)
     } yield PlayCount(countAsInt)
+    log.info(s"userid: $userId has ${pc}")
+    pc
   }
 
   // TODO: Call @["Immersion", "play"]!(...)
-  def incPlayCount(userId: String): Unit = {
+  def decPlayCount(userId: String): Unit = {
 
     //TODO under development
   }

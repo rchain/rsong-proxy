@@ -13,6 +13,7 @@ import coop.rchain.domain._
 import coop.rchain.service.moc.MocSongMetadata
 import coop.rchain.service.moc.MocSongMetadata.mocSongs
 import scala.concurrent.ExecutionContext.Implicits.global
+import coop.rchain.repo.RSongCache._
 
 import scala.concurrent.Future
 
@@ -24,7 +25,7 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
 
   object userId extends QueryParamDecoderMatcher[String]("userId")
 
-  val songRepo = SongRepo(proxy)
+
   val userRepo = UserRepo(proxy)
   val log = Logger("SongApi")
 
@@ -37,7 +38,7 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
       case GET -> Root / "song" / id :? userId(uid) =>
         MocSongMetadata.mocSongs.get(id) match {
           case Some(m) =>
-            Future { userRepo.incPlayCount(uid) }
+            Future { userRepo.decPlayCount(uid) }
             Ok(
               SongResponse(
                 m,
@@ -48,7 +49,7 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
       case GET -> Root / "song" / "music" / id  =>
         log.debug(
           s"GET / song /music /id request from user: for asset: $id")
-        val link = RSongCache.getMemoizedAsset(id)(songRepo)
+        val link = getMemoizedAsset(id)(proxy)
         link.fold(
           l => {
             computeHttpErr(l, id)
@@ -62,13 +63,13 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
 
       case GET -> Root / "art" / id ⇒
         log.debug(s"GET / art /id request for asset: $id")
-        val link = songRepo.getBinaryData(id)
+        val link = getMemoizedAsset(id)(proxy)
         link.fold(
           l => {
             computeHttpErr(l, id)
           },
           r =>
-            Ok(r,
+            Ok(r.binaryData,
                Header("Content-Type", "binary/octet-stream"),
                Header("Accept-Ranges", "bytes"))
         )
