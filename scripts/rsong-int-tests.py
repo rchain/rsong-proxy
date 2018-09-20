@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 ##
 ##  int test for rsong-proxy
+## Usage: ./rsong-int-tests.py rsong-proxy-hostnanme
 ##
 import sys
 import requests

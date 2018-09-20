@@ -91,7 +91,7 @@ cd target/universal && unzip ./rsong-acquisition-1.2-SNAPSHOT && cd rsong-acquis
 ```
 sbt clean compile run
 ## from a different terminal:
-./scripts/rsong-int-tests.py
+./scripts/rsong-int-tests.py localhost:9000
 ```
 
 
