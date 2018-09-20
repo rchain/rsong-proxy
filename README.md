@@ -54,10 +54,10 @@ export HOST_URL=$LOCAL_K8
 You may consider using [direnv](https://direnv.net/) to manage projects environment variables
 
 ### Run the docker image
-[Circle CI](https://circleci.com) build process publishes the docker image to docker hub. To run the image:
+[Circle CI](https://circleci.com) build process publishes the [rsong-proxy docker](https://hub.docker.com/r/kayvank/rsong-proxy/) image to docker hub. To run the image:
 
 ```
-./docker-run.sh
+sccripts/docker-run.sh
 ```
 
 ### Running the Source code
@@ -95,6 +95,8 @@ cd target/universal && unzip ./rsong-acquisition-1.2-SNAPSHOT && cd rsong-acquis
 ```
 
 ##### Execute rsong-proxy integration tests
+Integration tests are run by the python script [rsong-int-tests.py](./scripts/rsong-int-tests.py).  
+The scripts assumes [requests](http://www.python-requests.org/en/master/) is installed.
 ```
 sbt clean compile run
 ## from a different terminal:
