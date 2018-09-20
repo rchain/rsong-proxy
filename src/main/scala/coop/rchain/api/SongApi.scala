@@ -48,13 +48,13 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
       case GET -> Root / "song" / "music" / id  =>
         log.debug(
           s"GET / song /music /id request from user: for asset: $id")
-        val link = songRepo.fetchSong(id)
+        val link = RSongCache.getMemoizedAsset(id)(songRepo)
         link.fold(
           l => {
             computeHttpErr(l, id)
           },
           r => {
-            Ok(r,
+            Ok(r.binaryData,
                Header("Content-Type", "binary/octet-stream"),
                Header("Accept-Ranges", "bytes"))
           }

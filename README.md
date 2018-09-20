@@ -37,20 +37,27 @@ Alternatively you may build and run the project from source code.
 To run the project locally, configure your environment variables:
 
 ```
+##
+export LOCAL_GRPC='localhost'
+export GCP_GRPC='dd.dd.dd.dd'
+export AWS_GRPC='dd.dd.dd.dd'
+export DOCKER_GRPC='172.17.0.2'
 export HTTP_PORT=9000
-export AUTH_NAME=secrete-user-name
-export AUTH_PASSWORD=serete-password
-export API_VERSION=v1
-export GRPC_SERVER=localhost
-export HOST_URL=http://localhost:9000
+export GRPC_SERVER=$LOCAL_GRPC
+export GRPC_PORT_INTERNAL=40404
+export GRPC_PORT_EXTERNAL=40401
+export PRD_K8='http://prd-rchain.com'
+export DEV_K8='http://dev-rchain.com'
+export LOCAL_K8='http://localhost'
+export HOST_URL=$LOCAL_K8
 ```
 You may consider using [direnv](https://direnv.net/) to manage projects environment variables
 
 ### Run the docker image
-The build process pushes the docker image to docker hub. To run the image:
+[Circle CI](https://circleci.com) build process publishes the [rsong-proxy docker](https://hub.docker.com/r/kayvank/rsong-proxy/) image to docker hub. To run the image:
 
 ```
-./docker-run.sh
+sccripts/docker-run.sh
 ```
 
 ### Running the Source code
@@ -72,6 +79,31 @@ tests are:
 sbt clean test
 ```
 
+#### Integration tests
+- configure  .envrc for both rsong-proxy and rsong-acquisition are configured for the same node instance
+- execute [rsong-acquisition](../rsong-acquisition) to migrate the song data to node
+- build rsong-proxy and run integration tests
+
+##### Execute rsong-acquisition
+
+```
+cd ../rsong-acquisition
+## make sure rsong-acquisition & rsong-proxy are using the same node
+sbt clean compile universal:packageBin
+cd target/universal && unzip ./rsong-acquisition-1.2-SNAPSHOT && cd rsong-acquisition-1.2-SNAPSHOT
+./bin/rsong-acquisition
+```
+
+##### Execute rsong-proxy integration tests
+Integration tests are run by the python script [rsong-int-tests.py](./scripts/rsong-int-tests.py).  
+The scripts assumes [requests](http://www.python-requests.org/en/master/) is installed.
+```
+sbt clean compile run
+## from a different terminal:
+./scripts/rsong-int-tests.py localhost:9000
+```
+
+
 ## url Inventory
 ```
 host='localhost:9000'
@@ -81,9 +113,6 @@ curl -X POST $host/v1/user/<user_id>
 
 ## retrieve  user  object
 curl  $host/v1/user/<user_id>
-
-## reset playcount
-curl -X PUT $host/v1/user/<user_id>/playcount
 
 ## retrive a user's song
 curl -v  GET $host/v1/song/song1?userId=123 | jq

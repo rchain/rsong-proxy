@@ -1,5 +1,6 @@
 package coop.rchain.repo
 
+import com.typesafe.scalalogging.Logger
 import coop.rchain.domain.{CachingException, Err, ErrorCode}
 import coop.rchain.utils.Globals
 import scalacache._
@@ -31,19 +32,24 @@ object ErrImplicits {
     }
   }
 }
-object RsongCache {
+object RSongCache {
   import ErrImplicits._
 
   case class CachedAsset(
     name: String,
     binaryData: Array[Byte]
   )
+  val log = Logger("RSongCache")
   val repo = new SongRepo(Globals.proxy)
 
-  val (redisUrl, redisPort)= (Globals.appCfg.getString("redis.url"), Globals.appCfg.getInt("redis.port"))
+  val (redisUrl, redisPort)=
+    (Globals.appCfg.getString("redis.url"),
+      Globals.appCfg.getInt("redis.port"))
+
   implicit val rsongCache: Cache[CachedAsset] =
     RedisCache(redisUrl, redisPort)
 
+  rsongCache.config
 val getMemoizedAsset: String => SongRepo => Either[Err, CachedAsset] =
   name => repo => {
 
@@ -51,10 +57,13 @@ val getMemoizedAsset: String => SongRepo => Either[Err, CachedAsset] =
     memoize[Try, CachedAsset](None) {
       loadCache(name)(repo) match {
         case Right(s) => s
-        case Left(e) => throw CachingException(e.msg)
+        case Left(e) =>
+          log.error(s"Exception in RSongCache layer. ${e}")
+          throw CachingException(e.msg)
       }
     }
 
+    log.info(s"in memoized, attempting to fetch $name")
     __getMemoizedAsset(name).asErr
   }
 
