@@ -51,10 +51,7 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
         val link = songRepo.fetchSong(id)
         link.fold(
           l => {
-            log.error(s"error in finding asset by id: $id.")
-            log.error(s"${l}")
-            InternalServerError()
-            InternalServerError()
+            computeHttpErr(l, id)
           },
           r => {
             Ok(r,
@@ -68,9 +65,7 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
         val link = songRepo.fetchSong(id)
         link.fold(
           l => {
-            log.error(s"error in finding asset by id: $id.")
-            log.error(s"${l}")
-            InternalServerError()
+            computeHttpErr(l, id)
           },
           r =>
             Ok(r,
@@ -78,4 +73,14 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
                Header("Accept-Ranges", "bytes"))
         )
     }
+  private def computeHttpErr(e: Err, name: String) = {
+    e.code match {
+      case ErrorCode.nameToPar =>
+        log.error(s"$name not found.  ${e.toString}")
+        NotFound(name)
+      case _ =>
+        log.error(s"Server error for name: $name. ${e.toString}")
+        InternalServerError(name)
+    }
+  }
 }

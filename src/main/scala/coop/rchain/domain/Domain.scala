@@ -87,6 +87,8 @@ case class RSongJsonAsset(
     jsonData: String
 )
 
+case class CachingException(message: String) extends  Exception(message)
+
 object NameKey extends Enumeration {
   type NameKey = Value
   val newUserId, store, playCount, retrieveSong, retrieveMetadata, remunerate,
