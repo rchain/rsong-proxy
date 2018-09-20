@@ -69,6 +69,6 @@ val getMemoizedAsset: String => SongRepo => Either[Err, CachedAsset] =
 
   val loadCache: String =>
     SongRepo =>  Either[Err,CachedAsset]= name => repo =>
-    repo.fetchSong(name).map(CachedAsset(name, _))
+    repo.getBinaryData(name).map(CachedAsset(name, _))
 
 }
