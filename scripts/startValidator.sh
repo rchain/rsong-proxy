@@ -1,3 +1,7 @@
 #!/bin/bash
 ## usage ./startValidator.sh key
- rnode run -s -p 4000 --bootstrap rnode://c61769b39d368cbcbc9499634e030386c79d5b02@52.119.8.108:40400 --validator-private-key $1
+rnode run -s \
+      --required-sigs 0 \
+      --map_size 2048576000 \
+      --thread-pool-size 70 \
+      --validator-private-key b081323f1de029986252e28bd2c5f5dd2309551851d2cc5209b2d1025d6472f4
