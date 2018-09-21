@@ -15,5 +15,11 @@ object Globals {
     appCfg.getInt("grpc.ports.external"))
 
   val proxy = RholangProxy(host, port)
-  println(s"GRPC server is  $host:$port}.  rsongHostUrl is $rsongHostUrl")
+  println(s""""
+              ----------------------------------------------------
+             GRPC server:   $host:$port
+             rsongHostUrl:  $rsongHostUrl"
+             redis_url:     ${appCfg.getString("redis.url")}
+              ----------------------------------------------------
+  """)
 }
