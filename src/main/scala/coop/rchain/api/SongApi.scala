@@ -35,15 +35,17 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
         log.debug(s"GET / song request from user: $id")
         Ok(mocSongs.values.toList.asJson)
 
-      case GET -> Root / "song" / id :? userId(uid) =>
-        MocSongMetadata.mocSongs.get(id) match {
+      case GET -> Root / "song"  / songId :? userId(uid) =>
+        MocSongMetadata.mocSongs.get(songId) match {
           case Some(m) =>
-            Future { userRepo.decPlayCount(uid) }
+            Future { userRepo.decPlayCount(songId, uid) }
             Ok(
               SongResponse(
                 m,
-                userRepo.fetchPlayCount(id).getOrElse(PlayCount(50))).asJson)
-          case None => NotFound(id)
+                userRepo.fetchPlayCount(uid).getOrElse(PlayCount(50))).asJson)
+          case None =>
+            log.warn(s"song: $songId for user: $uid was not found")
+            NotFound(songId)
         }
 
       case GET -> Root / "song" / "music" / id  =>
