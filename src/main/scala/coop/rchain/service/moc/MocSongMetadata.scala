@@ -11,7 +11,7 @@ object MocSongMetadata {
                        uri = s"${rsongHostUrl}/${artpath}/Broke.jpg"),
     "Euphoria" -> Artwork(id = "Euphoria",
                           uri = s"${rsongHostUrl}/${artpath}/Euphoria.jpg"),
-    "Tiny Human" -> Artwork(id = "Tiny Human",
+    "Tiny_Human" -> Artwork(id = "Tiny Human",
                             uri = s"${rsongHostUrl}/${artpath}/Tiny Human.jpg")
   )
   val artists = Map(
@@ -21,7 +21,7 @@ object MocSongMetadata {
     "Euphoria" -> Artist(id = "California-Guitar-Trio",
                          name = "California Guitar Trio",
                          title = "California Guitar Trio"),
-    "Tiny Human" -> Artist(id = "Imogen-Heap",
+    "Tiny_Human" -> Artist(id = "Imogen-Heap",
                            name = "Imogen Heap",
                            title = "Imogen Heap")
   )
@@ -45,13 +45,13 @@ object MocSongMetadata {
       artists = List(artists("Euphoria")),
       uri = s"${rsongHostUrl}/${artpath}/Euphoria.jpg"
     ),
-    "Tiny Human" -> Album(
+    "Tiny_Human" -> Album(
       id = "album-id-Tiny_Human",
-      artworks = List(artworks("Tiny Human")),
+      artworks = List(artworks("Tiny_Human")),
       name = "Tiny Human",
       title = "Tiny Human",
       duration_ms = 10000,
-      artists = List(artists("Tiny Human")),
+      artists = List(artists("Tiny_Human")),
       uri = s"${rsongHostUrl}/${artpath}/TinyHuman.jpg"
     )
   )
@@ -72,9 +72,9 @@ object MocSongMetadata {
         ),
         language = "EN"
       ),
-    "Tiny Human" ->
+    "Tiny_Human" ->
       Song(
-        id = "Tiny Human",
+        id = "Tiny_Human",
         name = "Tiny Human",
         title = "Tiny Human",
         audio = List(
@@ -115,16 +115,11 @@ object MocSongMetadata {
                    artists = List(artists("Euphoria")),
                    artwork = List(artworks("Euphoria")),
                    album = Some(albums("Euphoria")))),
-    ("Tiny Human" ->
-      SongMetadata(song("Tiny Human"),
-                   artists = List(artists("Tiny Human")),
-                   artwork = List(artworks("Tiny Human")),
-                   album = Some(albums("Tiny Human"))))
+    ("Tiny_Human" ->
+      SongMetadata(song("Tiny_Human"),
+                   artists = List(artists("Tiny_Human")),
+                   artwork = List(artworks("Tiny_Human")),
+                   album = Some(albums("Tiny_Human"))))
   )
-
-  def songMetadata(userid: String): List[SongMetadata] = List()
-
-  val songRepo = SongRepo(proxy)
-  val songDirectory = "/home/kayvan/dev/assets/rchain_assets"
 
 }

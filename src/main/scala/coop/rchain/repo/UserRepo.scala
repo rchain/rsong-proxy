@@ -2,23 +2,16 @@ package coop.rchain.repo
 
 import com.typesafe.scalalogging.Logger
 import coop.rchain.domain._
+import coop.rchain.repo.SongRepo.SONG_OUT
 import io.circe._
 import io.circe.generic.auto._
+
 import scala.util._
 import io.circe.syntax._
 
 object UserRepo {
   val COUNT_OUT = "COUNT-OUT"
   val logger = Logger[UserRepo.type]
-
-  def newUser(id: String): Json = {
-    User(id = id,
-         name = Some("Immersion-user"),
-         active = true,
-         lastLogin = System.currentTimeMillis,
-         playCount = 100,
-         Map("key-1" -> "value-1", "key-2" -> "value-2")).asJson
-  }
 
   def newUserRhoTerm(name: String): String =
     s"""@["Immersion", "newUserId"]!("${name}")"""
@@ -31,42 +24,54 @@ object UserRepo {
     }
   }
 
-  def apply(grpc: RholangProxy): UserRepo =
-    new UserRepo(grpc)
+  def apply(proxy: RholangProxy): UserRepo =
+    new UserRepo(proxy)
 }
 
-class UserRepo(grpc: RholangProxy) {
+class UserRepo(proxy: RholangProxy) {
 
   import Repo._
   import UserRepo._
 
-  val songRepo = SongRepo(grpc)
-
   val newUser: String => Either[Err, DeployAndProposeResponse] = user =>
-    (newUserRhoTerm _ andThen grpc.deployAndPropose _)(user)
+    (newUserRhoTerm _ andThen proxy.deployAndPropose _)(user)
 
   def putPlayCountAtName(
       userId: String,
       playCountOut: String): Either[Err, DeployAndProposeResponse] =
     for {
-      rhoName <- findByName(grpc, userId)
-      playCountArgs = s"""("$rhoName".hexToBytes(), $playCountOut)"""
+      rhoName <- findByName(proxy, userId)
+      playCountArgs = s"""("$rhoName".hexToBytes(), "$playCountOut")"""
       term = s"""@["Immersion", "playCount"]!${playCountArgs}"""
-      m <- grpc.deployAndPropose(term)
+      m <- proxy.deployAndPropose(term)
     } yield m
 
   def fetchPlayCount(userId: String): Either[Err, PlayCount] = {
-    val now = System.currentTimeMillis()
-    val playCountOut = s"$userId-$COUNT_OUT-$now"
-    for {
+    val playCountOut = s"$userId-${COUNT_OUT}-${System.currentTimeMillis()}"
+    val pc = for {
       _ <- putPlayCountAtName(userId, playCountOut)
-      count <- findByName(grpc, playCountOut)
+      count <- findByName(proxy, playCountOut)
       countAsInt <- asInt(count)
     } yield PlayCount(countAsInt)
+    log.info(s"++++++++++++++++userid: $userId has ${pc}")
+    pc
   }
 
   // TODO: Call @["Immersion", "play"]!(...)
-  def incPlayCount(userId: String): Unit = {
+  def decPlayCount(songId: String, userId: String): Unit = {
+    val permittedOut=s"${userId}-${songId}-permittedToPlay-${System.currentTimeMillis()}"
+    val pOut = for {
+      sid <- findByName(proxy, s"${songId}_Stereo.izr")
+      _=log.info(s"rholangName= $sid for songId: $songId")
+      uid <-  findByName(proxy, userId)
+      _=log.info(s"rholangName= $uid for userId: $userId")
+      parameters = s"""("$sid".hexToBytes(), "$uid".hexToBytes(), "$permittedOut")"""
+      term = s"""@["Immersion", "play"]!${parameters}"""
+      m <- proxy.deployAndPropose(term)
+      p <- findByName(proxy, permittedOut)
+    } yield p
+
+    log.info(s"user: $userId with song: $songId has permitedOut: $pOut")
 
     //TODO under development
   }

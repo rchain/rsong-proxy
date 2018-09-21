@@ -13,6 +13,7 @@ import coop.rchain.domain._
 import coop.rchain.service.moc.MocSongMetadata
 import coop.rchain.service.moc.MocSongMetadata.mocSongs
 import scala.concurrent.ExecutionContext.Implicits.global
+import coop.rchain.repo.RSongCache._
 
 import scala.concurrent.Future
 
@@ -24,7 +25,7 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
 
   object userId extends QueryParamDecoderMatcher[String]("userId")
 
-  val songRepo = SongRepo(proxy)
+
   val userRepo = UserRepo(proxy)
   val log = Logger("SongApi")
 
@@ -34,30 +35,29 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
         log.debug(s"GET / song request from user: $id")
         Ok(mocSongs.values.toList.asJson)
 
-      case GET -> Root / "song" / id :? userId(uid) =>
-        MocSongMetadata.mocSongs.get(id) match {
+      case GET -> Root / "song"  / songId :? userId(uid) =>
+        MocSongMetadata.mocSongs.get(songId) match {
           case Some(m) =>
-            Future { userRepo.incPlayCount(uid) }
+            Future { userRepo.decPlayCount(songId, uid) }
             Ok(
               SongResponse(
                 m,
-                userRepo.fetchPlayCount(id).getOrElse(PlayCount(50))).asJson)
-          case None => NotFound(id)
+                userRepo.fetchPlayCount(uid).getOrElse(PlayCount(50))).asJson)
+          case None =>
+            log.warn(s"song: $songId for user: $uid was not found")
+            NotFound(songId)
         }
 
       case GET -> Root / "song" / "music" / id  =>
         log.debug(
           s"GET / song /music /id request from user: for asset: $id")
-        val link = songRepo.fetchSong(id)
+        val link = getMemoizedAsset(id)(proxy)
         link.fold(
           l => {
-            log.error(s"error in finding asset by id: $id.")
-            log.error(s"${l}")
-            InternalServerError()
-            InternalServerError()
+            computeHttpErr(l, id)
           },
           r => {
-            Ok(r,
+            Ok(r.binaryData,
                Header("Content-Type", "binary/octet-stream"),
                Header("Accept-Ranges", "bytes"))
           }
@@ -65,17 +65,25 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
 
       case GET -> Root / "art" / id ⇒
         log.debug(s"GET / art /id request for asset: $id")
-        val link = songRepo.fetchSong(id)
+        val link = getMemoizedAsset(id)(proxy)
         link.fold(
           l => {
-            log.error(s"error in finding asset by id: $id.")
-            log.error(s"${l}")
-            InternalServerError()
+            computeHttpErr(l, id)
           },
           r =>
-            Ok(r,
+            Ok(r.binaryData,
                Header("Content-Type", "binary/octet-stream"),
                Header("Accept-Ranges", "bytes"))
         )
     }
+  private def computeHttpErr(e: Err, name: String) = {
+    e.code match {
+      case ErrorCode.nameToPar =>
+        log.error(s"$name not found.  ${e.toString}")
+        NotFound(name)
+      case _ =>
+        log.error(s"Server error for name: $name. ${e.toString}")
+        InternalServerError(name)
+    }
+  }
 }
