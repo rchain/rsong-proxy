@@ -25,8 +25,6 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
 
   object userId extends QueryParamDecoderMatcher[String]("userId")
 
-
-  val userRepo = UserRepo(proxy)
   val log = Logger("SongApi")
 
   val routes: HttpRoutes[F] =
@@ -38,11 +36,11 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
       case GET -> Root / "song"  / songId :? userId(uid) =>
         MocSongMetadata.mocSongs.get(songId) match {
           case Some(m) =>
-            Future { userRepo.decPlayCount(songId, uid) }
+            Future { UserRepo.decPlayCount(songId, uid)(proxy) }
             Ok(
               SongResponse(
                 m,
-                userRepo.fetchPlayCount(uid).getOrElse(PlayCount(50))).asJson)
+                UserRepo.fetchPlayCount(uid)(proxy).getOrElse(PlayCount(50))).asJson)
           case None =>
             log.warn(s"song: $songId for user: $uid was not found")
             NotFound(songId)

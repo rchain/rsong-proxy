@@ -27,6 +27,7 @@ lazy val root = (project in file("."))
       Seq(
        "io.monix" %% "monix" % V.monix,
         "com.github.cb372" %% "scalacache-redis" % V.redisCache,
+        "com.twitter" %% "storehaus-cache" % "0.15.0",
        "org.http4s" %% "http4s-dsl" % V.http4s,
        "org.http4s" %% "http4s-blaze-server" % V.http4s,
         "org.http4s" %% "http4s-circe" % V.http4s,

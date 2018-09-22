@@ -1,15 +1,17 @@
 package coop.rchain.repo
 
 import com.typesafe.scalalogging.Logger
-import coop.rchain.domain.{CachingException, Err, ErrorCode}
+import coop.rchain.domain.{CachingException, Err, PlayCount}
 import coop.rchain.utils.Globals
 import scalacache._
 import scalacache.redis._
 import scalacache.serialization.binary._
 import scalacache.memoization._
 import scalacache.modes.try_._
-
+import scala.concurrent.Future
 import scala.util.{Either, Left, Right, Try}
+import com.twitter.storehaus.cache.MutableLRUCache
+import scala.concurrent.ExecutionContext.Implicits.global
 
 
 object RSongCache {
@@ -19,6 +21,13 @@ object RSongCache {
     name: String,
     binaryData: Array[Byte]
   )
+
+  case class CachedUser(
+    rsongUserId: String,
+    playCount: PlayCount
+  )
+  val userCache = MutableLRUCache[String, PlayCount](7000)
+
   val log = Logger[RSongCache.type]
   val  binaryAsset: String => Either[Err, Array[Byte]] = name =>
     SongRepo.getRSongAsset(name)(Globals.proxy)
@@ -48,4 +57,23 @@ val getMemoizedAsset: String => RholangProxy => Either[Err, CachedAsset] =
     __getMemoizedAsset(name).asErr
   }
 
+  implicit val rsongUserCache: Cache[CachedUser] =
+    RedisCache(redisUrl, redisPort)
+
+  def getUser: String => RholangProxy =>  CachedUser =
+    name => proxy => {
+
+     userCache.get(name)  match {
+        case Some(n) =>
+          val z = UserRepo.fetchPlayCount(name)(proxy)
+          val (k,v) = (name, z.toOption.getOrElse(PlayCount(50)))
+          userCache+= (k,v)
+          CachedUser(k,v)
+
+        case None =>
+        userCache+=(name, PlayCount(50))
+        Future{UserRepo.newUser(name)(proxy)}
+        CachedUser(name,PlayCount(50))
+      }
+    }
 }

@@ -5,7 +5,7 @@ metadata:
   labels:
     app: rsong-proxy
 spec:
-  replicas: 1
+  replicas:
   selector:
     matchLabels:
       app: rsong-proxy

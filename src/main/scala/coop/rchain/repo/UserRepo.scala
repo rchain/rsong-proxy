@@ -2,12 +2,7 @@ package coop.rchain.repo
 
 import com.typesafe.scalalogging.Logger
 import coop.rchain.domain._
-import coop.rchain.repo.SongRepo.SONG_OUT
-import io.circe._
-import io.circe.generic.auto._
-
 import scala.util._
-import io.circe.syntax._
 
 object UserRepo {
   val COUNT_OUT = "COUNT-OUT"
@@ -24,21 +19,16 @@ object UserRepo {
     }
   }
 
-  def apply(proxy: RholangProxy): UserRepo =
-    new UserRepo(proxy)
-}
-
-class UserRepo(proxy: RholangProxy) {
 
   import Repo._
-  import UserRepo._
 
-  val newUser: String => Either[Err, DeployAndProposeResponse] = user =>
+
+  val newUser: String => RholangProxy => Either[Err, DeployAndProposeResponse] = user => proxy =>
     (newUserRhoTerm _ andThen proxy.deployAndPropose _)(user)
 
   def putPlayCountAtName(
       userId: String,
-      playCountOut: String): Either[Err, DeployAndProposeResponse] =
+      playCountOut: String)(proxy: RholangProxy): Either[Err, DeployAndProposeResponse] =
     for {
       rhoName <- findByName(proxy, userId)
       playCountArgs = s"""("$rhoName".hexToBytes(), "$playCountOut")"""
@@ -46,19 +36,18 @@ class UserRepo(proxy: RholangProxy) {
       m <- proxy.deployAndPropose(term)
     } yield m
 
-  def fetchPlayCount(userId: String): Either[Err, PlayCount] = {
+  def fetchPlayCount(userId: String)(proxy: RholangProxy): Either[Err, PlayCount] = {
     val playCountOut = s"$userId-${COUNT_OUT}-${System.currentTimeMillis()}"
     val pc = for {
-      _ <- putPlayCountAtName(userId, playCountOut)
+      _ <- putPlayCountAtName(userId, playCountOut)(proxy)
       count <- findByName(proxy, playCountOut)
       countAsInt <- asInt(count)
     } yield PlayCount(countAsInt)
-    log.info(s"++++++++++++++++userid: $userId has ${pc}")
+    log.info(s"userid: $userId has ${pc}")
     pc
   }
 
-  // TODO: Call @["Immersion", "play"]!(...)
-  def decPlayCount(songId: String, userId: String): Unit = {
+  def decPlayCount(songId: String, userId: String)(proxy: RholangProxy): Unit = {
     val permittedOut=s"${userId}-${songId}-permittedToPlay-${System.currentTimeMillis()}"
     val pOut = for {
       sid <- findByName(proxy, s"${songId}_Stereo.izr")
@@ -72,7 +61,5 @@ class UserRepo(proxy: RholangProxy) {
     } yield p
 
     log.info(s"user: $userId with song: $songId has permitedOut: $pOut")
-
-    //TODO under development
   }
 }
