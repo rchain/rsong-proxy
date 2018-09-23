@@ -150,6 +150,7 @@ See [deployment-prd-spec](k8-spec/app/proxy-deploy-pod.yaml) for more detail
 - [http4s](https://github.com/http4s/http4s)
 - [kubernetes](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 - [direnv](https://direnv.net/)
+- [redis](https://redis.io/)
 - [Google Cloud Platform, GCP](https://cloud.google.com/)
 
 

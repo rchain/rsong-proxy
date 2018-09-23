@@ -9,68 +9,37 @@ import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
 import io.circe.generic.auto._
 import io.circe.syntax._
-import scala.concurrent.ExecutionContext.Implicits.global
-
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class UserApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
-  import Repo._
+  import RSongUserCache._
 
-  val repo = UserRepo(proxy)
   val log = Logger("UserApi")
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
-    case GET -> Root / id =>
-      log.debug(s"GET / id request form user: $id")
-      findByName(proxy, id)
-        .fold(
-          e =>
-            if (e.code == ErrorCode.nameNotFound) {
-              val _ = Future {
-                repo.newUser(id)
-              }
-              Ok(
-                User(id = id,
-                     name = None,
-                     active = true,
-                     lastLogin = System.currentTimeMillis,
-                     playCount = 50,
-                     metadata = Map("immersionUser" -> "ImmersionUser")).asJson)
-            } else
-              InternalServerError(s"${e.code} ; ${e.msg}"),
-          _ =>
+    case GET -> Root / userId =>
+      log.debug(s"GET / userId request form user: $userId")
+      getOrCreateUser(userId)(proxy).fold(
+        l => {
+          log.error(s"Error in ROOT/$userId api. ${l}")
+          InternalServerError(s"${l.code} ; ${l.msg}")
+        },
+          r =>
             Ok(
-              User(id = id,
+              User(id = userId,
                    name = None,
                    active = true,
                    lastLogin = System.currentTimeMillis,
-                   playCount = 50,
+                   playCount = r.playCount.current,
                    metadata = Map("immersionUser" -> "ImmersionUser")).asJson)
-        )
-
-    case POST -> Root / id =>
-      log.debug(s"POST / id request form user: $id")
-      val _ = Future {
-        repo.newUser(id)
-      }
-      Accepted(
-        User(id = id,
-             name = None,
-             active = true,
-             lastLogin = System.currentTimeMillis,
-             playCount = 50,
-             metadata = Map("immersionUser" -> "ImmersionUser")).asJson)
-
+      )
     case GET -> Root / id / "playcount" =>
       log.debug(s"GET / id /playcount request form user: $id")
-      repo
-        .fetchPlayCount(id)
+        getOrCreateUser(id)(proxy)
         .fold(
           e =>
             if (e.code == ErrorCode.nameNotFound) NotFound(s"${e}")
             else InternalServerError(s"${e.code} ; ${e.msg}"),
-          r => Ok(r.asJson)
+          r => Ok(r.playCount.asJson)
         )
   }
 

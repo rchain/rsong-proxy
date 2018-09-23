@@ -2,6 +2,8 @@ package coop.rchain.service.moc
 import coop.rchain.domain._
 import coop.rchain.repo.SongRepo
 
+import scala.util.{Left, Right}
+
 object MocSongMetadata {
 
   import coop.rchain.utils.Globals._
@@ -122,4 +124,12 @@ object MocSongMetadata {
                    album = Some(albums("Tiny_Human"))))
   )
 
+  def getMetadata(songId: String) = {
+    MocSongMetadata.mocSongs.get(songId) match {
+      case Some(m) => Right(m)
+      case None => Left(Err(
+        ErrorCode.nameNotFound,
+        s"No metadata for songId: $songId found!", Some(songId)))
+    }
+  }
 }

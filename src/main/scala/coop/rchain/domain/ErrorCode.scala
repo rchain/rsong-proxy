@@ -2,9 +2,21 @@ package coop.rchain.domain
 
 object ErrorCode extends Enumeration {
   type ErrorCode = Value
-  val grpcEval, grpcDeploy, grpcPropose, grpcShow, rholang, nameToPar,
-  rsongHexConversion, rsongRetrival, rsongRevnetwork, contractFile,
-  playCountConversion, nameNotFound, cacheLayer, unknown = Value
+  val grpcEval,
+  grpcDeploy,
+  grpcPropose,
+  grpcShow,
+  rholang,
+  nameToPar,
+  rsongHexConversion,
+  rsongRetrival,
+  rsongRevnetwork,
+  contractFile,
+  playCountConversion,
+  nameNotFound,
+  unregisteredUser,
+  cacheLayer,
+  unknown = Value
 }
 
 import ErrorCode._

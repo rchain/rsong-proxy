@@ -5,8 +5,17 @@ import TodoListPlugin._
     Resolver.sonatypeRepo("releases"),
     Resolver.sonatypeRepo("snapshots"))
 
+val gitCommitString = SettingKey[String]("gitCommit")
+
+gitCommitString := git.gitHeadCommit.value.getOrElse("Not Set")
+
 lazy val root = (project in file("."))
-  .settings(
+  . settings(
+    buildInfoKeys := Seq[BuildInfoKey](version, gitCommitString),
+    buildInfoPackage := "buildInfo",
+    buildInfoOptions += BuildInfoOption.ToMap,
+    buildInfoOptions += BuildInfoOption.ToJson
+  ).settings(
     organization := "coop.rchain",
     name := "rsong-proxy",
     scalaVersion := "2.12.6",
@@ -55,6 +64,8 @@ PB.targets in Compile := Seq(
 // scalacOptions := CompilerSettings.options
 
 enablePlugins(JavaServerAppPackaging, BuildInfoPlugin)
+
+enablePlugins(GitVersioning)
 
 compileWithTodolistSettings
 
