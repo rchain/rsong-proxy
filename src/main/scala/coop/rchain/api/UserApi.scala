@@ -11,30 +11,35 @@ import io.circe.generic.auto._
 import io.circe.syntax._
 
 class UserApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
-  import UserRepo._
+  import RSongUserCache._
 
   val log = Logger("UserApi")
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
     case GET -> Root / userId =>
       log.debug(s"GET / userId request form user: $userId")
-      val cachedUser=RSongCache.getUser(userId)(proxy)
+      getOrCreateUser(userId)(proxy).fold(
+        l => {
+          log.error(s"Error in ROOT/$userId api. ${l}")
+          InternalServerError(s"${l.code} ; ${l.msg}")
+        },
+          r =>
             Ok(
               User(id = userId,
                    name = None,
                    active = true,
                    lastLogin = System.currentTimeMillis,
-                   playCount = cachedUser.playCount.current,
+                   playCount = r.playCount.current,
                    metadata = Map("immersionUser" -> "ImmersionUser")).asJson)
-
+      )
     case GET -> Root / id / "playcount" =>
       log.debug(s"GET / id /playcount request form user: $id")
-        fetchPlayCount(id)(proxy)
+        getOrCreateUser(id)(proxy)
         .fold(
           e =>
             if (e.code == ErrorCode.nameNotFound) NotFound(s"${e}")
             else InternalServerError(s"${e.code} ; ${e.msg}"),
-          r => Ok(r.asJson)
+          r => Ok(r.playCount.asJson)
         )
   }
 

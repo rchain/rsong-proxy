@@ -12,8 +12,10 @@ import io.circe.syntax._
 import coop.rchain.domain._
 import coop.rchain.service.moc.MocSongMetadata
 import coop.rchain.service.moc.MocSongMetadata.mocSongs
+
 import scala.concurrent.ExecutionContext.Implicits.global
-import coop.rchain.repo.RSongCache._
+import coop.rchain.repo.RSongAssetCache._
+import coop.rchain.repo.RSongUserCache.{decPlayCount, viewPlayCount}
 
 import scala.concurrent.Future
 
@@ -34,16 +36,10 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
         Ok(mocSongs.values.toList.asJson)
 
       case GET -> Root / "song"  / songId :? userId(uid) =>
-        MocSongMetadata.mocSongs.get(songId) match {
-          case Some(m) =>
-            Future { UserRepo.decPlayCount(songId, uid)(proxy) }
-            Ok(
-              SongResponse(
-                m,
-                UserRepo.fetchPlayCount(uid)(proxy).getOrElse(PlayCount(50))).asJson)
-          case None =>
-            log.warn(s"song: $songId for user: $uid was not found")
-            NotFound(songId)
+        getSongMetadata(songId,uid) match {
+          case Right(m) =>
+            Ok(m.asJson)
+          case Left(e) => computeHttpErr(e,songId)
         }
 
       case GET -> Root / "song" / "music" / id  =>
@@ -77,11 +73,26 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
   private def computeHttpErr(e: Err, name: String) = {
     e.code match {
       case ErrorCode.nameToPar =>
-        log.error(s"$name not found.  ${e.toString}")
+        log.error(s"${e} name: ${name} ")
+        NotFound(name)
+      case ErrorCode.nameNotFound =>
+        log.error(s"${e} name: ${name} ")
+        NotFound(name)
+      case ErrorCode.unregisteredUser =>
+        log.error(s"${e} name: ${name} ")
         NotFound(name)
       case _ =>
         log.error(s"Server error for name: $name. ${e.toString}")
         InternalServerError(name)
     }
   }
+  private def getSongMetadata(songId: String, userId: String) = {
+    for {
+      m <- MocSongMetadata.getMetadata(songId)
+      x <- decPlayCount(songId, userId)(proxy)
+      v <- viewPlayCount(userId)
+    } yield SongResponse(m,v)
+  }
+
+
 }

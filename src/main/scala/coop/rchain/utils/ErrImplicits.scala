@@ -1,6 +1,11 @@
 package coop.rchain.utils
 
 import coop.rchain.domain.{CachingException, Err, ErrorCode}
+import scalacache.Async
+
+import scala.concurrent.{Await, Promise}
+import scala.concurrent.duration.Duration
+import scala.util.control.NonFatal
 import scala.util.{Either, Failure, Left, Right, Success, Try}
 
 object ErrImplicits {
@@ -24,3 +29,4 @@ object ErrImplicits {
     }
   }
 }
+

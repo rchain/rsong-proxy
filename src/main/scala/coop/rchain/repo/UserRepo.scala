@@ -5,6 +5,7 @@ import coop.rchain.domain._
 import scala.util._
 
 object UserRepo {
+  import Repo._
   val COUNT_OUT = "COUNT-OUT"
   val logger = Logger[UserRepo.type]
 
@@ -18,10 +19,6 @@ object UserRepo {
         Left(Err(ErrorCode.playCountConversion, e.getMessage, None))
     }
   }
-
-
-  import Repo._
-
 
   val newUser: String => RholangProxy => Either[Err, DeployAndProposeResponse] = user => proxy =>
     (newUserRhoTerm _ andThen proxy.deployAndPropose _)(user)
@@ -59,7 +56,6 @@ object UserRepo {
       m <- proxy.deployAndPropose(term)
       p <- findByName(proxy, permittedOut)
     } yield p
-
     log.info(s"user: $userId with song: $songId has permitedOut: $pOut")
   }
 }
