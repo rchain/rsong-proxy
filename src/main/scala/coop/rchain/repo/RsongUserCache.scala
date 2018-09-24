@@ -65,16 +65,29 @@ object RSongUserCache {
     cachedUser
   }
 
-  def decPlayCount(songId: String, userId: String)(proxy: RholangProxy): Either[Err,CachedUser] =
-    for {
-      u <- get(userId).asErr
-      z <- u match {
-        case Some(n) =>
-          Future {
-            UserRepo.decPlayCount(songId, userId)(proxy)
-          }
-          Right(updateCache(n.copy(playCount = PlayCount(n.playCount.current-1))))
-        case None => Left(Err(ErrorCode.unregisteredUser, "Attempting to decrement playcount for unregeistered user!", Some(userId)))
-      }
-    } yield (z)
+
+
+  def decPlayCount(songId: String, userId: String)(proxy: RholangProxy) = {
+    val startTime=System.currentTimeMillis()
+
+    val retVal = __decPlayCount(songId, userId)(proxy)
+    val endTime=System.currentTimeMillis()
+    log.info(s"decPlayCount [strtTime,endtime]: [$startTime, $endTime]. elapsed time: ${endTime - startTime}")
+    retVal
+  }
+  private def __decPlayCount(songId: String, userId: String)(proxy: RholangProxy) = {
+    get(userId).asErr match {
+      case Right(None) =>
+        Left(Err(ErrorCode.unregisteredUser, "Attempting to decrement playcount for unregeistered user!", Some(userId)))
+      case Right(Some(u)) =>
+        Future {
+          for {
+            x <- UserRepo.decPlayCount(songId, userId)(proxy)
+            _ <- Right(updateCache(u.copy(playCount = PlayCount(u.playCount.current-1))))
+          } yield(x)
+        }
+        Right(u)
+    }
+  }
+
 }
