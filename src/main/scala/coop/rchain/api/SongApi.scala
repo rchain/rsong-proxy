@@ -12,12 +12,9 @@ import io.circe.syntax._
 import coop.rchain.domain._
 import coop.rchain.service.moc.MocSongMetadata
 import coop.rchain.service.moc.MocSongMetadata.mocSongs
-
-import scala.concurrent.ExecutionContext.Implicits.global
 import coop.rchain.repo.RSongAssetCache._
 import coop.rchain.repo.RSongUserCache.{decPlayCount, viewPlayCount}
 
-import scala.concurrent.Future
 
 class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
 
@@ -86,6 +83,7 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
         InternalServerError(name)
     }
   }
+
   private def getSongMetadata(songId: String, userId: String) = {
     for {
       m <- MocSongMetadata.getMetadata(songId)

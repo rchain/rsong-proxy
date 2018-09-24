@@ -10,12 +10,13 @@ object MocSongMetadata {
 
   val artworks = Map(
     "Broke" -> Artwork(id = "Broke",
-                       uri = s"${rsongHostUrl}/${artpath}/Broke.jpg"),
+      uri = s"${rsongHostUrl}/${artpath}/Broke.jpg"),
     "Euphoria" -> Artwork(id = "Euphoria",
-                          uri = s"${rsongHostUrl}/${artpath}/Euphoria.jpg"),
-    "Tiny_Human" -> Artwork(id = "Tiny Human",
-                            uri = s"${rsongHostUrl}/${artpath}/Tiny Human.jpg")
+      uri = s"${rsongHostUrl}/${artpath}/Euphoria.jpg"),
+    "Tiny_Human" -> Artwork(id = "Tiny_Human",
+      uri = s"${rsongHostUrl}/${artpath}/Tiny Human.jpg")
   )
+
   val artists = Map(
     "Broke" -> Artist(id = "Mycle-Wastman",
                       name = "Mycle Wastman",

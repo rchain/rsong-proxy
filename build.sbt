@@ -69,9 +69,6 @@ enablePlugins(GitVersioning)
 
 compileWithTodolistSettings
 
-javaOptions in Universal += s"-Dkamon.auto-start=true"
-
-
 dockerRepository := Some("kayvank")
 dockerUpdateLatest := true
 version in Docker := version.value + "-" + scala.sys.env.getOrElse(

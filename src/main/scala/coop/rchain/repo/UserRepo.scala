@@ -44,7 +44,7 @@ object UserRepo {
     pc
   }
 
-  def decPlayCount(songId: String, userId: String)(proxy: RholangProxy): Unit = {
+  def decPlayCount(songId: String, userId: String)(proxy: RholangProxy) = {
     val permittedOut=s"${userId}-${songId}-permittedToPlay-${System.currentTimeMillis()}"
     val pOut = for {
       sid <- findByName(proxy, s"${songId}_Stereo.izr")
@@ -57,5 +57,6 @@ object UserRepo {
       p <- findByName(proxy, permittedOut)
     } yield p
     log.info(s"user: $userId with song: $songId has permitedOut: $pOut")
+    pOut
   }
 }
