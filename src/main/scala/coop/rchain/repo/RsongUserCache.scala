@@ -36,7 +36,7 @@ object RSongUserCache {
         case Success(Some(user)) =>
           Right(user)
         case Success(None) =>
-          Future {
+          val _=Future {
             newUser(name)(proxy)
           }
           log.info(s"user: $name is not in cache. Creating user: $name")
@@ -70,7 +70,7 @@ object RSongUserCache {
   def decPlayCount(songId: String, userId: String)(proxy: RholangProxy) = {
     val startTime=System.currentTimeMillis()
 
-    val retVal = __decPlayCount(songId, userId)(proxy)
+    val retVal = Future { __decPlayCount(songId, userId)(proxy) }
     val endTime=System.currentTimeMillis()
     log.info(s"decPlayCount [strtTime,endtime]: [$startTime, $endTime]. elapsed time: ${endTime - startTime}")
     retVal
@@ -80,7 +80,7 @@ object RSongUserCache {
       case Right(None) =>
         Left(Err(ErrorCode.unregisteredUser, "Attempting to decrement playcount for unregeistered user!", Some(userId)))
       case Right(Some(u)) =>
-        val _=Future {UserRepo.decPlayCount(songId, userId)(proxy) }
+        val _=UserRepo.decPlayCount(songId, userId)(proxy)
          Right(updateCache(u.copy(playCount = PlayCount(u.playCount.current-1))))
 
     }
