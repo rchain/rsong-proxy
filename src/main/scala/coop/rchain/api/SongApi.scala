@@ -84,13 +84,19 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
     }
   }
 
-  private def getSongMetadata(songId: String, userId: String) = {
-//    val _=decPlayCount(songId, userId)(proxy)
-    for {
-      m <- MocSongMetadata.getMetadata(songId)
+  val view: String => String => Either[Err, PlayCount] =
+    songId => userId => for {
       v <- viewPlayCount(userId)
-    } yield SongResponse(m,v)
+      _ <- decPlayCount(songId, userId)
+    }yield v
+
+  private def getSongMetadata(songId: String, userId: String): Either[Err, SongResponse] = {
+  import cats.Applicative
+  import cats.implicits._
+
+    (
+      MocSongMetadata.getMetadata(songId),
+      view(songId)(userId)
+    ).mapN(SongResponse(_,_))
   }
-
-
 }

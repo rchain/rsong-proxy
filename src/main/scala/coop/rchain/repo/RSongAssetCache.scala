@@ -1,7 +1,7 @@
 package coop.rchain.repo
 
 import com.typesafe.scalalogging.Logger
-import coop.rchain.domain.{CachingException, Err, ErrorCode, PlayCount}
+import coop.rchain.domain._
 import coop.rchain.utils.Globals
 import scalacache._
 import scalacache.redis._
@@ -13,11 +13,6 @@ import coop.rchain.utils.ErrImplicits._
 
 
 object RSongAssetCache {
-
-  case class CachedAsset(
-    name: String,
-    binaryData: Array[Byte]
-  )
 
   val log = Logger[RSongAssetCache.type]
   val binaryAsset: String => Either[Err, Array[Byte]] = name =>

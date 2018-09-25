@@ -13,7 +13,7 @@ object MocSongMetadata {
       uri = s"${rsongHostUrl}/${artpath}/Broke.jpg"),
     "Euphoria" -> Artwork(id = "Euphoria",
       uri = s"${rsongHostUrl}/${artpath}/Euphoria.jpg"),
-    "Tiny_Human" -> Artwork(id = "Tiny_Human",
+    "Tiny Human" -> Artwork(id = "Tiny Human",
       uri = s"${rsongHostUrl}/${artpath}/Tiny Human.jpg")
   )
 
@@ -24,7 +24,7 @@ object MocSongMetadata {
     "Euphoria" -> Artist(id = "California-Guitar-Trio",
                          name = "California Guitar Trio",
                          title = "California Guitar Trio"),
-    "Tiny_Human" -> Artist(id = "Imogen-Heap",
+    "Tiny Human" -> Artist(id = "Imogen-Heap",
                            name = "Imogen Heap",
                            title = "Imogen Heap")
   )
@@ -48,14 +48,14 @@ object MocSongMetadata {
       artists = List(artists("Euphoria")),
       uri = s"${rsongHostUrl}/${artpath}/Euphoria.jpg"
     ),
-    "Tiny_Human" -> Album(
+    "Tiny Human" -> Album(
       id = "album-id-Tiny_Human",
-      artworks = List(artworks("Tiny_Human")),
+      artworks = List(artworks("Tiny Human")),
       name = "Tiny Human",
       title = "Tiny Human",
       duration_ms = 10000,
-      artists = List(artists("Tiny_Human")),
-      uri = s"${rsongHostUrl}/${artpath}/TinyHuman.jpg"
+      artists = List(artists("Tiny Human")),
+      uri = s"${rsongHostUrl}/${artpath}/Tiny Human.jpg"
     )
   )
 
@@ -75,7 +75,7 @@ object MocSongMetadata {
         ),
         language = "EN"
       ),
-    "Tiny_Human" ->
+    "Tiny Human" ->
       Song(
         id = "Tiny_Human",
         name = "Tiny Human",
@@ -118,11 +118,11 @@ object MocSongMetadata {
                    artists = List(artists("Euphoria")),
                    artwork = List(artworks("Euphoria")),
                    album = Some(albums("Euphoria")))),
-    ("Tiny_Human" ->
-      SongMetadata(song("Tiny_Human"),
-                   artists = List(artists("Tiny_Human")),
-                   artwork = List(artworks("Tiny_Human")),
-                   album = Some(albums("Tiny_Human"))))
+    ("Tiny Human" ->
+      SongMetadata(song("Tiny Human"),
+                   artists = List(artists("Tiny Human")),
+                   artwork = List(artworks("Tiny Human")),
+                   album = Some(albums("Tiny Human"))))
   )
 
   def getMetadata(songId: String) = {
