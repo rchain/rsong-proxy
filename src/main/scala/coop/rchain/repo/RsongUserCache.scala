@@ -80,13 +80,9 @@ object RSongUserCache {
       case Right(None) =>
         Left(Err(ErrorCode.unregisteredUser, "Attempting to decrement playcount for unregeistered user!", Some(userId)))
       case Right(Some(u)) =>
-        Future {
-          for {
-            x <- UserRepo.decPlayCount(songId, userId)(proxy)
-            _ <- Right(updateCache(u.copy(playCount = PlayCount(u.playCount.current-1))))
-          } yield(x)
-        }
-        Right(u)
+        val _=Future {UserRepo.decPlayCount(songId, userId)(proxy) }
+         Right(updateCache(u.copy(playCount = PlayCount(u.playCount.current-1))))
+
     }
   }
 
