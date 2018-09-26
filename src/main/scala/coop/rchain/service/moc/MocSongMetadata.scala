@@ -77,7 +77,7 @@ object MocSongMetadata {
       ),
     "Tiny Human" ->
       Song(
-        id = "Tiny_Human",
+        id = "Tiny Human",
         name = "Tiny Human",
         title = "Tiny Human",
         audio = List(
