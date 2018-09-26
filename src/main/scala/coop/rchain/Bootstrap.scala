@@ -4,15 +4,15 @@ import cats.effect._
 import cats.implicits._
 import org.http4s.server.blaze.BlazeBuilder
 import api._
+import kamon.Kamon
 import utils.Globals._
 import scala.concurrent.duration.Duration
-
-import scala.concurrent.ExecutionContext.Implicits.global
+import kamon.prometheus.PrometheusReporter
 
 object Bootstrap extends IOApp {
 
   def run(args: List[String]) =
-    ServerStream.stream[IO].compile.drain.as(ExitCode.Success)
+  ServerStream.stream[IO].compile.drain.as(ExitCode.Success)
 
 }
 object ServerStream {
@@ -21,6 +21,8 @@ object ServerStream {
   def statusApi[F[_]: Effect] = new Status[F].routes
   def userApi[F[_]: Effect] = new UserApi[F](proxy).routes
   def songApi[F[_]: Effect] = new SongApi[F](proxy).routes
+
+  Kamon.addReporter(new PrometheusReporter())
 
   def stream[F[_]: ConcurrentEffect] =
     BlazeBuilder[F]

@@ -50,11 +50,7 @@ lazy val root = (project in file("."))
         "io.grpc" % "grpc-netty" % scalapb.compiler.Version.grpcJavaVersion,
         "com.thesamet.scalapb" %% "scalapb-runtime-grpc" % scalapb.compiler.Version.scalapbVersion,
         "ch.qos.logback" % "logback-classic" % V.logback,
-        "io.kamon" %% "kamon-core" % V.kamon,
-        "io.kamon" %% "kamon-statsd" % V.kamon,
-        "io.kamon" %% "kamon-log-reporter" % V.kamon,
-        "io.kamon" %% "kamon-system-metrics" % V.kamon,
-        "org.aspectj" % "aspectjweaver" % "1.8.9"
+        "io.kamon" %% "kamon-prometheus" % "1.0.0"
 
       )})
 

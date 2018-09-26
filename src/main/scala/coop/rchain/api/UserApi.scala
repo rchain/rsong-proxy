@@ -9,6 +9,7 @@ import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
 import io.circe.generic.auto._
 import io.circe.syntax._
+import kamon.Kamon
 
 class UserApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
   import RSongUserCache._
@@ -17,30 +18,50 @@ class UserApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
     case GET -> Root / userId =>
-      log.debug(s"GET / userId request form user: $userId")
       getOrCreateUser(userId)(proxy).fold(
         l => {
-          log.error(s"Error in ROOT/$userId api. ${l}")
-          InternalServerError(s"${l.code} ; ${l.msg}")
+          computeHttpErr(l, userId, s"user")
         },
-          r =>
+          r => {
+            Kamon.counter(s"200 - get /user")
             Ok(
               User(id = userId,
-                   name = None,
-                   active = true,
-                   lastLogin = System.currentTimeMillis,
-                   playCount = r.playCount.current,
-                   metadata = Map("immersionUser" -> "ImmersionUser")).asJson)
-      )
+                name = None,
+                active = true,
+                lastLogin = System.currentTimeMillis,
+                playCount = r.playCount.current,
+                metadata = Map("immersionUser" -> "ImmersionUser")).asJson)
+          })
     case GET -> Root / id / "playcount" =>
-      log.debug(s"GET / id /playcount request form user: $id")
         getOrCreateUser(id)(proxy)
         .fold(
           e =>
-            if (e.code == ErrorCode.nameNotFound) NotFound(s"${e}")
-            else InternalServerError(s"${e.code} ; ${e.msg}"),
-          r => Ok(r.playCount.asJson)
+            computeHttpErr(e, id, s"get /user/playcount"),
+          r => {
+            Kamon.counter(s"200 - get /user/playcount")
+            Ok(r.playCount.asJson)
+          }
         )
   }
 
+  private def computeHttpErr(e: Err, name: String, route: String) = {
+    e.code match {
+      case ErrorCode.nameToPar =>
+        log.error(s"${e} name: ${name}, route: $route")
+        Kamon.counter(s"404 - ${route}")
+        NotFound(name)
+      case ErrorCode.nameNotFound =>
+        log.error(s"${e} name: ${name} , route: $route")
+        Kamon.counter(s"404 - ${route}")
+        NotFound(name)
+      case ErrorCode.unregisteredUser =>
+        log.error(s"${e} name: ${name} , route: $route")
+        Kamon.counter(s"404 - ${route}")
+        NotFound(name)
+      case _ =>
+        log.error(s"Server error for name: $name. ${e.toString}  route: $route")
+        Kamon.counter(s"500 - ${route}")
+        InternalServerError(name)
+    }
+  }
 }

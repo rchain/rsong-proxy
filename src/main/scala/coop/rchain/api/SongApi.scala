@@ -14,9 +14,10 @@ import coop.rchain.service.moc.MocSongMetadata
 import coop.rchain.service.moc.MocSongMetadata.mocSongs
 import coop.rchain.repo.RSongAssetCache._
 import coop.rchain.repo.RSongUserCache.{decPlayCount, viewPlayCount}
+import kamon.Kamon
 
 
-class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
+class SongApi[F[_] : Sync](proxy: RholangProxy) extends Http4sDsl[F] {
 
   object perPage extends OptionalQueryParamDecoderMatcher[Int]("per_page")
 
@@ -29,57 +30,62 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
   val routes: HttpRoutes[F] =
     HttpRoutes.of[F] {
       case GET -> Root / "song" :? userId(id) +& perPage(pp) +& page(p) =>
-        log.debug(s"GET / song request from user: $id")
+        Kamon.counter(s"200 - get /song").increment()
         Ok(mocSongs.values.toList.asJson)
 
-      case GET -> Root / "song"  / songId :? userId(uid) =>
-        getSongMetadata(songId,uid) match {
+      case GET -> Root / "song" / songId :? userId(uid) =>
+        getSongMetadata(songId, uid) match {
           case Right(m) =>
+            Kamon.counter(s"200 - get /song/$songId").increment()
             Ok(m.asJson)
-          case Left(e) => computeHttpErr(e,songId)
+          case Left(e) => computeHttpErr(e, songId, s"get /song/songId")
         }
 
-      case GET -> Root / "song" / "music" / id  =>
-        log.debug(
-          s"GET / song /music /id request from user: for asset: $id")
-        val link = getMemoizedAsset(id)(proxy)
-        link.fold(
+      case GET -> Root / "song" / "music" / id =>
+        Kamon.counter(s"200 - get /song/music/$id").increment()
+        getMemoizedAsset(id)(proxy).fold(
           l => {
-            computeHttpErr(l, id)
+            computeHttpErr(l, id, s"get /song/music/$id")
           },
           r => {
+            Kamon.counter(s"200 - get /song/music/$id").increment()
             Ok(r.binaryData,
-               Header("Content-Type", "binary/octet-stream"),
-               Header("Accept-Ranges", "bytes"))
+              Header("Content-Type", "binary/octet-stream"),
+              Header("Accept-Ranges", "bytes"))
           }
         )
 
       case GET -> Root / "art" / id ⇒
-        log.debug(s"GET / art /id request for asset: $id")
-        val link = getMemoizedAsset(id)(proxy)
-        link.fold(
+        getMemoizedAsset(id)(proxy).fold(
           l => {
-            computeHttpErr(l, id)
+            computeHttpErr(l, id, s"get /art/$id")
           },
-          r =>
+          r => {
+            Kamon.counter(s"200 - /art/$id").increment()
             Ok(r.binaryData,
-               Header("Content-Type", "binary/octet-stream"),
-               Header("Accept-Ranges", "bytes"))
+              Header("Content-Type", "binary/octet-stream"),
+              Header("Accept-Ranges", "bytes"))
+          }
         )
     }
-  private def computeHttpErr(e: Err, name: String) = {
+
+  private def computeHttpErr(e: Err, name: String, route: String) = {
     e.code match {
       case ErrorCode.nameToPar =>
-        log.error(s"${e} name: ${name} ")
+        log.error(s"${e} name: ${name}, route: $route")
+        Kamon.counter(s"404 - ${route}")
         NotFound(name)
       case ErrorCode.nameNotFound =>
-        log.error(s"${e} name: ${name} ")
+        log.error(s"${e} name: ${name} , route: $route")
+        Kamon.counter(s"404 - ${route}")
         NotFound(name)
       case ErrorCode.unregisteredUser =>
-        log.error(s"${e} name: ${name} ")
+        log.error(s"${e} name: ${name} , route: $route")
+        Kamon.counter(s"404 - ${route}")
         NotFound(name)
       case _ =>
-        log.error(s"Server error for name: $name. ${e.toString}")
+        log.error(s"Server error for name: $name. ${e.toString}  route: $route")
+        Kamon.counter(s"500 - ${route}")
         InternalServerError(name)
     }
   }
@@ -88,15 +94,15 @@ class SongApi[F[_]: Sync](proxy: RholangProxy) extends Http4sDsl[F] {
     songId => userId => for {
       v <- viewPlayCount(userId)
       _ <- decPlayCount(songId, userId)
-    }yield v
+    } yield v
 
   private def getSongMetadata(songId: String, userId: String): Either[Err, SongResponse] = {
-  import cats.Applicative
-  import cats.implicits._
+    import cats.Applicative
+    import cats.implicits._
 
     (
       MocSongMetadata.getMetadata(songId),
       view(songId)(userId)
-    ).mapN(SongResponse(_,_))
+    ).mapN(SongResponse(_, _))
   }
 }
