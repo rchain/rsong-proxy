@@ -81,7 +81,7 @@ sbt clean test
 
 #### Integration tests
 - configure  .envrc for both rsong-proxy and rsong-acquisition are configured for the same node instance
-- execute [rsong-acquisition](../rsong-acquisition) to migrate the song data to node
+- execute [rsong-acquisition](https://github.com/rchain/rsong-acquisition) to migrate the song data to node
 - build rsong-proxy and run integration tests
 
 ##### Execute rsong-acquisition
