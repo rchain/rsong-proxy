@@ -2,7 +2,12 @@
 
 # RSong Proxy
 
-A REST layer to proxy RSong mobile device requests RSongs Rholang contracts
+A client facing REST layer to proxy RSong requests to RSongs Rholang contracts.
+
+RSong is implemented as a combination of multiple microservices and their interactions.  These microservices are:
+- rsong-acquisition
+- rsong-proxy
+- rosng-microbatch
 
 ## Getting Started
 
