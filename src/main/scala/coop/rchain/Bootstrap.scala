@@ -28,7 +28,7 @@ object ServerStream {
     BlazeBuilder[F]
       .withIdleTimeout(Duration.Inf)
       .bindHttp(appCfg.getInt("api.http.port"), "0.0.0.0")
-      .mountService(corsHeader(statusApi))
+      .mountService(corsHeader(statusApi),s"/public")
       .mountService(corsHeader(statusApi), s"/${apiVersion}/public")
       .mountService(corsHeader(userApi), s"/${apiVersion}/user")
       .mountService(corsHeader(songApi), s"/${apiVersion}")

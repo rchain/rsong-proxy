@@ -1,17 +1,17 @@
 package coop.rchain.protocol
 
 import java.io.StringReader
-
 import cats.Monoid
 import com.typesafe.scalalogging.Logger
 import coop.rchain.casper.protocol.ListeningNameDataResponse
 import coop.rchain.domain.{Err, ErrorCode}
-import coop.rchain.models.Channel.ChannelInstance.Quote
 import coop.rchain.models.Expr.ExprInstance
 import coop.rchain.models._
 import coop.rchain.models.rholang.implicits._
 import coop.rchain.protocol.Protocol.DeParConverter
 import coop.rchain.rholang.interpreter.{Interpreter, PrettyPrinter}
+
+import scala.util.{Failure, Success, Try}
 
 object ParOps {
 
@@ -37,7 +37,7 @@ object ParOps {
             DeParConverter(
               asInt =
                 if (e.gInt.isDefined)
-                  List(e.gInt.get)
+                  List(e.gInt.get.toInt)
                 else List())
           case "String" =>
             log.info(s"its string: ${e.gString}")
@@ -105,19 +105,20 @@ object ParOps {
       } yield s
     }
   }
-  implicit class P2C(par: Par) {
-    def asChannel: Channel = Channel(Quote(par))
-  }
 
   import coop.rchain.models.rholang.implicits._
   implicit class String2Par(rTerm: String) {
     def asPar: Either[Err, Par] = {
-      val par =
-        Interpreter.buildNormalizedTerm(new StringReader(rTerm)).runAttempt
-      par match {
-        case Left(e)  => Left(Err(ErrorCode.nameToPar, e.getMessage, None))
-        case Right(r) => Right(r)
-      }
+
+        Try (
+          Interpreter.buildNormalizedTerm(new StringReader(rTerm)).value
+      ) match {
+            case Failure(e)  =>
+              println(e)
+              log.error(s"String2Par failed with Exception: ${e}")
+              Left(Err(ErrorCode.nameToPar, e.getMessage, None))
+            case Success(r) => Right(r)
+          }
+        }
     }
-  }
 }
