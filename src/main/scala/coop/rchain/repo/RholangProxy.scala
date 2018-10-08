@@ -39,8 +39,8 @@ class RholangProxy(channel: ManagedChannel) {
       DeployData()
         .withTerm(contract)
         .withTimestamp(System.currentTimeMillis())
-        .withPhloLimit(coop.rchain.casper.protocol.PhloLimit(0))
-        .withPhloPrice(coop.rchain.casper.protocol.PhloPrice(0))
+        .withPhloLimit(coop.rchain.casper.protocol.PhloLimit(Int.MaxValue))
+        .withPhloPrice(coop.rchain.casper.protocol.PhloPrice(1))
         .withNonce(0)
         .withFrom("0x1")
     )
@@ -77,7 +77,7 @@ class RholangProxy(channel: ManagedChannel) {
 
   import coop.rchain.protocol.ParOps._
   def dataAtName(
-      rholangName: String): Either[Err, ListeningNameDataResponse] = {
+    rholangName: String): Either[Err, ListeningNameDataResponse] = {
     log.debug(s"dataAtName received name $rholangName")
     rholangName.asPar.flatMap(p => dataAtName(p))
   }
@@ -85,7 +85,7 @@ class RholangProxy(channel: ManagedChannel) {
   import coop.rchain.protocol.ParOps._
   private def dataAtName(par: Par): Either[Err, ListeningNameDataResponse] = {
     log.debug(s"dataAtName received par ${PrettyPrinter().buildString(par)}")
-    val res = grpc.listenForDataAtName(par)
+    val res = grpc.listenForDataAtName(DataAtNameQuery(Int.MaxValue,Some(par)))
     res.status match {
       case "Success" =>
         log.debug(s"dataAtName returned payload size: ${res.length}")
@@ -95,5 +95,4 @@ class RholangProxy(channel: ManagedChannel) {
         Left(Err(ErrorCode.nameNotFound, s"${res}", None))
     }
   }
-
 }
