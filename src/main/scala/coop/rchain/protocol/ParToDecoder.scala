@@ -117,7 +117,9 @@ object ParOps {
               println(e)
               log.error(s"String2Par failed with Exception: ${e}")
               Left(Err(ErrorCode.nameToPar, e.getMessage, None))
-            case Success(r) => Right(r)
+            case Success(r) =>
+              log.info(s"rTerm: ${rTerm} Par: ${r}")
+              Right(r)
           }
         }
     }

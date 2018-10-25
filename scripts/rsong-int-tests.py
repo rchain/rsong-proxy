@@ -31,8 +31,7 @@ def _curl(name):
   return
 
 
-##for name in ['Broke', 'Euphoria', 'Tiny_Human']:
-for name in ['Broke']:
+for name in ['Broke', 'Euphoria', 'Tiny_Human']:
   _curl(name)
 
 
