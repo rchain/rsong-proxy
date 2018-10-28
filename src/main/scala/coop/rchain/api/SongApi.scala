@@ -62,9 +62,10 @@ class SongApi[F[_] : Sync](proxy: RholangProxy) extends Http4sDsl[F] {
         )
 
       case req @ POST -> Root / music  =>
-        Ok(SearchMusic.searchRequest.toOption.get.asJson)
-       // Ok(MocSongMetadata.getMetadata("Tiny Human").toOption.get.asJson)
-
+        req.decode[String] { data =>
+          val searchId = parse(data).toOption.get.as[SearchModel].toOption.get.id
+          Ok(SearchMusic.search(searchId).toOption.get.asJson)
+        }
 
 
       case GET -> Root / "art" / id ⇒
