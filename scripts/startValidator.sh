@@ -3,7 +3,8 @@
 DIR=~/dev/workspaces/workspace-rchain/rchain/node/target/universal/rnode-0.7.1
 EX=$DIR/bin/rnode
 $EX run -s \
-      --mapSize 2048576000 \
+      --map-size 2048576000 \
+      --casper-block-store-size 2048576000 \
       --required-sigs 0 \
        --thread-pool-size 5  \
        --bonds-file ~/.rnode/genesis/bonds.txt \
