@@ -108,6 +108,20 @@ sbt clean compile run
 ./scripts/rsong-int-tests.py localhost:9000
 ```
 
+## Music Search
+
+sampleSearch payload:
+```aidl
+{
+"albumTitle":"my very cool album",
+"songTitle": "my hot song",
+"artist": "ilan & kayvan rock"
+}
+```
+Sample Response payload
+```aidl
+
+```
 
 ## url Inventory
 ```
