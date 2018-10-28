@@ -113,14 +113,66 @@ sbt clean compile run
 sampleSearch payload:
 ```aidl
 {
-"albumTitle":"my very cool album",
-"songTitle": "my hot song",
+"albumTitle":"Tiny Human",
+"songTitle": "Tiny Human",
 "artist": "ilan & kayvan rock"
 }
 ```
 Sample Response payload
 ```aidl
-
+{
+  "song": {
+    "id": "Tiny Human",
+    "title": "Tiny Human",
+    "name": "Tiny Human",
+    "audio": [
+      {
+        "effect": "3D",
+        "uri": "/v1/song/music/Tiny_Human_Immersive.izr",
+        "duration_ms": 1000
+      },
+      {
+        "effect": "Stereo",
+        "uri": "/v1/song/music/Tiny_Human_Stereo.izr",
+        "duration_ms": 1000
+      }
+    ],
+    "language": "EN"
+  },
+  "artists": [
+    {
+      "id": "Imogen-Heap",
+      "title": "Imogen Heap",
+      "name": "Imogen Heap"
+    }
+  ],
+  "artwork": [
+    {
+      "id": "Tiny Human",
+      "uri": "/v1/art/Tiny Human.jpg"
+    }
+  ],
+  "album": {
+    "id": "album-id-Tiny_Human",
+    "title": "Tiny Human",
+    "name": "Tiny Human",
+    "artworks": [
+      {
+        "id": "Tiny Human",
+        "uri": "/v1/art/Tiny Human.jpg"
+      }
+    ],
+    "duration_ms": 10000,
+    "artists": [
+      {
+        "id": "Imogen-Heap",
+        "title": "Imogen Heap",
+        "name": "Imogen Heap"
+      }
+    ],
+    "uri": "/v1/art/Tiny Human.jpg"
+  }
+}
 ```
 
 ## url Inventory
