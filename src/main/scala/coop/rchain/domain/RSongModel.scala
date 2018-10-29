@@ -63,5 +63,11 @@ object RSongModel {
       metadata: RSongMetadata,
       uri: String
   )
+  case class SearchModel (
+    id: String,
+    albumTitle: String,
+    songTitle: String,
+    artist: String
+  )
 
 }

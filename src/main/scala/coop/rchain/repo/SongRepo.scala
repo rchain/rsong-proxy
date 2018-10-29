@@ -18,7 +18,8 @@ object SongRepo {
       songId <- findByName(proxy, assetName)
       songIdOut = s"${songId}-${SONG_OUT}"
       retrieveSongArgs = s"""("$songId".hexToBytes(), "$songIdOut")"""
-      termToRetrieveSong = s"""@["Immersion", "retrieveSong"]!$retrieveSongArgs"""
+      termToRetrieveSong =
+      s"""@["Immersion", "retrieveSong"]!$retrieveSongArgs"""
       _ <- proxy.deployAndPropose(termToRetrieveSong)
       songData <- findByName(proxy, songIdOut)
       binarySongData = Base16.decode(songData)

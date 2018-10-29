@@ -1,5 +1,7 @@
 package coop.rchain.utils
 
+import coop.rchain.models.Expr.ExprInstance.GString
+import coop.rchain.models.Par
 import org.specs2._
 
 class HexUtilsSpec extends Specification {
@@ -15,4 +17,7 @@ class HexUtilsSpec extends Specification {
     bytes2hex(hex2bytes(data), Option("-")) === data
   }
 
+  def a = {
+    val p = Par(exprs = GString(""))
+  }
 }

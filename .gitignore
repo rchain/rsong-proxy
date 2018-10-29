@@ -5,6 +5,7 @@ project/boot/
 *.log
 *.loaded
 *.pid
+nohup.out
 ##
 ## emacs & ensime
 ##

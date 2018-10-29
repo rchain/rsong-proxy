@@ -1,9 +1,12 @@
 #!/bin/bash
 ## usage ./startValidator.sh 
-
-rnode run -s \
+DIR=~/dev/workspaces/workspace-rchain/rchain/node/target/universal/rnode-0.7.1
+EX=$DIR/bin/rnode
+$EX run -s \
+      --map-size 2048576000 \
+      --casper-block-store-size 2048576000 \
       --required-sigs 0 \
-      --map_size 2048576000 \
-      --thread-pool-size 5  ##\
-##      --validator-private-key \
-##      ae131c0502a2ddf9a23d3f893cd842f122fa29b5530cb2967410ea3c45e7c566
+       --thread-pool-size 5  \
+       --bonds-file ~/.rnode/genesis/bonds.txt \
+      --validator-private-key \
+      793fbe701f0292743629484ca9f2d73d7cfb8ccdd186f536768fefd997b08074

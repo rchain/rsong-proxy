@@ -1,7 +1,10 @@
 package coop.rchain.api
 
 import cats.effect._
+import cats.effect.IO
+
 import com.typesafe.scalalogging.Logger
+import coop.rchain.domain.RSongModel.SearchModel
 import org.http4s.circe._
 import coop.rchain.protocol.Protocol._
 import coop.rchain.repo._
@@ -9,6 +12,9 @@ import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import io.circe.generic.auto._
 import io.circe.syntax._
+import io.circe._
+import io.circe.parser._
+import io.circe.generic.auto._
 import coop.rchain.domain._
 import coop.rchain.service.moc.MocSongMetadata
 import coop.rchain.service.moc.MocSongMetadata.mocSongs
@@ -54,6 +60,13 @@ class SongApi[F[_] : Sync](proxy: RholangProxy) extends Http4sDsl[F] {
               Header("Accept-Ranges", "bytes"))
           }
         )
+
+      case req @ POST -> Root / music  =>
+        req.decode[String] { data =>
+          val searchId = parse(data).toOption.get.as[SearchModel].toOption.get.id
+          Ok(SearchMusic.search(searchId).toOption.get.asJson)
+        }
+
 
       case GET -> Root / "art" / id ⇒
         getMemoizedAsset(id)(proxy).fold(

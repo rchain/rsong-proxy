@@ -16,6 +16,7 @@ object ErrorCode extends Enumeration {
   nameNotFound,
   unregisteredUser,
   cacheLayer,
+  jsonError,
   unknown = Value
 }
 
