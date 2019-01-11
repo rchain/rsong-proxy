@@ -1,4 +1,4 @@
-![user-stories](design/story-board.jpg)
+![user-stories](design/story-board.jpeg)
 RSong Story Board
 --
 The purpose of this section is to provide a high level coherent definition for 
