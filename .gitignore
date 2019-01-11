@@ -21,4 +21,7 @@ native/
 ## local overrides
 ##
 .envrc
-
+GPATH
+GRTAGS
+GTAGS
+nohup.out
