@@ -34,20 +34,17 @@ class RholangProxy(channel: ManagedChannel) {
 
   def shutdown = channel.shutdownNow()
 
-  def deploy(contract: String): Either[Err, String] = {
-    val resp = grpc.doDeploy(
-      DeployData()
-        .withTerm(contract)
-        .withTimestamp(System.currentTimeMillis())
-        .withPhloLimit(coop.rchain.casper.protocol.PhloLimit(0))
-        .withPhloPrice(coop.rchain.casper.protocol.PhloPrice(0))
-        .withNonce(0)
-        .withFrom("0x1")
-    )
+  def deploy(source: String): Either[Err, String] = {
+    val resp = grpc.doDeploy(DeployData(
+                               user = ByteString.EMPTY,
+                               timestamp = System.currentTimeMillis(),
+                               term = source,
+                               phloLimit = Integer.MAX_VALUE
+                             ))
 
     if (resp.success)
       Right(resp.message)
-    else Left(Err(ErrorCode.grpcDeploy, resp.message, Some(contract)))
+    else Left(Err(ErrorCode.grpcDeploy, resp.message, Some(source)))
   }
 
   def deployNoPropose(
