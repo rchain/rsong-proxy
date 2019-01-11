@@ -1,6 +1,9 @@
 RSong Story Board
 --
-The purpose of this section is to provide a high level coherent definition of RSong
+The purpose of this section is to provide a high level coherent definition for 
+- RSong
+- RSongs purpose
+- the problem space RSong is addressing
 
 ## RSong stories
 The purpose of this section is to divides up the system into Bounded Contexts, each of which can have a unified model - essentially a way of structuring MultipleCanonicalModels.
@@ -23,14 +26,15 @@ Content providers are artists or catalog owners. Stories are:
 - monetization
 
 ##### on-boarding
-Provides definition for on-boarding 
+- identity
 - individual content
 - catalog owners
 
 ##### reporting
-Provides definition 
+TBD: Provide definition 
 
 ##### monetization
+TBD: Provide definition 
 Smart contract related 
 
 #### Consumers
@@ -40,7 +44,7 @@ Content consumers are the viewers of the system.  Stories are:
 - resource allocations
 
 ##### on-boarding
-Provide definition for viewers on boarding 
+TBD: Provide definition 
 
 ##### reporting
 report on token consumption
@@ -59,14 +63,27 @@ Contents are RSong related assets, *Songs*., songs.  Stories are:
 - policies 
 
 #### acquisition
-Content acquisition is 
+Content acquisition the entry of assets to the RSong system. The flow is: 
+
+acquisition -> ingestion -> provisioning
+
+acquisition is fragmented to: 
 - album
 - catalog
+Once assets are acquired they
+- validation
+- verification
 ##### albums
-Processed in real time
+TBD: Provide definition 
 
 ##### catalog
-Processed off-line for large catalogs
+TBD: Provide definition 
+
+#####  validation
+TBD: Provide definition 
+
+#####  verification
+TBD: Provide definition 
 
 #### ingestion
 ingestion occurs where we have complete asset.
@@ -79,5 +96,6 @@ TBD
 
 ### Service-Context
 This section encapsulates and defines functionality and feature the system provides
+
 
 
