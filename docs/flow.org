@@ -1,0 +1,9 @@
+#+TITLE: RSong flow
+#+AUTHOR: Kayvan Kazeminejad
+#+OPTIONS: toc:nil num:nil
+#+LATEX_HEADER: \usepackage[top=0.5in]{geometry}
+#+LATEX_HEADER: {\setlength{\parindent}{0cm}
+[[./design/Rsong-System-view.jpeg]]
+
+* Introduction
+The purpose of this document is outline the RSong flow
