@@ -1,59 +1,65 @@
-![user-stories](design/story-board.jpeg)
-RSong Story Board
---
+#+TITLE: RSong Story-Board
+#+AUTHOR: Kayvan Kazeminejad
+#+OPTIONS: toc:nil num:nil
+#+LATEX_HEADER: \usepackage[top=0.5in]{geometry}
+#+LATEX_HEADER: {\setlength{\parindent}{0cm}
+#+ATTR_LATEX: :width 10cm :options angle=0
+[[./design/story-board.jpeg]]
+
+* RSong Story Board
 The purpose of this section is to provide a high level coherent definition for 
 - RSong
 - RSongs purpose
 - the problem space RSong is addressing
 
-## RSong stories
+** RSong stories
 The purpose of this section is to divides up the system into Bounded Contexts, each of which can have a unified model - essentially a way of structuring MultipleCanonicalModels.
 This section
 - User-context
 - Content-Context
 - Service-Context
 
-### User-Context
+*** User-Context
 This section encapsulates, and defines the specific responsibilities of the user-context to the model.
 
 User context is fragmented to:
 - providers
 - consumers
 
-#### Providers
+**** Providers
 Content providers are artists or catalog owners. Stories are:
 - on-boarding
 - reporting
 - monetization
 
-##### on-boarding
+***** on-boarding 
 - identity
 - individual content
 - catalog owners
 
-##### reporting
+***** reporting
 TBD: Provide definition 
 
-##### monetization
+***** monetization
 TBD: Provide definition 
 Smart contract related 
 
-#### Consumers
+**** Consumers
 Content consumers are the viewers of the system.  Stories are:
 - on-boarding
 - reporting
 - resource allocations
 
-##### on-boarding
+***** on-boarding
 TBD: Provide definition 
 
-##### reporting
+***** reporting
 report on token consumption
 
-##### resource allocations
+***** resource allocations
 token allocation/consumption
 
-### Content-Context
+*** Content-Context
 This section encapsulates, and defines the specific responsibilities of the context-context to the model.
 
 Contents are RSong related assets, *Songs*., songs.  Stories are:
@@ -63,7 +69,7 @@ Contents are RSong related assets, *Songs*., songs.  Stories are:
 - enrichment
 - policies 
 
-#### acquisition
+**** acquisition
 Content acquisition the entry of assets to the RSong system. The flow is: 
 
 acquisition -> ingestion -> provisioning
@@ -74,29 +80,28 @@ acquisition is fragmented to:
 Once assets are acquired they
 - validation
 - verification
-##### albums
+***** albums
 TBD: Provide definition 
 
-##### catalog
+***** catalog
 TBD: Provide definition 
 
-#####  validation
+*****  validation
 TBD: Provide definition 
 
-#####  verification
+*****  verification
 TBD: Provide definition 
 
-#### ingestion
+**** ingestion
 ingestion occurs where we have complete asset.
 
-#### provisioning
+**** provisioning
 make an asset searchable/playable
 
-#### policies 
+**** policies 
 TBD
 
-### Service-Context
+*** Service-Context
 This section encapsulates and defines functionality and feature the system provides
-
 
 
