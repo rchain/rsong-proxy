@@ -4,7 +4,7 @@
 #+LATEX_HEADER: \usepackage[top=0.5in]{geometry}
 #+LATEX_HEADER: {\setlength{\parindent}{0cm}
 #+ATTR_LATEX: :width 10cm :options angle=0
-[[./design/story-board.jpeg]]
+[[./image/story-board.jpeg]]
 
 * RSong Story Board
 The purpose of this section is to provide a high level coherent definition for 
