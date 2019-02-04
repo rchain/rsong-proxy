@@ -1,0 +1,46 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: rsong
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    # certmanager.k8s.io/cluster-issuer: rsong-rchain-coop
+    # nginx.ingress.kubernetes.io/tls-acme: 'true'
+    # kubernetes.io/tls-acme: 'true'
+    # ingress.kubernetes.io/force-ssl-redirect: "true"
+
+spec:
+  rules:
+  - host: rsong-proxy.rchain.coop
+    http:
+      paths:
+        - backend:
+            serviceName: rsong-proxy
+            servicePort: 9000
+  - host: www.rsong-proxy.rchain.coop
+    http:
+      paths:
+        - backend:
+            serviceName: rsong-proxy
+            servicePort: 9000
+  - host: rsong-admin.rchain.coop
+    http:
+      paths:
+        - backend:
+            serviceName: rsong-admin
+            servicePort: 80
+  - host: www.rsong-admin.rchain.coop
+    http:
+      paths:
+        - backend:
+            serviceName: rsong-admin
+            servicePort: 80
+
+  # tls:
+  # - hosts:
+  #     # - rsong-admin.rchain.coop 
+  #     - www.rsong-admin.rchain.coop 
+  #     - www.rsong-proxy.rchain.coop 
+  #   secretName: tls-letsencrypt-rsong

@@ -18,7 +18,7 @@ lazy val root = (project in file("."))
   ).settings(
     organization := "coop.rchain",
     name := "rsong-proxy",
-    scalaVersion := "2.12.6",
+    scalaVersion := "2.12.7",
     libraryDependencies ++= {
       object V {
         val http4s = "0.19+"
