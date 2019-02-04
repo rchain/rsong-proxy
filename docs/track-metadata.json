@@ -1,0 +1,48 @@
+{
+  "releaseDate": "2013-05-09T00:00:00Z",
+  "duration": "00:06:09",
+  "trackNumber": 8,
+  "isExplicit": false,
+  "genres": [
+    "Pop"
+  ],
+  "subgenres": [
+    "Contemporary Pop"
+  ],
+  "rights": [
+    "Purchase",
+    "Stream",
+    "FreeStream"
+  ],
+  "subtitle": "feat. Pharrell Williams",
+  "album": {
+    "id": "music.B13EB907-0100-11DB-89CA-0019B92A3933",
+    "name": "Random Access Memories",
+    "imageUrl": "https://musicimage.xboxlive.com/content/music.B13EB907-0100-11DB-89CA-0019B92A3933/image?locale=en-US",
+    "link": "https://music.microsoft.com/Album/B13EB907-0100-11DB-89CA-0019B92A3933?partnerID=AwesomePartner",
+    "source": "Catalog",
+    "compatibleSources": "Catalog, Collection"
+  },
+  "artists": [{
+    "role": "Main",
+    "artist": {
+      "id": "artist-id-123",
+      "name": "Daft Punk",
+      "imageUrl": "https://musicimage.xboxlive.com/content/music.C61C0000-0200-11DB-89CA-0019B92A3933/image?locale=en-US",
+      "Link": "https://music.microsoft.com/Artist/C61C0000-0200-11DB-89CA-0019B92A3933?partnerID=AwesomePartner",
+      "source": "Catalog",
+      "compatibleSources": "Catalog, Collection"
+    }
+  }],
+  "id": "rsong-generated-id",
+  "isrc": "isrc-1234",
+  "externalId": "rsong-generated-id",
+  "name": "Get Lucky",
+  "imageUrl": "https://musicimage.xboxlive.com/content/music.A83EB907-0100-11DB-89CA-0019B92A3933/image?locale=en-US",
+  "link": "https://music.microsoft.com/Track/A83EB907-0100-11DB-89CA-0019B92A3933?partnerID=AwesomePartner",
+  "otherIds": {
+    "music.amg": "T 29381286"
+  },
+  "source": "Catalog",
+  "compatibleSources": "Catalog, Collection"
+}

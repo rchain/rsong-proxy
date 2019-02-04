@@ -1,4 +1,4 @@
-![GitHub Logo](docs/design/rsong-proxy.jpeg)
+![GitHub Logo](image/design/rsong-proxy.jpeg)
 
 # RSong Proxy
 

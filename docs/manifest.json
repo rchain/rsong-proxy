@@ -1,0 +1,31 @@
+{
+  "mainifest": {
+    "header": {
+      "version": 123,
+      "app": "rsong",
+      "url": "https://rsong.rchain.org"
+    },
+    "asset": {
+      "name": "song123",
+      "id": "isrc-1234",
+        "entities": [{
+          "type": "image",
+          "name": "song-123-image.jpg",
+          "id": "image-123",
+          "url": "http: //s3-us-east-1.amazonaws.com/bucket/song-123.jpg"
+        }, {
+          "type": "music-file",
+          "name": "song-123.mp4",
+          "id": "song-bin-123",
+          "url": "http: //s3-us-east-1.amazonaws.com/bucket/song-123.mp4"
+        },
+        {
+          "type": "metadata",
+          "name": "song-123-metadata.json",
+          "id": "meta-123",
+          "url": "http: //s3-us-east-1.amazonaws.com/bucket/song-123-metadata.json"
+        }
+      ]
+    }
+  }
+}

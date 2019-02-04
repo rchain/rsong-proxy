@@ -1,5 +1,6 @@
 package coop.rchain.repo
 
+import com.google.protobuf.ByteString
 import coop.rchain.casper.protocol._
 import coop.rchain.domain.{Err, ErrorCode}
 import com.google.protobuf.empty._
@@ -8,6 +9,7 @@ import io.grpc.{ManagedChannel, ManagedChannelBuilder}
 import coop.rchain.domain._
 import coop.rchain.rholang.interpreter._
 import com.typesafe.scalalogging.Logger
+
 import scala.util._
 
 object RholangProxy {
@@ -34,20 +36,17 @@ class RholangProxy(channel: ManagedChannel) {
 
   def shutdown = channel.shutdownNow()
 
-  def deploy(contract: String): Either[Err, String] = {
-    val resp = grpc.doDeploy(
-      DeployData()
-        .withTerm(contract)
-        .withTimestamp(System.currentTimeMillis())
-        .withPhloLimit(coop.rchain.casper.protocol.PhloLimit(0))
-        .withPhloPrice(coop.rchain.casper.protocol.PhloPrice(0))
-        .withNonce(0)
-        .withFrom("0x1")
-    )
+  def deploy(source: String): Either[Err, String] = {
+    val resp = grpc.doDeploy(DeployData(
+                               user = ByteString.EMPTY,
+                               timestamp = System.currentTimeMillis(),
+                               term = source,
+                               phloLimit = Integer.MAX_VALUE
+                             ))
 
     if (resp.success)
       Right(resp.message)
-    else Left(Err(ErrorCode.grpcDeploy, resp.message, Some(contract)))
+    else Left(Err(ErrorCode.grpcDeploy, resp.message, Some(source)))
   }
 
   def deployNoPropose(
@@ -85,7 +84,7 @@ class RholangProxy(channel: ManagedChannel) {
   import coop.rchain.protocol.ParOps._
   private def dataAtName(par: Par): Either[Err, ListeningNameDataResponse] = {
     log.debug(s"dataAtName received par ${PrettyPrinter().buildString(par)}")
-    val res = grpc.listenForDataAtName(par)
+    val res = grpc.listenForDataAtName(DataAtNameQuery(2, Some(par)))
     res.status match {
       case "Success" =>
         log.debug(s"dataAtName returned payload size: ${res.length}")

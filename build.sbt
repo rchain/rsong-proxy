@@ -18,7 +18,7 @@ lazy val root = (project in file("."))
   ).settings(
     organization := "coop.rchain",
     name := "rsong-proxy",
-    scalaVersion := "2.12.6",
+    scalaVersion := "2.12.7",
     libraryDependencies ++= {
       object V {
         val http4s = "0.19+"
@@ -32,6 +32,7 @@ lazy val root = (project in file("."))
         val monix="3.0.0-RC2-d0feeba"
         val redisCache="0.24.3"
         val kamon = "0.6.6"
+        val magnolia = "0.10.0"
       }
       Seq(
        "io.monix" %% "monix" % V.monix,
@@ -48,11 +49,12 @@ lazy val root = (project in file("."))
         "com.typesafe" %  "config" % V.config,
         "com.typesafe.scala-logging" %% "scala-logging" % V.scalalogging, 
         "com.thesamet.scalapb" %% "compilerplugin" % V.scalapb,
-        "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion % "protobuf",
-        "io.grpc" % "grpc-netty" % scalapb.compiler.Version.grpcJavaVersion,
-        "com.thesamet.scalapb" %% "scalapb-runtime-grpc" % scalapb.compiler.Version.scalapbVersion,
-        "ch.qos.logback" % "logback-classic" % V.logback,
-        "io.kamon" %% "kamon-prometheus" % "1.0.0"
+       "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion % "protobuf",
+       "io.grpc" % "grpc-netty" % scalapb.compiler.Version.grpcJavaVersion,
+       "com.thesamet.scalapb" %% "scalapb-runtime-grpc" % scalapb.compiler.Version.scalapbVersion,
+       "com.propensive" %% "magnolia" % V.magnolia,
+       "ch.qos.logback" % "logback-classic" % V.logback,
+       "io.kamon" %% "kamon-prometheus" % "1.0.0"
 
       )})
 

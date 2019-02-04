@@ -1,0 +1,68 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rsong-proxy
+  labels:
+    app: rsong-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rsong-proxy
+      tier: proxy
+  template:
+    metadata:
+      labels:
+        app: rsong-proxy
+        tier: proxy
+    spec:
+      containers:
+      - name: rsong-proxy
+        image: kayvank/rsong-proxy:1.1.0-SNAPSHOT-v1-node-8
+        resources:
+          requests:
+            cpu: 300m
+            memory: 20000m
+        env:
+        - name: GET_HOSTS_FROM
+          value: dns
+        - name: GRPC_SERVER
+          value: rsong.rnode-anahita.rchain.coop
+        - name: REDIS_URL
+          value: redis-master
+        - name: HOST_URL
+          value: http://rsong-proxy.rchain.coop
+        ports:
+        - containerPort: 9000
+        livenessProbe:
+          httpGet:
+            path: /public/status
+            port: 9000
+          initialDelaySeconds: 4
+          timeoutSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /public/status
+            port: 9000
+          initialDelaySeconds: 4
+          periodSeconds: 3
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rsong-proxy
+  labels:
+    app: rsong-proxy
+    tier: proxy
+spec:
+  # comment or delete the following line if you want to use a LoadBalancer
+  # if your cluster supports it, uncomment the following to automatically create
+  # an external load-balanced IP for the frontend service.
+  type: LoadBalancer
+  ports:
+  - port: 9000
+  selector:
+    app: rsong-proxy
+    tier: proxy
