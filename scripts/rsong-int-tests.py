@@ -24,7 +24,7 @@ def _curl(name):
   start_time = time.time()
   r = requests.get(url=URL + '/v1/art/' + name + '.jpg')
   print(r.url)
-  print(r.headers)
+  ##print(r.headers)
   print(r.status_code)
   elapsed_time=time.time() - start_time
   print("elapsed time: {}".format(elapsed_time))
@@ -32,6 +32,7 @@ def _curl(name):
 
 
 for name in ['Broke', 'Euphoria', 'Tiny_Human']: 
+# for name in ['Broke']: 
   _curl(name)
 
 

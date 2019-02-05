@@ -9,6 +9,19 @@ val gitCommitString = SettingKey[String]("gitCommit")
 
 gitCommitString := git.gitHeadCommit.value.getOrElse("Not Set")
 
+scalacOptions ++= Seq(
+  "-encoding", "utf8", // Option and arguments on same line
+  "-Xfatal-warnings",  // New lines for each options
+  "-deprecation",
+  "-unchecked",
+  "-language:implicitConversions",
+  "-language:higherKinds",
+  "-language:existentials",
+  "-language:postfixOps"
+)
+
+javacOptions ++= Seq("-encoding", "UTF-8")
+
 lazy val root = (project in file("."))
   . settings(
     buildInfoKeys := Seq[BuildInfoKey](version, gitCommitString),
@@ -18,7 +31,7 @@ lazy val root = (project in file("."))
   ).settings(
     organization := "coop.rchain",
     name := "rsong-proxy",
-    scalaVersion := "2.12.7",
+    scalaVersion := "2.12.8",
     libraryDependencies ++= {
       object V {
         val http4s = "0.19+"
@@ -35,9 +48,8 @@ lazy val root = (project in file("."))
         val magnolia = "0.10.0"
       }
       Seq(
+        
        "io.monix" %% "monix" % V.monix,
-        "org.typelevel" %% "cats-effect" % V.catsEffect,
-        "org.typelevel" %% "cats-core" % "1.4.0",
         "com.github.cb372" %% "scalacache-redis" % V.redisCache,
        "org.http4s" %% "http4s-dsl" % V.http4s,
        "org.http4s" %% "http4s-blaze-server" % V.http4s,
@@ -46,12 +58,12 @@ lazy val root = (project in file("."))
         "io.circe" %% "circe-generic" % V.circie,
         "io.circe" %% "circe-parser" % V.circie,
         "org.specs2" %% "specs2-core" % V.specs2 % "test",
-        "com.typesafe" %  "config" % V.config,
         "com.typesafe.scala-logging" %% "scala-logging" % V.scalalogging, 
         "com.thesamet.scalapb" %% "compilerplugin" % V.scalapb,
        "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion % "protobuf",
        "io.grpc" % "grpc-netty" % scalapb.compiler.Version.grpcJavaVersion,
        "com.thesamet.scalapb" %% "scalapb-runtime-grpc" % scalapb.compiler.Version.scalapbVersion,
+        "io.grpc"  % "grpc-netty" % scalapb.compiler.Version.grpcJavaVersion,
        "com.propensive" %% "magnolia" % V.magnolia,
        "ch.qos.logback" % "logback-classic" % V.logback,
        "io.kamon" %% "kamon-prometheus" % "1.0.0"

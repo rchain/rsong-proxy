@@ -1,11 +1,13 @@
 package coop.rchain.protocol
 
 import java.io.StringReader
+
 import cats.Monoid
 import com.typesafe.scalalogging.Logger
 import coop.rchain.casper.protocol.ListeningNameDataResponse
 import coop.rchain.domain.{Err, ErrorCode}
 import coop.rchain.models.Expr.ExprInstance
+import coop.rchain.models.Expr.ExprInstance.GString
 import coop.rchain.models._
 import coop.rchain.models.rholang.implicits._
 import coop.rchain.protocol.Protocol.DeParConverter
@@ -109,9 +111,8 @@ object ParOps {
   import coop.rchain.models.rholang.implicits._
   implicit class String2Par(rTerm: String) {
     def asPar: Either[Err, Par] = {
-
-        Try (
-          Interpreter.buildNormalizedTerm(new StringReader(rTerm)).value
+      Try (
+        Par().copy(exprs = Seq(Expr(GString(rTerm))))
       ) match {
             case Failure(e)  =>
               println(e)

@@ -29,7 +29,7 @@ object ServerStream {
       .withIdleTimeout(Duration.Inf)
       .bindHttp(appCfg.getInt("api.http.port"), "0.0.0.0")
       .mountService(corsHeader(statusApi),s"/public")
-      .mountService(corsHeader(statusApi), s"/${apiVersion}/public")
+      .mountService(corsHeader(statusApi),s"/")
       .mountService(corsHeader(userApi), s"/${apiVersion}/user")
       .mountService(corsHeader(songApi), s"/${apiVersion}")
       .serve

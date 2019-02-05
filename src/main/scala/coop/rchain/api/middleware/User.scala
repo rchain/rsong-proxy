@@ -1,4 +1,4 @@
-package coop.rchain.api.middleware
+/**package coop.rchain.api.middleware
 
 // import cats._, cats.data._, cats.implicits._
 import cats.effect.Sync
@@ -23,4 +23,4 @@ class AuthUser[F[_]](implicit F: Sync[F],
 
   val service: HttpService[F] = authMiddleware(authedService)
 
-}
+}**/

@@ -40,12 +40,12 @@ object MiddleWear {
     maxAge = 1.day.toSeconds
   )
 
-  def corsHeader[F[_]: Effect](service: HttpService[F]) = {
+  def corsHeader[F[_]: Effect](service: HttpRoutes[F]) = {
     val s = CORS(service, methodConfig)
     s.map(addHeader(_, Header("Server", "RSong")))
   }
 
-  def binHeader[F[_]: Effect](service: HttpService[F]) = {
+  def binHeader[F[_]: Effect](service: HttpRoutes[F]) = {
     val s = CORS(service, methodConfig)
     s.map(addBinHeader(_, Header("Server", "RSong")))
   }

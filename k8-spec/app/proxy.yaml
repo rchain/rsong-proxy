@@ -6,7 +6,7 @@ metadata:
   labels:
     app: rsong-proxy
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: rsong-proxy
@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: rsong-proxy
-        image: kayvank/rsong-proxy:1.1.0-SNAPSHOT-v1-node-8
+        image: kayvank/rsong-proxy:1.0.7-SNAPSHOT-148
         resources:
           requests:
             cpu: 300m

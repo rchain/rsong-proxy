@@ -32,7 +32,9 @@ object RSongAssetCache {
       def __getMemoizedAsset(name: String): Try[CachedAsset] =
         memoize[Try, CachedAsset](None) {
           SongRepo.getRSongAsset(name)(proxy).map(CachedAsset(name, _)) match {
-            case Right(s) => s
+            case Right(s) =>
+              log.debug(s"Found asset. ${s}")
+              s
             case Left(e) =>
               log.error(s"Exception in RSongCache layer. ${e}")
               throw CachingException(e.msg)

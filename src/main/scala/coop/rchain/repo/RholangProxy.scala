@@ -4,7 +4,7 @@ import com.google.protobuf.ByteString
 import coop.rchain.casper.protocol._
 import coop.rchain.domain.{Err, ErrorCode}
 import com.google.protobuf.empty._
-import coop.rchain.models.Par
+import coop.rchain.models.{Expr, Par}
 import io.grpc.{ManagedChannel, ManagedChannelBuilder}
 import coop.rchain.domain._
 import coop.rchain.rholang.interpreter._
@@ -22,8 +22,7 @@ object RholangProxy {
       ManagedChannelBuilder
         .forAddress(host, port)
         .maxInboundMessageSize(MAXGRPCSIZE)
-        .usePlaintext(true)
-        .build
+        .usePlaintext.build
     new RholangProxy(channel)
   }
 
@@ -84,7 +83,7 @@ class RholangProxy(channel: ManagedChannel) {
   import coop.rchain.protocol.ParOps._
   private def dataAtName(par: Par): Either[Err, ListeningNameDataResponse] = {
     log.debug(s"dataAtName received par ${PrettyPrinter().buildString(par)}")
-    val res = grpc.listenForDataAtName(DataAtNameQuery(2, Some(par)))
+    val res = grpc.listenForDataAtName(DataAtNameQuery(Int.MaxValue, Some(par)))
     res.status match {
       case "Success" =>
         log.debug(s"dataAtName returned payload size: ${res.length}")
