@@ -1,31 +1,70 @@
 {
-  "mainifest": {
-    "header": {
-      "version": 123,
-      "app": "rsong",
-      "url": "https://rsong.rchain.org"
-    },
-    "asset": {
-      "name": "song123",
-      "id": "isrc-1234",
-        "entities": [{
-          "type": "image",
-          "name": "song-123-image.jpg",
-          "id": "image-123",
-          "url": "http: //s3-us-east-1.amazonaws.com/bucket/song-123.jpg"
-        }, {
-          "type": "music-file",
-          "name": "song-123.mp4",
-          "id": "song-bin-123",
-          "url": "http: //s3-us-east-1.amazonaws.com/bucket/song-123.mp4"
+    "mainifest": {
+        "header": {
+            "rchain_id": "mainifest-unique-id",
+            "version": "01",
+            "app": "rsong",
+            "url": "https://rsong.rchain.org",
+            "timestamp": 1549400035
         },
-        {
-          "type": "metadata",
-          "name": "song-123-metadata.json",
-          "id": "meta-123",
-          "url": "http: //s3-us-east-1.amazonaws.com/bucket/song-123-metadata.json"
-        }
-      ]
+        "owner": {
+            "rchain_id": "artist-id",
+            "name": "acme",
+            "owner_meta_data": [
+                {
+                    "k1": "v1",
+                    "k11": "v11"
+                },
+                {
+                    "k2": "v1",
+                    "k21": "v11"
+                },
+                {
+                    "kn": "vn",
+                    "kn1": "vn1"
+                }
+            ]
+        },
+        "assets": [
+            {
+                "name": "song123",
+                "id": "isrc-1234",
+            "rchain_id": "unique-id",
+                "entities": [
+                    {
+                        "type": "image",
+                        "name": "song-123-image.jpg",
+                        "id": "image-123",
+                        "rchain_id": "unique-id",
+                        "url": "http: //s3-us-east-1.amazonaws.com/bucket/song-123.jpg",
+                        "presentation": "binary"
+                    },
+                    {
+                        "type": "music-file",
+                        "name": "song-123.mp4",
+                        "id": "song-bin-123",
+                        "rchain_id": "unique-id",
+                        "url": "http: //s3-us-east-1.amazonaws.com/bucket/song-123.mp3",
+                        "presentation": "mp3"
+                    },
+                    {
+                        "type": "music-file",
+                        "name": "song-123.wav",
+                        "id": "song-bin-123",
+                        "rchain_id": "unique-id",
+                        "url": "http: //s3-us-east-1.amazonaws.com/bucket/song-123.wav",
+                        "presentation": "wav"
+                    },
+                    {
+                        "type": "metadata",
+                        "name": "song-123-metadata.json",
+                        "id": "meta-123",
+                        "rchain_id": "unique-id",
+                        "url": "http: //s3-us-east-1.amazonaws.com/bucket/song-123-metadata.json",
+                        "presentation": "utf-8"
+                    }
+                ]
+            }
+        ]
     }
-  }
 }
