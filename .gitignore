@@ -18,6 +18,7 @@ project/.ensime
 .history
 .cache
 native/
+**/classes/
 ##
 ## local overrides
 ##

@@ -6,7 +6,7 @@ metadata:
   labels:
     app: rsong-proxy
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: rsong-proxy
@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: rsong-proxy
-        image: kayvank/rsong-proxy:1.0.7-SNAPSHOT-148
+        image: kayvank/rsong-proxy:1.0.9-SNAPSHOT-v5-berlin-demo
         resources:
           requests:
             cpu: 300m
@@ -37,13 +37,13 @@ spec:
         - containerPort: 9000
         livenessProbe:
           httpGet:
-            path: /public/status
+            path: /
             port: 9000
           initialDelaySeconds: 4
           timeoutSeconds: 3
         readinessProbe:
           httpGet:
-            path: /public/status
+            path: /
             port: 9000
           initialDelaySeconds: 4
           periodSeconds: 3
