@@ -3,6 +3,7 @@ package coop.rchain.repo
 import com.typesafe.scalalogging.Logger
 import coop.rchain.domain._
 import scala.util._
+import coop.rchain.repo.Repo._
 
 object UserRepo {
   import Repo._
@@ -20,14 +21,14 @@ object UserRepo {
     }
   }
 
-  val newUser: String => RholangProxy => Either[Err, DeployAndProposeResponse] = user => proxy =>
-    (newUserRhoTerm _ andThen proxy.deployAndPropose _)(user)
+  val newUser: String => Either[Err, DeployAndProposeResponse] = user =>
+    (newUserRhoTerm _ andThen deployAndPropose _)(user)
 
   def putPlayCountAtName(
       userId: String,
       playCountOut: String)(proxy: RholangProxy): Either[Err, DeployAndProposeResponse] =
     for {
-      rhoName <- findByName(proxy, userId)
+      rhoName <- findByName(userId)
       playCountArgs = s"""("$rhoName".hexToBytes(), "$playCountOut")"""
       term = s"""@["Immersion", "playCount"]!${playCountArgs}"""
       m <- proxy.deployAndPropose(term)
@@ -37,7 +38,7 @@ object UserRepo {
     val playCountOut = s"$userId-${COUNT_OUT}-${System.currentTimeMillis()}"
     val pc = for {
       _ <- putPlayCountAtName(userId, playCountOut)(proxy)
-      count <- findByName(proxy, playCountOut)
+      count <- findByName(playCountOut)
       countAsInt <- asInt(count)
     } yield PlayCount(countAsInt)
     log.info(s"userid: $userId has ${pc}")
@@ -47,14 +48,14 @@ object UserRepo {
   def decPlayCount(songId: String, userId: String)(proxy: RholangProxy) = {
     val permittedOut=s"${userId}-${songId}-permittedToPlay-${System.currentTimeMillis()}"
     val pOut = for {
-      sid <- findByName(proxy, s"${songId}_Stereo.izr")
+      sid <- findByName(s"${songId}_Stereo.izr")
       _=log.info(s"rholangName= $sid for songId: $songId")
-      uid <-  findByName(proxy, userId)
+      uid <-  findByName(userId)
       _=log.info(s"rholangName= $uid for userId: $userId")
       parameters = s"""("$sid".hexToBytes(), "$uid".hexToBytes(), "$permittedOut")"""
       term = s"""@["Immersion", "play"]!${parameters}"""
       m <- proxy.deployAndPropose(term)
-      p <- findByName(proxy, permittedOut)
+      p <- findByName(permittedOut)
     } yield p
     log.info(s"user: $userId with song: $songId has permitedOut: $pOut")
     pOut

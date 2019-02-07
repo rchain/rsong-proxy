@@ -47,6 +47,8 @@ class RholangProxy(channel: ManagedChannel) {
       Right(resp.message)
     else Left(Err(ErrorCode.grpcDeploy, resp.message, Some(source)))
   }
+  def showBlocks: List[BlockInfoWithoutTuplespace] = grpc.showBlocks(BlocksQuery(
+    Int.MaxValue)).toList
 
   def deployNoPropose(
       contract: String): Either[Err, DeployAndProposeResponse] = {

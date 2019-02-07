@@ -11,15 +11,4 @@ object Globals {
   val songpath = s"$apiVersion/song/music"
   val rsongHostUrl: String = appCfg.getString("my.host.url")
 
-  val (host, port) = (appCfg.getString("grpc.host"),
-    appCfg.getInt("grpc.ports.external"))
-
-  val proxy = RholangProxy(host, port)
-  println(s""""
-              ----------------------------------------------------
-             GRPC server:   $host:$port
-             rsongHostUrl:  $rsongHostUrl"
-             redis_url:     ${appCfg.getString("redis.url")}
-              ----------------------------------------------------
-  """)
 }

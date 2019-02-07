@@ -25,8 +25,8 @@ object RSongUserCache {
   implicit val rsongUserCache: Cache[CachedRSongUser] =
     RedisCache(redisUrl, redisPort)
 
-  def getOrCreateUser: String => RholangProxy => Either[Err,CachedRSongUser] =
-    name => proxy => {
+  val getOrCreateUser: String => Either[Err,CachedRSongUser] =
+    name => {
       get(name) match {
         case Success(Some(user)) =>
           Right(user)

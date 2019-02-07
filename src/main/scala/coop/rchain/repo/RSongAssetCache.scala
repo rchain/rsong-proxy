@@ -16,7 +16,7 @@ object RSongAssetCache {
 
   val log = Logger[RSongAssetCache.type]
   val binaryAsset: String => Either[Err, Array[Byte]] = name =>
-    SongRepo.getRSongAsset(name)(Globals.proxy)
+    SongRepo.getRSongAsset(name)
 
   val (redisUrl, redisPort) =
     (Globals.appCfg.getString("redis.url"),
@@ -26,12 +26,12 @@ object RSongAssetCache {
     RedisCache(redisUrl, redisPort)
 
   rsongCache.config
-  val getMemoizedAsset: String => RholangProxy => Either[Err, CachedAsset] =
-    name => proxy => {
+  val getMemoizedAsset: String => Either[Err, CachedAsset] =
+    name => {
 
       def __getMemoizedAsset(name: String): Try[CachedAsset] =
         memoize[Try, CachedAsset](None) {
-          SongRepo.getRSongAsset(name)(proxy).map(CachedAsset(name, _)) match {
+          SongRepo.getRSongAsset(name).map(CachedAsset(name, _)) match {
             case Right(s) =>
               log.debug(s"Found asset. ${s}")
               s

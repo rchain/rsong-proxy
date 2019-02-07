@@ -12,15 +12,16 @@ object SongRepo {
 
   val log = Logger[SongRepo.type ]
 
-  def getRSongAsset(
-      assetName: String)(proxy: RholangProxy): Either[Err, Array[Byte]] =
+  val getRSongAsset: String =>  Either[Err, Array[Byte]] =
+      assetName =>
     for {
-      songId <- findByName(proxy, assetName)
+      songId <- findByName(assetName)
       songIdOut = s"${songId}-${SONG_OUT}"
+      _ = log.info(s"${songId}-${SONG_OUT}")
       retrieveSongArgs = s"""("$songId".hexToBytes(), "$songIdOut")"""
       termToRetrieveSong = s"""@["Immersion", "retrieveSong"]!$retrieveSongArgs"""
-      _ <- proxy.deployAndPropose(termToRetrieveSong)
-      songData <- findByName(proxy, songIdOut)
+      _ <- deployAndPropose(termToRetrieveSong)
+      songData <- findByName(songIdOut)
       binarySongData = Base16.decode(songData)
     } yield binarySongData
 

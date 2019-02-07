@@ -17,7 +17,7 @@ import coop.rchain.repo.RSongUserCache.{decPlayCount, viewPlayCount}
 import kamon.Kamon
 
 
-class SongApi[F[_] : Sync](proxy: RholangProxy) extends Http4sDsl[F] {
+class SongApi[F[_] : Sync] extends Http4sDsl[F] {
 
   object perPage extends OptionalQueryParamDecoderMatcher[Int]("per_page")
 
@@ -43,7 +43,7 @@ class SongApi[F[_] : Sync](proxy: RholangProxy) extends Http4sDsl[F] {
 
       case GET -> Root / "song" / "music" / id =>
         Kamon.counter(s"200 - get /song/music/$id").increment()
-        getMemoizedAsset(id)(proxy).fold(
+        getMemoizedAsset(id).fold(
           l => {
             computeHttpErr(l, id, s"get /song/music/$id")
           },
@@ -56,7 +56,7 @@ class SongApi[F[_] : Sync](proxy: RholangProxy) extends Http4sDsl[F] {
         )
 
       case GET -> Root / "art" / id ⇒
-        getMemoizedAsset(id)(proxy).fold(
+        getMemoizedAsset(id).fold(
           l => {
             computeHttpErr(l, id, s"get /art/$id")
           },

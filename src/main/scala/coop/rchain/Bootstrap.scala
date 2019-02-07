@@ -19,8 +19,8 @@ object ServerStream {
   import coop.rchain.api.middleware.MiddleWear._
 
   def statusApi[F[_]: Effect] = new Status[F].routes
-  def userApi[F[_]: Effect] = new UserApi[F](proxy).routes
-  def songApi[F[_]: Effect] = new SongApi[F](proxy).routes
+  def userApi[F[_]: Effect] = new UserApi[F].routes
+  def songApi[F[_]: Effect] = new SongApi[F].routes
 
   Kamon.addReporter(new PrometheusReporter())
 
