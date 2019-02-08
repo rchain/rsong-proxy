@@ -87,11 +87,11 @@ class RholangProxy(channel: ManagedChannel) {
     log.debug(s"dataAtName received par ${PrettyPrinter().buildString(par)}")
     val res = grpc.listenForDataAtName(DataAtNameQuery(Int.MaxValue, Some(par)))
     res.status match {
-      case "Success" =>
-        log.debug(s"dataAtName returned payload size: ${res.length}")
+      case "Success" if res.blockResults.headOption.isDefined =>
         Right(res)
+      case "Success" if res.blockResults.headOption.isEmpty =>
+        Left(Err(ErrorCode.emptyVectorReturned, s"${res}", None))
       case _ =>
-        log.debug(s"${res}")
         Left(Err(ErrorCode.nameNotFound, s"${res}", None))
     }
   }

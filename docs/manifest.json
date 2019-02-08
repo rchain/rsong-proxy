@@ -35,6 +35,23 @@
                         "name": "song123",
                         "id": "isrc-1234",
                         "rchain_id": "unique-id",
+                        "contributers": [
+                            {
+                                "name": "myName",
+                                "rchain_id": "myID",
+                                "additionalInfo": {
+                                    "k1": "v1",
+                                    "k2": "v2",
+                                }
+                                "contribution": 20,
+                                "crypto": [
+                                    {
+                                        "entity": "ROCK",
+                                        "wallet": "unique-id"
+                                    }
+                                ]
+                            }
+                        ],
                         "entities": [
                             {
                                 "type": "binary",
@@ -85,6 +102,16 @@
             {
                 "status": "ready",
                 "when": "some-time-stamp"
+            },
+            {
+                "when": "some-time-stamp",
+                "where": "registration",
+                "status": "received"
+            },
+            {
+                "when": "some-time-stamp",
+                "where": "registration",
+                "status": "completed"
             },
             {
                 "when": "some-time-stamp",

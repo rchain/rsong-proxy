@@ -14,6 +14,7 @@ object ErrorCode extends Enumeration {
   contractFile,
   playCountConversion,
   nameNotFound,
+  emptyVectorReturned,
   unregisteredUser,
   cacheLayer,
   unknown = Value
