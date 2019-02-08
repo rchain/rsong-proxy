@@ -7,6 +7,14 @@
             "url": "https://rsong.rchain.org",
             "timestamp": 1549400035
         },
+        "where": {
+            "ip": "12.12.12.12",
+            "timezone": "UTC",
+            "collection-api": {
+                "name": "rsong-api",
+                "version": "v-1.0-beta"
+            }
+        },
         "who": {
             "owner": {
                 "rchain_id": "artist-id",
@@ -41,8 +49,8 @@
                                 "rchain_id": "myID",
                                 "additionalInfo": {
                                     "k1": "v1",
-                                    "k2": "v2",
-                                }
+                                    "k2": "v2"
+                                },
                                 "contribution": 20,
                                 "crypto": [
                                     {
@@ -98,56 +106,65 @@
                 ]
             }
         },
-        "ingestion_pipeline": [
-            {
-                "status": "ready",
-                "when": "some-time-stamp"
-            },
-            {
-                "when": "some-time-stamp",
-                "where": "registration",
-                "status": "received"
-            },
-            {
-                "when": "some-time-stamp",
-                "where": "registration",
-                "status": "completed"
-            },
-            {
-                "when": "some-time-stamp",
-                "where": "acquisition",
-                "status": "received"
-            },
-            {
-                "when": "some-time-stamp",
-                "where": "acquisition",
-                "status": "processing"
-            },
-            {
-                "when": "some-time-stamp",
-                "where": "acquisition",
-                "status": "completed"
-            },
-            {
-                "when": "some-time-stamp",
-                "where": "publish",
-                "status": "received"
-            },
-            {
-                "when": "some-time-stamp",
-                "where": "publish",
-                "status": "processing"
-            },
-            {
-                "when": "some-time-stamp",
-                "where": "publish",
-                "status": "completed"
-            },
-            {
-                "when": "some-time-stamp",
-                "where": "provision",
-                "status": "received"
-            }
-        ]
+        "how": {
+            "ingestion_pipeline": [
+                {
+                    "from": "init",
+                    "to": "ready",
+                    "label": "ready",
+                    "when": 1549666754,
+                    "status": "ready"
+                },
+                {
+                    "from": "ready",
+                    "to": "register",
+                    "label": "register",
+                    "when": 1549666755,
+                    "status": "processing"
+                },
+                {
+                    "from": "register",
+                    "to": "register",
+                    "label": "register",
+                    "when": 1549666756,
+                    "status": "completed"
+                },
+                {
+                    "from": "register",
+                    "to": "transcode",
+                    "label": "transcode",
+                    "when": 1549666765,
+                    "status": "processing"
+                },
+                {
+                    "from": "transcode",
+                    "to": "transcode",
+                    "label": "transcode",
+                    "status": "completed",
+                    "when": 1549666765
+                },
+                {
+                    "from": "transcode",
+                    "to": "publish",
+                    "label": "publish",
+                    "status": "processing",
+                    "when": 1549666765
+                },
+                {
+                    "from": "publish",
+                    "to": "publish",
+                    "label": "publish",
+                    "status": "completed",
+                    "when": 1549666765
+                },
+                {
+                    "from": "publish",
+                    "to": "provision",
+                    "label": "provision",
+                    "status": "processing",
+                    "when": 1549666765
+                }
+            ]
+        }
     }
 }
