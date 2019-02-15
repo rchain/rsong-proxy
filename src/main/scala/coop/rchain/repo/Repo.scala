@@ -46,7 +46,7 @@ object Repo {
 
   def getDataAtName(proxy: RholangProxy,
                     rholangName: String): Either[Err, Seq[Par]] = {
-    log.debug(s"In getDataAtName. rholangName is $rholangName")
+    log.info(s"In getDataAtName. rholangName is $rholangName")
     for {
       blockInfoWithData <- proxy.dataAtName(rholangName)
       pars = blockInfoWithData.blockResults.flatMap(_.postBlockData)

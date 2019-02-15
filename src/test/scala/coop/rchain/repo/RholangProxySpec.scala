@@ -6,7 +6,6 @@ import org.specs2.Specification
 class RholangProxySpec extends  Specification {
   def is = s2"""
       repo specs
-          test node connection $e0
           fetch by name $e1
     """
   def e0 = {

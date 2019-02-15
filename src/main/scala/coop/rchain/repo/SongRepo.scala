@@ -20,6 +20,7 @@ object SongRepo {
       _ = log.info(s"${songId}-${SONG_OUT}")
       retrieveSongArgs = s"""("$songId".hexToBytes(), "$songIdOut")"""
       termToRetrieveSong = s"""@["Immersion", "retrieveSong"]!$retrieveSongArgs"""
+      _ = log.info(s"rholang to retrieve:${termToRetrieveSong}")
       _ <- deployAndPropose(termToRetrieveSong)
       songData <- findByName(songIdOut)
       binarySongData = Base16.decode(songData)
