@@ -41,7 +41,8 @@ new metaDataMapStore, songMapStore, userMapStore, remunerate, testLog(`rho:io:st
     for (@metaDataMap <- metaDataMapStore; @songMap <- songMapStore) {
       metaDataMapStore!(metaDataMap) |
       songMapStore!(songMap) |
-      songDataOut!(songMap.get(metaDataMap.get(songIdIn).nth(1)))
+      songDataOut!(songMap.get(metaDataMap.get(songIdIn).nth(1))) |
+      testLog !(songMap.get(metaDataMap.get(songIdIn).nth(1)))
     }
   } |
   

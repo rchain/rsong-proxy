@@ -1,7 +1,12 @@
 #!/bin/bash
+##
+## remove the old rspace and start node as validator in a fresh state
 ## usage ./startValidator.sh 
+##
 
-rnode run -s \
+rm -rf ~/.rnode/rspace  && \
+    rm -f ~/.rnode/rnode.log && \
+    rnode run -s \
       --required-sigs 0 \
       --thread-pool-size 5  \
       --validator-private-key \
