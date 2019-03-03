@@ -1,13 +1,11 @@
 package coop.rchain.repo
 
-import com.google.protobuf.ByteString
 import coop.rchain.casper.protocol._
 import coop.rchain.domain.{Err, ErrorCode}
 import com.google.protobuf.empty._
 import coop.rchain.models.{Expr, Par}
 import io.grpc.{ManagedChannel, ManagedChannelBuilder}
 import coop.rchain.domain._
-import coop.rchain.rholang.interpreter._
 import com.typesafe.scalalogging.Logger
 
 import scala.util._
@@ -35,18 +33,21 @@ class RholangProxy(channel: ManagedChannel) {
 
   def shutdown = channel.shutdownNow()
 
-  def deploy(source: String): Either[Err, String] = {
-    val resp = grpc.doDeploy(DeployData(
-                               user = ByteString.EMPTY,
-                               timestamp = System.currentTimeMillis(),
-                               term = source,
-                               phloLimit = Integer.MAX_VALUE
-                             ))
-
+  def deploy(contract: String): Either[Err, String] = {
+    val resp = grpc.doDeploy(
+      DeployData()
+        .withTerm(contract)
+        .withTimestamp(System.currentTimeMillis())
+        .withPhloLimit(Int.MaxValue)
+        .withPhloPrice(1)
+        .withNonce(0)
+        .withFrom("0x1")
+    )
     if (resp.success)
       Right(resp.message)
-    else Left(Err(ErrorCode.grpcDeploy, resp.message, Some(source)))
+    else Left(Err(ErrorCode.grpcDeploy, resp.message, Some(contract)))
   }
+
   def showBlocks: List[BlockInfoWithoutTuplespace] = grpc.showBlocks(BlocksQuery(
     Int.MaxValue)).toList
 
@@ -78,13 +79,12 @@ class RholangProxy(channel: ManagedChannel) {
   import coop.rchain.protocol.ParOps._
   def dataAtName(
       rholangName: String): Either[Err, ListeningNameDataResponse] = {
-    log.debug(s"dataAtName received name $rholangName")
+    log.info(s"dataAtName received name $rholangName")
     rholangName.asPar.flatMap(p => dataAtName(p))
   }
 
-  import coop.rchain.protocol.ParOps._
   private def dataAtName(par: Par): Either[Err, ListeningNameDataResponse] = {
-    log.debug(s"dataAtName received par ${PrettyPrinter().buildString(par)}")
+    log.info(s"dataAtName received par ${par}")
     val res = grpc.listenForDataAtName(DataAtNameQuery(Int.MaxValue, Some(par)))
     res.status match {
       case "Success" if res.blockResults.headOption.isDefined =>

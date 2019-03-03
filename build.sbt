@@ -1,6 +1,8 @@
 import CompilerSettings._
 import TodoListPlugin._
 
+scalaVersion := "2.12.8"
+
   resolvers ++= Seq(
     Resolver.sonatypeRepo("releases"),
     Resolver.sonatypeRepo("snapshots"))
@@ -39,7 +41,7 @@ lazy val root = (project in file("."))
         val logback = "1.2.3"
         val scalalogging = "3.9.0"
         val config = "1.3.3"
-        val scalapb= "0.7.4"
+        val scalapb= "0.8.2"
         val circie="0.9.3"
         val catsEffect="1.0.0"
         val monix="3.0.0-RC2-d0feeba"
@@ -68,12 +70,10 @@ lazy val root = (project in file("."))
        "ch.qos.logback" % "logback-classic" % V.logback,
        "io.kamon" %% "kamon-prometheus" % "1.0.0"
 
-      )})
-
-PB.targets in Compile := Seq(
-  scalapb.gen() -> (sourceManaged in Compile).value)
-
-// scalacOptions := CompilerSettings.options
+      )},
+  PB.targets in Compile := Seq( scalapb.gen() -> (sourceManaged in Compile).value),
+  buildInfoKeys in Compile := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, git.gitHeadCommit),
+  buildInfoPackage := "buildInfo" )
 
 enablePlugins(JavaServerAppPackaging, BuildInfoPlugin)
 

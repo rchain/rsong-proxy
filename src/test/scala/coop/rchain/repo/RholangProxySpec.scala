@@ -6,7 +6,6 @@ import org.specs2.Specification
 class RholangProxySpec extends  Specification {
   def is = s2"""
       repo specs
-          test node connection $e0
           fetch by name $e1
     """
   def e0 = {
@@ -17,9 +16,8 @@ class RholangProxySpec extends  Specification {
   }
 
   def e1 = {
-    val immersiveName = "Broke_Immersive.izr"
     val name="Broke.jpg"
-    val computed = SongRepo.getRSongAsset(name)
+    val computed = Repo.findByName(name)
     println(s"==== broke.jpg = ${computed}")
     computed.isRight === true
     computed.right.get.length > 100

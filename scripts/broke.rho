@@ -1,0 +1,4 @@
+new songOut, stdout(`rho:io:stdout`) in { 
+  @["Immersion", "retrieveSong"]!("Broke.jpg".hexToBytes(), *songOut) | 
+{stdout ! (["songout = ",*songOut]) }
+}

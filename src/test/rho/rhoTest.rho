@@ -1,0 +1,7 @@
+new songId, songIdOut, stdout(`rho:io:stdout`) in {
+@["Immersion", "store"] ! ("Broke.jpg", "art related metadata", *songId) | 
+@["Immersion", "retrieveSong"] ! (*songId, *songIdOut)  | 
+for(@text <- songIdOut) {
+  stdout ! (text)
+  }
+}

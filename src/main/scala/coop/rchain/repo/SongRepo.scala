@@ -4,9 +4,10 @@ import com.typesafe.scalalogging.Logger
 import coop.rchain.crypto.codec.Base16
 import coop.rchain.domain._
 import scala.util._
+import java.util.UUID
 
 object SongRepo {
-  private val SONG_OUT = "SONG-OUT"
+  private val SONG_OUT = "SONG-OUT" // UUID.randomUUID.toString
 
   import Repo._
 
@@ -20,6 +21,7 @@ object SongRepo {
       _ = log.info(s"${songId}-${SONG_OUT}")
       retrieveSongArgs = s"""("$songId".hexToBytes(), "$songIdOut")"""
       termToRetrieveSong = s"""@["Immersion", "retrieveSong"]!$retrieveSongArgs"""
+      _ = log.info(s"rholang to retrieve:${termToRetrieveSong}")
       _ <- deployAndPropose(termToRetrieveSong)
       songData <- findByName(songIdOut)
       binarySongData = Base16.decode(songData)
