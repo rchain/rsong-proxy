@@ -4,9 +4,10 @@ import com.typesafe.scalalogging.Logger
 import coop.rchain.crypto.codec.Base16
 import coop.rchain.domain._
 import scala.util._
+import java.util.UUID
 
 object SongRepo {
-  private val SONG_OUT = "SONG-OUT"
+  private val SONG_OUT = "SONG-OUT" // UUID.randomUUID.toString
 
   import Repo._
 

@@ -16,9 +16,8 @@ class RholangProxySpec extends  Specification {
   }
 
   def e1 = {
-    val immersiveName = "Broke_Immersive.izr"
     val name="Broke.jpg"
-    val computed = SongRepo.getRSongAsset(name)
+    val computed = Repo.findByName(name)
     println(s"==== broke.jpg = ${computed}")
     computed.isRight === true
     computed.right.get.length > 100

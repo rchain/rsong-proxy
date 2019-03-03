@@ -2,7 +2,6 @@ package coop.rchain.repo
 
 import com.typesafe.scalalogging.Logger
 import coop.rchain.models.Par
-import coop.rchain.rholang.interpreter.PrettyPrinter
 import coop.rchain.domain._
 import coop.rchain.utils.Globals._
 
@@ -23,7 +22,12 @@ object Repo {
 
   implicit class ParsToString(pars: Seq[Par]) {
     def stringify() = {
-      val e = pars.map(p => PrettyPrinter().buildString(p))
+      val e = //pars.map(p => p.exprs.flatMap(_.getGString))
+        for {
+          p <- pars
+          e <- p.exprs
+        } yield (e.getGString)
+
       if (e.isEmpty)
         Left(Err(ErrorCode.nameNotFound, s"Rholang name not found${}", None))
       else Right(e.head)
@@ -35,7 +39,7 @@ object Repo {
 
   def findByName( name: String): Either[Err, String] =  findByName(proxy, name)
 
-   private  def findByName(proxy: RholangProxy, name: String): Either[Err, String] = {
+  private  def findByName(proxy: RholangProxy, name: String): Either[Err, String] = {
     for {
       data <- getDataAtName(proxy, s""""$name"""")
       _= log.info(s"form getDataAtName: ${data}")
@@ -55,7 +59,11 @@ object Repo {
 
   private def stringify: Seq[Par] => Either[Err, String] =
     pars => {
-      val e: Seq[String] = pars.map(p => PrettyPrinter().buildString(p))
+      val e: Seq[String] =
+        for {
+          p <- pars
+          e <- p.exprs
+        } yield (e.getGString)
       if (e.isEmpty)
         Left(Err(ErrorCode.nameNotFound, s"Rholang name not found", None))
       else
