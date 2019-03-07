@@ -41,7 +41,7 @@
                 "assets": [
                     {
                         "artist_profile": {
-                            "name": "myname",
+                            "MainArtist": "Name of main artist on release",
                             "country": "US",
                             "genres": [
                                 "g1"
@@ -55,7 +55,7 @@
                         },
                         "albums": [
                             {
-                                "name": "album-name",
+                                "TitleText": "album-name",
                                 "songs": [
                                     {
                                         "index": 1,
