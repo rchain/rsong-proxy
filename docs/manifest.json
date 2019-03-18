@@ -67,11 +67,10 @@
                                     "genres": ["genre-1", "genre-2", "genre-3"],
                                     "MainArtist": ["album-name-DDEX-1", "album-name-DDEX-2"],
                                     "type": "song",
-                                    "rights_holders": [
+                                    "songwriters": [
                                         {
                                             "name": "myName",
                                             "rchain_id": "myID",
-                                            "type": "songwriter",
                                             "contribution": 20,
                                             "publisher": { "name": "publisherName", "contribution": 20 },
                                             "crypto": [
@@ -82,9 +81,24 @@
                                                 }
                                             ],
                                             "pro": "pro-name",
-                                            "iswc": "iswc-name",
+                                            "iswc": "iswc-name"
+                                        },
+                                    ],
+                                    "soundRecordingOwners": [
+                                        {
+                                            "name": "myName",
+                                            "rchain_id": "myID",
+                                            "role": "label",
+                                            "contribution": 20,
+                                            "crypto": [
+                                                {
+                                                    "entity": "ROCK",
+                                                    "wallet": "unique-id",
+                                                    "email": "email_address"
+                                                }
+                                            ],
                                             "isrc": "isrc-name"
-                                        }
+                                        },
                                     ],
                                     "components": [
                                         {
