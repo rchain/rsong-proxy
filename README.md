@@ -2,6 +2,8 @@
 
 # RSong Proxy
 
+## This repository is archived in favor of [rsong](https://github.com/rchain/rsong)
+
 A client facing REST layer to proxy RSong requests to RSongs Rholang contracts.
 
 RSong is implemented as a combination of multiple microservices and their interactions.  These microservices are:
