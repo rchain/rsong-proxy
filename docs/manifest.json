@@ -17,22 +17,14 @@
         "who": {
             "owner": {
                 "rchain_id": "artist-id",
-                "name": "acme",
-                "rchain_registration_id": "reg-123",
-                "owner_meta_data": [
-                    {
-                        "k1": "v1",
-                        "k11": "v11"
-                    },
-                    {
-                        "k2": "v1",
-                        "k21": "v11"
-                    },
-                    {
-                        "kn": "vn",
-                        "kn1": "vn1"
-                    }
-                ]
+                "oauth_id": "artist-oauth-id",
+                "first_name": "artist-first-name",
+                "last_name": "artist-last-name",
+                "country": "country-of-residence",
+                "birthdate": "artist-birthdate",
+                "email": "artist-email",
+                "kyc_approval": false,
+                "rchain_registration_id": "reg-123"
             }
         },
         "what": {
@@ -41,21 +33,13 @@
                 "assets": [
                     {
                         "artist_profile": {
-                            "name": "myname",
+                            "MainArtist": "artist-name-DDEX",
                             "country": "US",
-                            "genres": [
-                                "g1"
-                            ],
-                            "photo": "file_location",
-                            "artist_bio": "my bio",
-                            "social_media_links": [
-                                "link1"
-                            ],
                             "rchain_id": "unique-id"
                         },
                         "albums": [
                             {
-                                "name": "album-name",
+                                "TitleText": "album-name-DDEX",
                                 "songs": [
                                     {
                                         "index": 1,
@@ -79,24 +63,43 @@
                         "entities": [
                             {
                                 "entity": {
-                                    "contributers": [
+                                    "title": "song-name",
+                                    "genres": ["genre-1", "genre-2", "genre-3"],
+                                    "MainArtist": ["album-name-DDEX-1", "album-name-DDEX-2"],
+                                    "type": "song",
+                                    "songwriters": [
                                         {
                                             "name": "myName",
                                             "rchain_id": "myID",
-                                            "additionalInfo": {
-                                                "k1": "v1",
-                                                "k2": "v2"
-                                            },
+                                            "contribution": 20,
+                                            "publisher": { "name": "publisherName", "contribution": 20 },
+                                            "crypto": [
+                                                {
+                                                    "entity": "ROCK",
+                                                    "wallet": "unique-id",
+                                                    "email": "email_address"
+                                                }
+                                            ],
+                                            "pro": "pro-name",
+                                            "iswc": "iswc-name"
+                                        },
+                                    ],
+                                    "soundRecordingOwners": [
+                                        {
+                                            "name": "myName",
+                                            "rchain_id": "myID",
+                                            "role": "label",
                                             "contribution": 20,
                                             "crypto": [
                                                 {
                                                     "entity": "ROCK",
-                                                    "wallet": "unique-id"
+                                                    "wallet": "unique-id",
+                                                    "email": "email_address"
                                                 }
-                                            ]
-                                        }
+                                            ],
+                                            "isrc": "isrc-name"
+                                        },
                                     ],
-                                    "type": "song",
                                     "components": [
                                         {
                                             "type": "binary",
